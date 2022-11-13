@@ -37,8 +37,7 @@ class result_file:
 
     def store(self, file_name):
         with open(file_name, "w", encoding = 'utf-8') as file:
-            for line in self.lines:
-                file.write(str(line) + "\n")
+            file.write("\n".join(self.lines))
 
 # line content with additional information
 class line_content:
@@ -56,7 +55,7 @@ class line_content:
         return re.match("^\s*// -\^\^\^.*", self.text)
         
     def get_placeholder(self):
-        return re.search("[$][{][^}]*[}]", self.text)
+        return re.search("[$][{][^${}]*[}]", self.text)
 
 # just a class to denote that the code lines should be 
 # threated as code, so no decoration between lines is performed
