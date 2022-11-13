@@ -217,17 +217,178 @@ class test_of_code_block(unittest.TestCase):
         self.assertTrue(type(block) is code_block)
         self.assertEqual(block.get_list_of_lines(), ["first", "second", "third", "fourth"])
         
-"""     
 class test_of_list_walker(unittest.TestCase):
 
-    def test_not_implemented(self):
-        self.assertTrue(False, "Test not implemented")
+    def test_of_construction(self):
+        lines = [
+            "1", 
+            "22",
+            "333" ]
+        walker = list_walker(lines)
+        self.assertEqual(walker.lines_array, ["1", "22", "333"])
+        self.assertEqual(walker.lines_count, 3)
+        self.assertEqual(walker.current_line, 0)
+        
+    def test_of_checking_end(self):
+        lines = [
+            "1", 
+            "22",
+            "333" ]
+        walker = list_walker(lines)
+        self.assertFalse(walker.is_end())
+        walker.get_line()
+        self.assertFalse(walker.is_end())
+        walker.get_line()
+        self.assertFalse(walker.is_end())
+        walker.get_line()
+        self.assertTrue(walker.is_end())
+        
+    def test_of_reading_content(self):
+        lines = [
+            "1", 
+            "22",
+            "333" ]
+        walker = list_walker(lines)
+        value = walker.get_line()
+        self.assertEqual(str(value), "1")
+        self.assertEqual(type(value), line_content)
+        value = walker.get_line()
+        self.assertEqual(str(value), "22")
+        value = walker.get_line()
+        self.assertEqual(str(value), "333")
+        value = walker.get_line()
+        self.assertTrue(value is None)
     
+    def test_of_push_back(self):
+        lines = [
+            "1", 
+            "22",
+            "333" ]
+        walker = list_walker(lines)
+        value = walker.get_line()
+        value = walker.get_line()
+        walker.push_back(["4444", "55555"])
+        value = walker.get_line()
+        self.assertEqual(str(value), "4444")
+        value = walker.get_line()
+        self.assertEqual(str(value), "55555")
+        value = walker.get_line()
+        self.assertEqual(str(value), "333")
+        self.assertEqual(walker.lines_array, ["1", "4444", "55555", "333"])
+ 
+    def test_of_searchig_line(self):
+        lines = [
+            "1", 
+            "22   ",
+            "333",
+            "4444",
+            "55555" ]
+        walker = list_walker(lines)
+        
+        walker.go_to_line_with("333")
+        value = walker.get_line()
+        self.assertEqual(str(value), "4444")
+        
+        walker.go_to_line_with(" 22")
+        value = walker.get_line()
+        self.assertEqual(str(value), "333")
+        
+        walker.go_to_line_with(" 2   2")
+        self.assertTrue(walker.is_end())
+        
+    def test_of_skiping_till_end_of_block(self):
+        lines = [
+            "a", 
+            "b",
+            "// -^^^",
+            "c",
+            "d",
+            "// -^^^",
+            "e",
+            "f" ]
+        walker = list_walker(lines)
+        
+        walker.go_to_end_of_content_block()
+        value = walker.get_line()
+        self.assertEqual(str(value), "c")
+        
+        walker.go_to_end_of_content_block()
+        value = walker.get_line()
+        self.assertEqual(str(value), "e")
+        
+        walker.go_to_end_of_content_block()
+        self.assertTrue(walker.is_end())
+        
 class test_of_code_generator(unittest.TestCase):
 
-    def test_not_implemented(self):
-        self.assertTrue(False, "Test not implemented")
-"""    
+    def test_of_define(self):
+        self.assertTrue(False)
+        
+    def test_of_set_template(self):
+        self.assertTrue(False)
+     
+    def test_of_generate(self):
+        self.assertTrue(False)
+        
+    def test_of_transform(self):
+        self.assertTrue(False)
+ 
+    def test_of_combine_with_user_code(self):
+        self.assertTrue(False)  
+    
+    def test_of_process_line(self):
+        self.assertTrue(False)
+    
+    def test_of_calculate_result(self):
+        self.assertTrue(False)
+
+    def test_of_combine_lines_from(self):
+        self.assertTrue(False)
+        
+    def test_of_whitespace_text(self):
+        builder = code_generator(globals())
+        
+        whitespaced = builder._whitespace_text("   xx")
+        self.assertEqual(whitespaced, "     ")
+        
+        whitespaced = builder._whitespace_text(" \t \r  x x \nssddfd")
+        self.assertEqual(whitespaced, " \t \r      \n      ")
+        
+        whitespaced = builder._whitespace_text("")
+        self.assertEqual(whitespaced, "")
+    
+    def test_of_copy_lines_till_end_of_block(self):
+        source = [
+            "abcd",
+            "1",
+            "2",
+            "3",
+            "// -^^^",
+            "end" ]
+        target = [ ]
+        walker = list_walker(source)
+        walker.get_line()
+        builder = code_generator(globals())
+        builder._copy_lines(walker, target)
+        self.assertEqual(target, ["1", "2", "3", "// -^^^"])
+        self.assertFalse(walker.is_end())
+        line = walker.get_line()
+        self.assertEqual(str(line), "end")
+        
+    def test_of_copy_lines_till_end_data(self):
+        source = [
+            "abcd",
+            "1",
+            "2",
+            "3",
+            "end" ]
+        target = [ ]
+        walker = list_walker(source)
+        walker.get_line()
+        builder = code_generator(globals())
+        builder._copy_lines(walker, target)
+        self.assertEqual(target, ["1", "2", "3", "end"])
+        self.assertTrue(walker.is_end())
     
 # -------------------------------------------------------------------
 
