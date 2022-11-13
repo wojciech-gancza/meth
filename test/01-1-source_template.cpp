@@ -5,7 +5,7 @@ class X
 {
 	// -vvv implementation of user defined function
 		
-		// example of dode can be placed here - this is 
+		// example of code can be placed here - this is 
 		// initial text, filled at creation, but surwiwing 
 		// regeneration of the file
 		
@@ -19,4 +19,10 @@ class X
 	};
 	
 	enum X { ${enum_list} };
+	
+	void ${general_name("xx aa hellooo").UPPERCASE()}
+	{
+	}
+	
+	${generate_some_code_with_placeholders_and_user_code_block()}
 };

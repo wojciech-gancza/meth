@@ -7,6 +7,7 @@ class X
 
 	void f()
 	{
+		cout << "AAA";
 	}
 
 	// -^^^ and of user defined code block
@@ -20,5 +21,19 @@ class X
 
 	enum X { FIRST,
 	         SECOND,
-	         THIRD };
+	         THIRD,
+	         AND_FINALLY_FORTH,
+	         LAST,
+
+	void XX_AA_HELLOOO
+	{
+	}
+
+	void a_function
+	{
+	    // -vvv a_function user code
+	    f();
+		cout << "BBB";
+	    // -^^^ end of user code. do not modify
+	}
 };

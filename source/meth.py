@@ -8,6 +8,8 @@
 import os
 import re
 
+from tools import general_name
+
 # file loaded into memory in forn of list of lines.
 # whole file content is read during construction.
 # futher modification of file is not reflected in object
@@ -107,11 +109,12 @@ class list_walker:
                 break
 
 # main functionality - generator creating output files
-class generator:
+class code_generator:
 
-    def __init__(self):
+    def __init__(self, global_dictionary):
         self.symbols = {  }
         self.template_file_name = ""
+        self.global_dictionary = global_dictionary
         
     def define(self, name, value):
         self.symbols[str(name)] = value
@@ -167,7 +170,7 @@ class generator:
     
     # calculate result of expression to place in created text
     def _calculate_result(self, expression):
-        return eval(expression, globals(), self.symbols)
+        return eval(expression, self.global_dictionary, self.symbols)
 
     def _combine_lines_from(self, before, value, after):
         if type(value) is list:
@@ -201,49 +204,4 @@ class generator:
             if line.is_persistent_block_end():
                 return
     
-# ----------------------------------------------------------
-
-# library objects
-# some nice to use tools which could be usefull
-
-# class transforming string to identifier with variours notations
-class general_name:
-
-    def __init__(self, name):
-        self.bare_name = name.split()
-        
-    def CamelCase(self):
-        return "".join([x.capitalize() for x in self.bare_name])
-        
-    def lowercaseCamel(self):
-        if len(self.bare_name):
-            first = self.bare_name[0].lower()
-            return first + "".join([x.capitalize() for x in self.bare_name[1:]])
-        else:
-            return ""
-        
-    def lowercase(self):
-        return "_".join([x.lower() for x in self.bare_name])
-        
-    def UPPERCASE(self):
-        return "_".join([x.upper() for x in self.bare_name])
-        
-# ----------------------------------------------------------
-
-def generate_some_code():
-    return code_block([ "void ${fname}", 
-                            "{", 
-                            "    // -vvv ${fname} user code", 
-                            "    // by default - do nothing",
-                            "    // -^^^ end of user code. do not modify",
-                            "}"])
-
-# Main functionality of source file generator. It 
-builder = generator()
-builder.set_template("../test/source.cpp")
-builder.define("name", general_name("hello World"))
-builder.define("fname", "a_function")
-builder.define("enum_list", ["FIRST", "SECOND", "THIRD", "AND_FINALLY_FORTH", "LAST"])
-builder.generate("../test/_generated/result.cpp")
-
 # ----------------------------------------------------------
