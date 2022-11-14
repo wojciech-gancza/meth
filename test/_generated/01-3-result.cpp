@@ -23,7 +23,7 @@ class X
 	         SECOND,
 	         THIRD,
 	         AND_FINALLY_FORTH,
-	         LAST,
+	         LAST };
 
 	void XX_AA_HELLOOO
 	{

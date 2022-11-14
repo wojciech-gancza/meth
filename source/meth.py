@@ -183,7 +183,7 @@ class code_generator:
                 prefix = self._whitespace_text(before)
                 for scalar in value[1:-1]:
                     result = result + self._combine_lines_from(prefix, scalar, ",")
-                result = result + self._combine_lines_from(prefix, value[-1], ",")
+                result = result + self._combine_lines_from(prefix, value[-1], after)
                 return result
         elif type(value) is code_block:
             result = [ ]
