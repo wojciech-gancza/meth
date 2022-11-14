@@ -154,8 +154,7 @@ class code_generator:
                     generated.go_to_end_of_content_block()
         return result
 
-    # transfroms single line to output. Returns 'True' when the line result is 
-    # not the end of block and the content can be processed
+    # transfroms single line. Result is list of result lines to replace passed one
     def _process_line(self, line):
         placeholder_match = line.get_placeholder()
         line_text = str(line)
