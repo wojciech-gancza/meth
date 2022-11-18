@@ -320,31 +320,102 @@ class test_of_list_walker(unittest.TestCase):
         self.assertTrue(walker.is_end())
         
 class test_of_code_generator(unittest.TestCase):
-    """
+    
     def test_of_define(self):
-        self.assertTrue(False)
-        
+        builder = code_generator(globals())
+        builder.define("x", 12)
+        builder.define("a", 97)
+        self.assertEqual(builder.symbols["x"], 12)
+        self.assertEqual(builder.symbols["a"], 97)
+        builder.define("a", "ALPHA")
+        self.assertEqual(builder.symbols["a"], "ALPHA")
+   
     def test_of_set_template(self):
-        self.assertTrue(False)
-     
-    def test_of_generate(self):
-        self.assertTrue(False)
-        
+        builder = code_generator(globals())
+        builder.set_template("path_to_template")
+        self.assertEqual(builder.template_file_name, "path_to_template")
+        builder.set_template("filename")
+        self.assertEqual(builder.template_file_name, "filename")
+    
+    #def test_of_generate(self):
+    #    # test already covered by functional tests
+    #    pass
+    
     def test_of_transform(self):
-        self.assertTrue(False)
- 
+        template = [
+            "first",
+            "second ${[1, 2, 4]} end"]
+        expected = [
+            "first", 
+            "second 1,",
+            "       2,",
+            "       4 end" ]
+        builder = code_generator(globals())
+        result = builder._transform(template)
+        self.assertEqual(result, expected)  
+    
     def test_of_combine_with_user_code(self):
-        self.assertTrue(False)  
+        template = [
+            "1 line",
+            "second",
+            "// -vvv",
+            "default",
+            "// -^^^",
+            "end" ]
+        existing = [
+            "xxxx",
+            "// -vvv",
+            "USER CODE",
+            "// -^^^" ]
+        expected = [
+            "1 line",
+            "second",
+            "// -vvv",
+            "USER CODE",
+            "// -^^^",
+            "end" ]
+        builder = code_generator(globals())
+        result = builder._combine_with_user_code(template, existing)
+        self.assertEqual(result, expected)  
     
     def test_of_process_line(self):
-        self.assertTrue(False)
-    
-    def test_of_calculate_result(self):
-        self.assertTrue(False)
+        builder = code_generator(globals())
+        line = "line without code"
+        result = builder._process_line(line_content(line))
+        self.assertEqual(result, None)
+        line = "line ${1} end"
+        result = builder._process_line(line_content(line))
+        self.assertEqual(result, ["line 1 end"])
 
+    def test_of_calculate_result(self):
+        builder = code_generator(globals())
+        expression = "1+1"
+        value = builder._calculate_result(expression)
+        self.assertEqual(value, 2)
+        expression = "alfa"
+        builder.define("alfa", "A")
+        value = builder._calculate_result(expression)
+        self.assertEqual(value, "A")
+        try:
+            expression = "beta"
+            value = builder._calculate_result(expression)
+            self.assertTrue(False)
+        except:
+            pass
+ 
     def test_of_combine_lines_from(self):
-        self.assertTrue(False)
-    """  
+        builder = code_generator(globals())
+        x = builder._combine_lines_from("AAA", "bcd", "end")
+        self.assertEqual(x, ["AAAbcdend"])
+        x = builder._combine_lines_from("AAA", 1024, "end")
+        self.assertEqual(x, ["AAA1024end"])
+        x = builder._combine_lines_from("AAA", 1024, "end")
+        self.assertEqual(x, ["AAA1024end"])
+        x = builder._combine_lines_from("AAA", [1, 2, 3, 4], "end")
+        self.assertEqual(x, ["AAA1,", "   2,", "   3,", "   4end"])
+        x = builder._combine_lines_from("AAA", code_block([1, 2, 3, 4]), "end")
+        self.assertEqual(x, ["AAA1end", "AAA2end", "AAA3end", "AAA4end"])
+     
     def test_of_whitespace_text(self):
         builder = code_generator(globals())
         
