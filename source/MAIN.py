@@ -1,28 +1,17 @@
 # ----------------------------------------------------------
 
 from meth import code_generator, code_block
-from tools import general_name
+from tools import general_name, cpp_enum
 
 # Main functionality of source file generator. It 
-template            = "../test/01-1-source_template.cpp"
-previous_result     = "../test/01-2-existing_content.cpp"
-expected_result     = "../test/01-3-expected_result.cpp"
-generated_result    = "../test/_generated/01-3-result.cpp"
+template            = "../test/03-1-source_template.cpp"
+generated_result    = "../test/_generated/03-1-result.cpp"
 
 builder = code_generator(globals())
 builder.set_template(template)
-builder.define("name", general_name("hello World"))
-builder.define("fname", "a_function")
-builder.define("enum_list", ["FIRST", "SECOND", "THIRD", "AND_FINALLY_FORTH", "LAST"])
 
-def generate_some_code_with_placeholders_and_user_code_block():
-    return code_block([ 
-        "void ${fname}", 
-        "{", 
-        "    // -vvv ${fname} user code", 
-        "    // by default - do nothing",
-        "    // -^^^ end of user code. do not modify",
-        "}"])
+builder.define("enum1", cpp_enum(["E1X223", "BETA", "SOMETHONG_ELSE", "X", "KULA314", "MOVIE", "DDS", "MDF", "XRAYMACHINE", "FOXTROT", "B554"]))
+builder.define("enum2", cpp_enum(["X0", "X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X9", "XA", "XB", "XC", "XD", "XE", "XF"]))
 
 builder.generate(generated_result)
 

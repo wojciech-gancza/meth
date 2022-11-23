@@ -8,8 +8,6 @@
 import os
 import re
 
-from tools import general_name
-
 # file loaded into memory in forn of list of lines.
 # whole file content is read during construction.
 # futher modification of file is not reflected in object
