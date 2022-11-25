@@ -1,6 +1,8 @@
 // This is example of source code generated file
 // DO NOT EDIT IT (except especially prepared and marked blocks)
 
+// ---------------------------------------------------
+
 enum E1 { E1X223,         BETA,
           SOMETHONG_ELSE, X,
           KULA314,        MOVIE,
@@ -51,7 +53,7 @@ E1 convert<E1>(const std::string& text)
 
 std::string to_strig(E1 value)
 {
-	return enum1_names[static_cast<unsigned>(value);
+	return enum1_names[static_cast<unsigned>(value)];
 }
 
 // ---------------------------------------------------
@@ -106,5 +108,7 @@ E2 convert<E2>(const std::string& text)
 
 std::string to_strig(E2 value)
 {
-	return enum2_names[static_cast<unsigned>(value);
+	return enum2_names[static_cast<unsigned>(value)];
 }
+
+// ---------------------------------------------------

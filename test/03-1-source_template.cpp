@@ -1,6 +1,8 @@
 // This is example of source code generated file
 // DO NOT EDIT IT (except especially prepared and marked blocks)
 
+// ---------------------------------------------------
+
 enum E1 { ${enum1.get_items_as_list()} };
 
 const char* const enum1_names[] = {
@@ -32,4 +34,6 @@ std::string to_strig(E2 value)
 {
 	return enum2_names[static_cast<unsigned>(value)];
 }
+
+// ---------------------------------------------------
 
