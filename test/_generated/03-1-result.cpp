@@ -3,6 +3,7 @@
 
 // ---------------------------------------------------
 
+
 enum E1 { E1X223,         BETA,
           SOMETHONG_ELSE, X,
           KULA314,        MOVIE,
@@ -58,6 +59,7 @@ std::string to_strig(E1 value)
 
 // ---------------------------------------------------
 
+
 enum E2 { X0, X1, X2, X3,
           X4, X5, X6, X7,
           X8, X9, XA, XB };
@@ -110,5 +112,6 @@ std::string to_strig(E2 value)
 {
 	return enum2_names[static_cast<unsigned>(value)];
 }
+
 
 // ---------------------------------------------------

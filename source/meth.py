@@ -131,8 +131,8 @@ class code_generator:
         walker = list_walker(template)
         while not walker.is_end():
             line = walker.get_line()
-            replacement = self._process_line(line)
-            if replacement:
+            replacement = self._process_line(line, walker)
+            if not replacement is None:
                 walker.push_back(replacement)
         return walker.lines_array
  
@@ -153,15 +153,18 @@ class code_generator:
         return result
 
     # transfroms single line. Result is list of result lines to replace passed one
-    def _process_line(self, line):
+    def _process_line(self, line, source_reader):
         placeholder_match = line.get_placeholder()
         line_text = str(line)
         if placeholder_match:
             before = line_text[:placeholder_match.start(0)]
             after = line_text[placeholder_match.end(0):]
             expression = line_text[placeholder_match.start(0)+2:placeholder_match.end(0)-1]
-            value = self._calculate_result(expression)
-            return self._combine_lines_from(before, value, after)   
+            if expression.strip()[0] == "#":  # this is not simple expression, but metastatement
+                return self._process_metatatement(before, after, expression.strip()[1:], source_reader)
+            else:
+                value = self._calculate_result(expression)
+                return self._combine_lines_from(before, value, after)   
         return None
     
     # calculate result of expression to place in created text
@@ -199,5 +202,45 @@ class code_generator:
             target.append(str(line))
             if line.is_persistent_block_end():
                 return
+    
+    # emits lines created returned by metaexpression
+    def _process_metatatement(self, before, after, expession, source_reader):
+        #
+        #
+        # TODO
+        #
+        #
+        return [  ]
+        
+    def _read_up_to_end_of_metastatement(self, before, end, source_reader):
+        current_level = 1
+        position, level_change = self.check_metastatement(end, 0)
+        
+            
+        pass
+        
+    # returns position of metastatement and type of metastatement located in line. Type is
+    # denoted as numbers: 
+    #   +1: entering scope metastatements (IF, FOR)
+    #    0: contunuation of scope (ELSE)
+    #   -1: leagind scope (END)
+    def _check_metastatement(self, line, start_at):
+        to_search = line[start_at:]
+        found = re.search("[$][{]\s*#\s*(IF|ELSE|END|FOR)\s*[^${}]*[}]", to_search)
+        if found:
+            position = start_at + found.start(0)
+            end = start_at + found.end(0)
+            print(position, end, line)
+            metastatement = line[position :end]
+            if re.match("[$][{]\s*#\s*FOR.*", metastatement):
+                return position, end, +1
+            if re.match("[$][{]\s*#\s*IF.*", metastatement):
+                return position, end, +1
+            if re.match("[$][{]\s*#\s*END.*", metastatement):
+                return position, end, -1
+            else:
+                return position, end, 0 # ("ELSE")
+        else:
+            return None, None, None
     
 # ----------------------------------------------------------

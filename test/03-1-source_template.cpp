@@ -3,6 +3,8 @@
 
 // ---------------------------------------------------
 
+${#IF emitE1}
+
 enum E1 { ${enum1.get_items_as_list()} };
 
 const char* const enum1_names[] = {
@@ -13,12 +15,16 @@ E1 convert<E1>(const std::string& text)
 	${enum1.code_of_convert_from_string()}
 };
 
+${#IF convert_to_string}
 std::string to_strig(E1 value)
 {
 	return enum1_names[static_cast<unsigned>(value)];
 }
+${#  END  }
 
 // ---------------------------------------------------
+
+${#ELSE}
 
 enum E2 { ${enum2.get_items_as_list()} };
 
@@ -34,6 +40,8 @@ std::string to_strig(E2 value)
 {
 	return enum2_names[static_cast<unsigned>(value)];
 }
+
+${#END}
 
 // ---------------------------------------------------
 
