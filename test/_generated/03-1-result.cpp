@@ -4,7 +4,7 @@
 // ---------------------------------------------------
 
 
-void function_XXX
+void function_XXX()
 {
 	// -vvv body of hunction handler No XXX
 	// example of function body - feel free to change it

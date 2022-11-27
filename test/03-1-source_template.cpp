@@ -13,7 +13,7 @@ void function_${nil}
 ${#END}
 
 ${#FOR item : ["XXX", 2, 3, 4, 6, 12, 55]}
-void function_${item}
+void function_${item}()
 {
 	// -vvv body of hunction handler No ${item}
 	// example of function body - feel free to change it

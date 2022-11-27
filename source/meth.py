@@ -114,6 +114,24 @@ class list_walker:
             if line.is_persistent_block_end():
                 break
 
+def _add_head(block, head):
+    if len(block) > 0:
+        block[0] = head + block[0]
+        return block
+    elif head == "":
+        return [ ]
+    else:
+        return [ head ]
+        
+def _add_tail(block, tail):
+    if len(block) > 0:
+        block[-1] = block[-1] + tail
+        return block
+    elif tail == "":
+        return [ ]
+    else:
+        return [ tail ]        
+    
 # main functionality - generator creating output files
 class code_generator:
 
@@ -225,6 +243,66 @@ class code_generator:
             return self._process_meta_FOR(variable, collection_expression, before, after, source_reader)
         return None
     
+    class _iteration_controller:
+        
+        def __init__(self, collection, before, block, after):
+            self.collection = collection
+            self.length = len(collection)
+            self.first_line_prefix = before
+            self.block = block
+            self.last_line_suffix = after
+            self.current_position = 0
+            
+        def set_values(self, symbols):
+            pass
+            
+        def get_next_block(self):
+            block = self.block
+            if self.current_position == 0:
+                block = _add_head(block, self.first_line_prefix)
+            if self.current_position == self.length - 1:
+                block = _add_tail(block, self.last_line_suffix)   
+            return block  
+            
+        # return bool value. False for last iteration
+        def go_to_next_iteration(self):
+            if self.current_position == self.length - 1:
+                return False
+            else:
+                return True
+              
+    class _list_iteration_controller(_iteration_controller):
+    
+        def __init__(self, var_name, collection, before, block, after):
+            code_generator._iteration_controller.__init__(self, list(collection), before, block, after)
+            self.variable_name = var_name
+           
+        def set_values(self, symbols):
+            symbols[self.variable_name] = self.collection[self.current_position]
+    
+    class _dict_iteration_controller(_iteration_controller):
+    
+        def __init__(self, var_name, collection, before, block, after):
+            code_generator._iteration_controller.__init__(self, collection, before, block, after)
+            key_name, value_name = self._get_key_value_pair(var_name)
+            self.key_name = key_name
+            self.value_name = value_name
+            self.keys = list(collection.keys())
+           
+        def set_values(self, symbols):
+            key = self.keys[self.current_position]
+            symbols[self.key_name] = key
+            symbols[self.value_name] = self.collection[key]
+    
+        def _get_key_value_pair(self, identifiers):
+            separator_location = re.search("\s*,\s*", identifiers)
+            if separator_location:
+                key_name = identifiers[:separator_location.start(0)]
+                value_name = identifiers[separator_location.end(0):]
+                return key_name.strip(), value_name.strip()
+            else:
+                raise Exception("expecting pair of identifiers to iterate dictionary (Found '" + identifiers + "')")
+          
     def _process_meta_FOR(self, variable, collection_expression, before, after, source_reader):
         collection = self._calculate_result(collection_expression)   
         source_reader.set_mark_range_to_delete()
@@ -232,40 +310,27 @@ class code_generator:
             
         if len(collection) == 0:
             return self._decorate_with_start_end([], before, after)
-       
+            
         block = self._select_metastatement_block(blocks, 0)
         
-        # reading value from colleection
-        #
-        #
-        position = 0
-        #
         if type(collection) == dict:
-            keys = list(collection.keys())
-            key_name, value_name = self._get_key_value_pair(variable)
+            loop_iterator = code_generator._dict_iteration_controller(variable, collection, before, block, after)
+        else:
+            loop_iterator = code_generator._list_iteration_controller(variable, collection, before, block, after)
+            
+        block = loop_iterator.get_next_block()
+        loop_iterator.set_values(self.symbols)
+        should_continue = loop_iterator.go_to_next_iteration()
+        
+        if should_contunue:
             #
-            key = keys[position]
-            self.symbols[key_name] = key
-            self.symbols[value_name] = collection[key]
-        else:
-            collection = list(collection)
-            self.symbols[variable] = collection[position]
-        #
-        #
-        # 
-        # first iteration should have before, last - after. All others: before = after = ""
-        return self._decorate_with_start_end(block, before, after)
+            #
+            #
+            #
+            #
+            pass
+        return block
         
-    def _get_key_value_pair(self, identifiers):
-        separator_location = re.search("\s*,\s*", identifiers)
-        if separator_location:
-            key_name = identifiers[:separator_location.start(0)]
-            value_name = identifiers[separator_location.end(0):]
-            return key_name.strip(), value_name.strip()
-        else:
-            raise Exception("expecting pair of identifiers to iterate dictionary (Found '" + identifiers + "')")
-        
-       
     def _get_loop_elements(self, loop_expression):
         separator_location = re.search("\s*:\s*", loop_expression)
         if separator_location:
@@ -294,27 +359,9 @@ class code_generator:
         
     # consider moving these methods to separate class
     def _decorate_with_start_end(self, block, before, after):
-        block = self._add_head(block, before)
-        return self._add_tail(block, after)
+        block = _add_head(block, before)
+        return _add_tail(block, after)
                 
-    def _add_head(self, block, head):
-        if len(block) > 0:
-            block[0] = head + block[0]
-            return block
-        elif head == "":
-            return [ ]
-        else:
-            return [ head ]
-            
-    def _add_tail(self, block, tail):
-        if len(block) > 0:
-            block[-1] = block[-1] + tail
-            return block
-        elif tail == "":
-            return [ ]
-        else:
-            return [ tail ]        
-        
     # returns position of metastatement and type of metastatement located in line. Type is
     # denoted as numbers: 
     #   +1: entering scope metastatements (IF, FOR)
