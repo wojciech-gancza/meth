@@ -212,35 +212,66 @@ class code_generator:
         #
         return [  ]
         
-    def _read_up_to_end_of_metastatement(self, before, end, source_reader):
-        current_level = 1
-        position, level_change = self.check_metastatement(end, 0)
-        
-            
-        pass
-        
     # returns position of metastatement and type of metastatement located in line. Type is
     # denoted as numbers: 
     #   +1: entering scope metastatements (IF, FOR)
     #    0: contunuation of scope (ELSE)
     #   -1: leagind scope (END)
+    class _metastatement_location:
+    
+        def __init__(self, start, end, depth_change):
+            self.start = start
+            self.end = end
+            self.depth_change = depth_change 
+            
     def _check_metastatement(self, line, start_at):
         to_search = line[start_at:]
         found = re.search("[$][{]\s*#\s*(IF|ELSE|END|FOR)\s*[^${}]*[}]", to_search)
         if found:
             position = start_at + found.start(0)
             end = start_at + found.end(0)
-            print(position, end, line)
             metastatement = line[position :end]
             if re.match("[$][{]\s*#\s*FOR.*", metastatement):
-                return position, end, +1
+                return code_generator._metastatement_location(position, end, +1)
             if re.match("[$][{]\s*#\s*IF.*", metastatement):
-                return position, end, +1
+                return code_generator._metastatement_location(position, end, +1)
             if re.match("[$][{]\s*#\s*END.*", metastatement):
-                return position, end, -1
+                return code_generator._metastatement_location(position, end, -1)
             else:
-                return position, end, 0 # ("ELSE")
+                return code_generator._metastatement_location( position, end, 0) # ("ELSE")
         else:
-            return None, None, None
+            return None
+    
+    def _read_metastatement_body(self, before, after, source_reader):
+        current_level = 1
+        result = [ ]
+        current_block = [ ]
+        line = after
+        check_from_position = 0
+        after_metastatement = ""
+        while True:
+            found = self._check_metastatement(line, check_from_position)
+            if not found:
+                current_block.append(line)
+                if source_reader.is_end():
+                    break
+                line = source_reader.get_line()
+                check_from_position = 0
+            else:
+                if current_level == 1 and found.depth_change <= 0:
+                    last_line = line[check_from_position:found.start]
+                    current_block.append(last_line)
+                    after_metastatement = line[found.end:]
+                    if found.depth_change == 0:
+                        result.append(current_block)
+                        current_block = []
+                        check_from_position = found.end
+                    else:
+                        break
+                else:
+                    current_level = current_level + found.depth_change
+        if current_block != []:
+            result.append(current_block)
+        return before, result, after_metastatement   
     
 # ----------------------------------------------------------

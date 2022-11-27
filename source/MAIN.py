@@ -17,11 +17,29 @@ builder.define("convert_to_string", True)
 
 # builder.generate(generated_result)
 
-a, b, c = builder._check_metastatement("xxxcs${#END}dddsdsds", 3)
-print(a, b, c)
-a, b, c = builder._check_metastatement("xxxcs${ #  FOR x : collection() }dddsdsds", 0)
-print(a, b, c)
-a, b, c = builder._check_metastatement("${#IF x}", 0)
-print(a, b, c)
+def show_metastatement_search_result(line, result, starting_at):
+    if result is None:
+        print("Metastatement was not found when analising '" + line + "' starting at position " + str(starting_at))
+    else:
+        part = line[result.start:result.end]
+        print("In line '" + line + "' found metastatement '" + part + "' metastatement depth change is: " + str(result.depth_change))
+
+line = "xxxcs${#END}dddsdsds"
+x = builder._check_metastatement(line, 3)
+show_metastatement_search_result(line, x, 3)
+
+line = "xxxcs${ #  FOR x : collection() }dddsdsds"
+x = builder._check_metastatement(line, 0)
+show_metastatement_search_result(line, x, 0)
+
+line = "${#IF x}"
+x = builder._check_metastatement(line, 0)
+show_metastatement_search_result(line, x, 0)
+
+print("----------------------------")
+
+line = "something before${#IF condition}under condition${#ELSE}elsewere${#END}after condition"
+x = builder._read_metastatement_body("something before", "under condition${#ELSE}elsewere${#END}after condition", None)
+print(x)
 
 # ----------------------------------------------------------
