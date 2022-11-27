@@ -56,5 +56,6 @@ x = builder._read_metastatement_body("something in same line", lines)
 print(x)
 
 # ----------------------------------------------------------
+builder.define("someMap", { "A": 12, "B": 127, "C": 998543 })
 
 builder.generate(generated_result)

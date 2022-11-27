@@ -218,17 +218,63 @@ class code_generator:
         if match:
             condition = expression[match.end(0):]
             return self._process_meta_IF(condition, before, after, source_reader)            
-        #
-        #
-        #
-        #
-        #
-        #
+        match = re.search("^\s*FOR\s*", expression)
+        if match:
+            loop_definition = expression[match.end(0):]
+            variable, collection_expression = self._get_loop_elements(loop_definition)
+            return self._process_meta_FOR(variable, collection_expression, before, after, source_reader)
+        return None
+    
+    def _process_meta_FOR(self, variable, collection_expression, before, after, source_reader):
+        collection = self._calculate_result(collection_expression)   
         source_reader.set_mark_range_to_delete()
         blocks, after = self._read_metastatement_body(after, source_reader)
+            
+        if len(collection) == 0:
+            return self._decorate_with_start_end([], before, after)
+       
         block = self._select_metastatement_block(blocks, 0)
+        
+        # reading value from colleection
+        #
+        #
+        position = 0
+        #
+        if type(collection) == dict:
+            keys = list(collection.keys())
+            key_name, value_name = self._get_key_value_pair(variable)
+            #
+            key = keys[position]
+            self.symbols[key_name] = key
+            self.symbols[value_name] = collection[key]
+        else:
+            collection = list(collection)
+            self.symbols[variable] = collection[position]
+        #
+        #
+        # 
+        # first iteration should have before, last - after. All others: before = after = ""
         return self._decorate_with_start_end(block, before, after)
         
+    def _get_key_value_pair(self, identifiers):
+        separator_location = re.search("\s*,\s*", identifiers)
+        if separator_location:
+            key_name = identifiers[:separator_location.start(0)]
+            value_name = identifiers[separator_location.end(0):]
+            return key_name.strip(), value_name.strip()
+        else:
+            raise Exception("expecting pair of identifiers to iterate dictionary (Found '" + identifiers + "')")
+        
+       
+    def _get_loop_elements(self, loop_expression):
+        separator_location = re.search("\s*:\s*", loop_expression)
+        if separator_location:
+            variable_name = loop_expression[:separator_location.start(0)]
+            collection_expression = loop_expression[separator_location.end(0):]
+            return variable_name.strip(), collection_expression.strip()
+        else:
+            raise Exception("'" + loop_expression + "' is not good loop definition - should be 'item : collection_expression'")
+    
     def _process_meta_IF(self, condition, before, after, source_reader):
         condition_value = self._calculate_result(condition)
         source_reader.set_mark_range_to_delete()
@@ -245,18 +291,29 @@ class code_generator:
             return blocks[index]
         else:
             return [ ]
-            
+        
+    # consider moving these methods to separate class
     def _decorate_with_start_end(self, block, before, after):
+        block = self._add_head(block, before)
+        return self._add_tail(block, after)
+                
+    def _add_head(self, block, head):
         if len(block) > 0:
-            block[0] = before + block[0]
-            block[-1] = block[-1] + after
+            block[0] = head + block[0]
             return block
+        elif head == "":
+            return [ ]
         else:
-            line = before + after
-            if line == "":
-                return [  ]
-            else:
-                return [ line ]
+            return [ head ]
+            
+    def _add_tail(self, block, tail):
+        if len(block) > 0:
+            block[-1] = block[-1] + tail
+            return block
+        elif tail == "":
+            return [ ]
+        else:
+            return [ tail ]        
         
     # returns position of metastatement and type of metastatement located in line. Type is
     # denoted as numbers: 

@@ -3,6 +3,17 @@
 
 // ---------------------------------------------------
 
+
+void function_XXX
+{
+	// -vvv body of hunction handler No XXX
+	// example of function body - feel free to change it
+	// -^^^
+}
+
+	A :-> 12
+
+
 enum E1 { E1X223,         BETA,
           SOMETHONG_ELSE, X,
           KULA314,        MOVIE,
