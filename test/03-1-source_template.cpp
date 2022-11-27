@@ -2,7 +2,6 @@
 // DO NOT EDIT IT (except especially prepared and marked blocks)
 
 // ---------------------------------------------------
-
 ${#IF emitE1}
 
 enum E1 { ${enum1.get_items_as_list()} };
@@ -20,12 +19,10 @@ std::string to_strig(E1 value)
 {
 	return enum1_names[static_cast<unsigned>(value)];
 }
-${#  END  }
-
-// ---------------------------------------------------
-
 ${#ELSE}
-
+This should never happen!
+${#  END  }
+${#ELSE}
 enum E2 { ${enum2.get_items_as_list()} };
 
 const char* const enum2_names[] = {
@@ -40,7 +37,6 @@ std::string to_strig(E2 value)
 {
 	return enum2_names[static_cast<unsigned>(value)];
 }
-
 ${#END}
 
 // ---------------------------------------------------

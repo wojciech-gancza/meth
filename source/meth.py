@@ -73,6 +73,7 @@ class list_walker:
         self.lines_array = list_of_lines
         self.lines_count = len(self.lines_array)
         self.current_line = 0
+        self.replace_from = None
         
     def is_end(self):
         return (self.current_line == self.lines_count)
@@ -85,11 +86,19 @@ class list_walker:
             self.current_line = self.current_line + 1
             return line_content(line)
             
+    def set_mark_range_to_delete(self):
+        self.replace_from = self.current_line - 1
+    
     # replace last read line by the given list. It also back line pointer
     # to point to first line of added array
     def push_back(self, lines):
-        self.lines_array = self.lines_array[:self.current_line-1] + lines + self.lines_array[self.current_line:]
-        self.current_line = self.current_line - 1
+        if self.replace_from is None:
+            self.lines_array = self.lines_array[:self.current_line-1] + lines + self.lines_array[self.current_line:]
+            self.current_line = self.current_line - 1
+        else:
+            self.lines_array = self.lines_array[:self.replace_from] + lines + self.lines_array[self.current_line:]
+            self.current_line = self.replace_from
+            self.replace_from = None
         self.lines_count = len(self.lines_array)
 
     def go_to_line_with(self, content):
@@ -204,13 +213,50 @@ class code_generator:
                 return
     
     # emits lines created returned by metaexpression
-    def _process_metatatement(self, before, after, expession, source_reader):
+    def _process_metatatement(self, before, after, expression, source_reader):
+        match = re.search("^\s*IF\s*", expression)
+        if match:
+            condition = expression[match.end(0):]
+            return self._process_meta_IF(condition, before, after, source_reader)            
         #
         #
-        # TODO
         #
         #
-        return [  ]
+        #
+        #
+        source_reader.set_mark_range_to_delete()
+        blocks, after = self._read_metastatement_body(after, source_reader)
+        block = self._select_metastatement_block(blocks, 0)
+        return self._decorate_with_start_end(block, before, after)
+        
+    def _process_meta_IF(self, condition, before, after, source_reader):
+        condition_value = self._calculate_result(condition)
+        source_reader.set_mark_range_to_delete()
+        blocks, after = self._read_metastatement_body(after, source_reader)
+        if condition_value:
+            select_block = 0
+        else:
+            select_block = 1
+        block = self._select_metastatement_block(blocks, select_block)
+        return self._decorate_with_start_end(block, before, after)    
+        
+    def _select_metastatement_block(self, blocks, index):
+        if index < len(blocks):
+            return blocks[index]
+        else:
+            return [ ]
+            
+    def _decorate_with_start_end(self, block, before, after):
+        if len(block) > 0:
+            block[0] = before + block[0]
+            block[-1] = block[-1] + after
+            return block
+        else:
+            line = before + after
+            if line == "":
+                return [  ]
+            else:
+                return [ line ]
         
     # returns position of metastatement and type of metastatement located in line. Type is
     # denoted as numbers: 
@@ -242,36 +288,47 @@ class code_generator:
         else:
             return None
     
-    def _read_metastatement_body(self, before, after, source_reader):
+    def _strip_starting_empty_lines(self, result):
+        for i in range(0, len(result)):
+            if len(result[i]) > 0:
+                if result[i][0] == "":
+                    result[i] = result[i][1:]
+        return result
+    
+    def _read_metastatement_body(self, line, source_reader):
         current_level = 1
         result = [ ]
         current_block = [ ]
-        line = after
         check_from_position = 0
         after_metastatement = ""
+        begin_of_data = 0
         while True:
             found = self._check_metastatement(line, check_from_position)
             if not found:
-                current_block.append(line)
+                current_block.append(line[begin_of_data:])
                 if source_reader.is_end():
                     break
-                line = source_reader.get_line()
+                line = str(source_reader.get_line())
                 check_from_position = 0
+                begin_of_data = 0
             else:
                 if current_level == 1 and found.depth_change <= 0:
-                    last_line = line[check_from_position:found.start]
-                    current_block.append(last_line)
+                    last_line = line[begin_of_data:found.start]
+                    if last_line != "":
+                        current_block.append(last_line)
                     after_metastatement = line[found.end:]
                     if found.depth_change == 0:
                         result.append(current_block)
                         current_block = []
                         check_from_position = found.end
+                        begin_of_data = found.end
                     else:
                         break
                 else:
+                    check_from_position = found.end
                     current_level = current_level + found.depth_change
         if current_block != []:
             result.append(current_block)
-        return before, result, after_metastatement   
+        return self._strip_starting_empty_lines(result), after_metastatement   
     
 # ----------------------------------------------------------
