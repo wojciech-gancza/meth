@@ -10,8 +10,46 @@ void function_XXX()
 	// example of function body - feel free to change it
 	// -^^^
 }
+void function_2()
+{
+	// -vvv body of hunction handler No 2
+	// example of function body - feel free to change it
+	// -^^^
+}
+void function_3()
+{
+	// -vvv body of hunction handler No 3
+	// example of function body - feel free to change it
+	// -^^^
+}
+void function_4()
+{
+	// -vvv body of hunction handler No 4
+	// example of function body - feel free to change it
+	// -^^^
+}
+void function_6()
+{
+	// -vvv body of hunction handler No 6
+	// example of function body - feel free to change it
+	// -^^^
+}
+void function_12()
+{
+	// -vvv body of hunction handler No 12
+	// example of function body - feel free to change it
+	// -^^^
+}
+void function_55()
+{
+	// -vvv body of hunction handler No 55
+	// example of function body - feel free to change it
+	// -^^^
+}
 
 	A :-> 12
+	B :-> 127
+	C :-> 998543
 
 
 enum E1 { E1X223,         BETA,

@@ -139,6 +139,7 @@ class code_generator:
         self.symbols = {  }
         self.template_file_name = ""
         self.global_dictionary = global_dictionary
+        self.processing_stack = [ ]
         
     def define(self, name, value):
         self.symbols[str(name)] = value
@@ -241,7 +242,21 @@ class code_generator:
             loop_definition = expression[match.end(0):]
             variable, collection_expression = self._get_loop_elements(loop_definition)
             return self._process_meta_FOR(variable, collection_expression, before, after, source_reader)
+        match = re.search("^\s*NEXT\s*$", expression)
+        if match:
+            return self._process_loop_iteration()
         return None
+    
+    def _process_loop_iteration(self):
+        loop_iterator = self.processing_stack[-1]
+        block = loop_iterator.get_next_block()
+        loop_iterator.set_values(self.symbols)
+        should_continue = loop_iterator.go_to_next_iteration()
+        if should_continue:
+            return block + [ "${#NEXT}" ]
+        else:
+            self.processing_stack = self.processing_stack[:-1]
+            return block
     
     class _iteration_controller:
         
@@ -261,7 +276,7 @@ class code_generator:
             if self.current_position == 0:
                 block = _add_head(block, self.first_line_prefix)
             if self.current_position == self.length - 1:
-                block = _add_tail(block, self.last_line_suffix)   
+                block = _add_tail(block, self.last_line_suffix)                 
             return block  
             
         # return bool value. False for last iteration
@@ -269,6 +284,7 @@ class code_generator:
             if self.current_position == self.length - 1:
                 return False
             else:
+                self.current_position = self.current_position + 1
                 return True
               
     class _list_iteration_controller(_iteration_controller):
@@ -317,19 +333,20 @@ class code_generator:
             loop_iterator = code_generator._dict_iteration_controller(variable, collection, before, block, after)
         else:
             loop_iterator = code_generator._list_iteration_controller(variable, collection, before, block, after)
-            
-        block = loop_iterator.get_next_block()
-        loop_iterator.set_values(self.symbols)
-        should_continue = loop_iterator.go_to_next_iteration()
         
-        if should_contunue:
-            #
-            #
-            #
-            #
-            #
-            pass
-        return block
+        #block = loop_iterator.get_next_block()
+        #loop_iterator.set_values(self.symbols)
+        #should_continue = loop_iterator.go_to_next_iteration()
+        #
+        #if should_continue:
+        #    block.append("${#NEXT}")
+        #    self.processing_stack.append(loop_iterator)
+        #
+        #return block
+        
+        self.processing_stack.append(loop_iterator)
+        return self._process_loop_iteration()
+        
         
     def _get_loop_elements(self, loop_expression):
         separator_location = re.search("\s*:\s*", loop_expression)
