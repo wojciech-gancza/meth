@@ -36,20 +36,31 @@ typical metaprograming. Using python allow to keep you metaprograms clean.
 
 Meth need template file containing the source of generated files. Template is 
 copied line by line to the target replacing variable elements by its value. 
+
+### Varialble elements
+
 Variables are denoted as '${ ... }'. The content '...' is simply interpreted 
 by the python interpreter and the value is placed in the result file. The value can be: 
 - scalar - then its string representation is located in the place of variable.
 - list - then set of lines are added with comma endings at the first and middle lines
 - list of lines wrapped in 'code_block' class - the content generates multiplied template lines
 
+### manually added code
+
 Lines located between '// -vvv ...' and '// -^^^ ...' are preserved. Programmer can place 
 any code between them in generated file. When generation is called, the generator first loads
 file and extracts such block to be used in the new file. When file is generated first time, the 
 content of template will be stored.
 
-## UNDER CONSTRUCTION
+### code added conditionally or in loop
 
-Metastatements are under development. Metastatements will allow to 
-- generate some parts of template conditionally (notation '${#IF ...}', 
-  '${#ELSE}', '${#END}')
-- use loops in template file (notation '${FOR var : values}')
+To easily decide about code to add and for generating similar parts of code, two metastatements 
+were added:
+ - ${IF condition} ... - conditionally added code. Conditional code ends at ${#END} tag. 
+   It is also possible to use ${ELSE}. 'condition' is any python expression which value is 
+   evalueted when condition is calculated.
+ - ${#FOR varname : collection} - loop. All template text between this tag and ${#END} is repeated
+   for variable named 'varname' trawersing the collection. When the collection is dictionary - 
+   use ${#FOR key, value : dictionary} form of loop.
+
+Metastatements can be nested.
