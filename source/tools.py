@@ -184,7 +184,7 @@ class file_name:
     
     def get_name_and_path_relative_to(self, base_path):
         if base_path[-1] == "/":
-            base_path = base_path[:-2]
+            base_path = base_path[:-1]
         file = self.full_file_name.split("/")
         path = base_path.split("/")
         while file and path and file[0] == path[0]:
