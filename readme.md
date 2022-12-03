@@ -56,7 +56,7 @@ content of template will be stored.
 
 To easily decide about code to add and for generating similar parts of code, two metastatements 
 were added:
- - '${#IF condition}' ... - conditionally adding code. Conditional code ends at '${#END}' tag. 
+ - '${#IF condition}' ... - conditionally added code. Conditional code ends at '${#END}' tag. 
    It is also possible to use ${ELSE}. 'condition' is any python expression which value is 
    evalueted when condition is calculated.
  - '${#FOR varname : collection}' - loop. All template text between this tag and ${#END} is repeated
