@@ -37,7 +37,7 @@ typical metaprograming. Using python allow to keep you metaprograms clean.
 Meth need template file containing the source of generated files. Template is 
 copied line by line to the target replacing variable elements by its value. 
 
-### Varialble elements
+### varialble elements
 
 Variables are denoted as '${ ... }'. The content '...' is simply interpreted 
 by the python interpreter and the value is placed in the result file. The value can be: 
@@ -56,11 +56,11 @@ content of template will be stored.
 
 To easily decide about code to add and for generating similar parts of code, two metastatements 
 were added:
- - ${IF condition} ... - conditionally added code. Conditional code ends at ${#END} tag. 
+ - '${#IF condition}' ... - conditionally adding code. Conditional code ends at '${#END}' tag. 
    It is also possible to use ${ELSE}. 'condition' is any python expression which value is 
    evalueted when condition is calculated.
- - ${#FOR varname : collection} - loop. All template text between this tag and ${#END} is repeated
+ - '${#FOR varname : collection}' - loop. All template text between this tag and ${#END} is repeated
    for variable named 'varname' trawersing the collection. When the collection is dictionary - 
-   use ${#FOR key, value : dictionary} form of loop.
+   use '${#FOR key, value : dictionary}' form of loop.
 
 Metastatements can be nested.
