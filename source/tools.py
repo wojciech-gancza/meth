@@ -80,7 +80,9 @@ class cpp_enum:
                     items_in_line = 0
                 else:
                     line = line + "," + (" " * (1 + item_width - len(text)))
-            line = line + self.elements[-1]
+            line = line + quotation + self.elements[-1] + quotation
+        if line != "":
+            result.append(line)
         return result
          
     def code_of_convert_from_string(self):
