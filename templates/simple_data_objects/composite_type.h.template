@@ -11,6 +11,13 @@ ${#FOR type : element_types}
 #include "${type.lowercase()}.h"
 ${#END}
 
+// -vvv additional includes and declarations could be written here
+
+	// code written here will be preserved during future
+	// generation of this file
+
+// -^^^ end of manualy entered code
+
 namespace ${namespace}
 {
     class ${type_name}
@@ -27,6 +34,12 @@ ${#FOR type : element_types}
 					set${type.CamelCase()}(object.get${type.CamelCase()}());
 ${#END}
 			}
+
+            // -vvv additional methods could be written here
+
+                // code written here will be preserved during future 
+                // generation of this file 
+
+            // -^^^ end of manualy entered code	
 	};
-	
 }

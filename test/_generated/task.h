@@ -11,6 +11,13 @@
 #include "comment.h"
 #include "type.h"
 
+// -vvv additional includes and declarations could be written here
+
+	// code written here will be preserved during future
+	// generation of this file
+
+// -^^^ end of manualy entered code
+
 namespace Data
 {
     class Task
@@ -31,5 +38,12 @@ namespace Data
 				if(std::is_base_of<T, type.CamelCase()}>::value)
 					setType(object.getType());
 			}
+
+            // -vvv additional methods could be written here
+
+                // code written here will be preserved during future
+                // generation of this file
+
+            // -^^^ end of manualy entered code
 	};
 }
