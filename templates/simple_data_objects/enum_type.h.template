@@ -27,10 +27,7 @@ namespace ${namespace}
 			};		
 
 ${#IF use_strings_support}
-			const char* const names[] = 
-			{
-				${cpp_enum(enum_values).get_items_as_list('\"')}
-			}
+			static const char* names[];
 		
 ${#END}
 			${type_name}(e_${type_name} value = ${default_value}) explicit
@@ -48,11 +45,8 @@ ${#END}
 			}
 			
 ${#IF use_strings_support}
-			static ${type_name} from_string(const std::string& text)
-			{
-				${cpp_enum(enum_values).code_of_convert_from_string()}
-			}
-
+			static ${type_name} from_string(const std::string& text);
+			
 			std::string to_string() const
 			{
 				return names[static_cast<unsigned>(m_${type_name})];

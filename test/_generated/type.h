@@ -24,10 +24,7 @@ namespace Data
 				Task,   Index,  Sprint
 			};
 
-			const char* const names[] =
-			{
-				"Task",   "Index",  "Sprint"
-			}
+			static const char* names[];
 
 			Type(e_Type value = Task) explicit
 			: 	m_Type { value }
@@ -43,18 +40,7 @@ namespace Data
 				m_Type = newValue;
 			}
 
-			static Type from_string(const std::string& text)
-			{
-				switch( text.size() )
-				{
-				case 4:
-				    return Task;
-				case 5:
-				    return Index;
-				default:
-				    return Sprint;
-				};
-			}
+			static Type from_string(const std::string& text);
 
 			std::string to_string() const
 			{

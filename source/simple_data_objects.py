@@ -25,14 +25,14 @@ class simple_data_object_builder:
     def create_simple_type(self, name, base_type, default_value):
         self.generator.define("base_type", base_type)
         type_name = general_name(name)
-        self._generate_simple_type_header_file("simple_type.h.template", type_name, default_value)
+        self._generate_simple_type_source_file("simple_type.h.template", type_name, default_value, "h")
         
     def create_string_type(self, name, default_value = ""):
         self.generator.define("base_type", "std::string")
         self.generator.define("include_with_base_type", "<string>")
         self.generator.define("is_move_allowed", True)
         type_name = general_name(name)
-        self._generate_simple_type_header_file("object_type.h.template", type_name, default_value)
+        self._generate_simple_type_source_file("object_type.h.template", type_name, default_value, "h")
         
     def create_enum_type(self, name, enum_values, use_strings = False, base_type = "int", default_value = None):
         self.generator.define("base_type", base_type)
@@ -41,17 +41,25 @@ class simple_data_object_builder:
         if default_value is None:
             default_value = enum_values[0]
         type_name = general_name(name)
-        self._generate_simple_type_header_file("enum_type.h.template", type_name, default_value)
+        self._generate_simple_type_source_file("enum_type.h.template", type_name, default_value, "h")
+        if use_strings:
+            self.generator.define("header_file_name", type_name.lowercase())
+            self._generate_simple_type_source_file("enum_type.cpp.template", type_name, default_value, "cpp")
         
-    def _generate_simple_type_header_file(self, template_name, type_name, default_value):
+    def create_composite(self, name, element_names):
+        self.generator.define("element_types", [general_name(x) for x in element_names])
+        type_name = general_name(name)
+        self._generate_simple_type_source_file("composite_type.h.template", type_name, "", "h")
+        
+    def _generate_simple_type_source_file(self, template_name, type_name, default_value, extension):
         self.generator.define("type_name", type_name.CamelCase())
         self.generator.define("default_value", default_value) 
         self._select_template(template_name)
-        output_file_name = self._create_header_file_name(type_name)
+        output_file_name = self._create_file_name(type_name, extension)
         self.generator.generate(output_file_name)
     
-    def _create_header_file_name(self, type_name):
-        output_file_name_and_path = file_name(self.target_path + type_name.lowercase() + ".h")
+    def _create_file_name(self, type_name, extenstion):
+        output_file_name_and_path = file_name(self.target_path + type_name.lowercase() + "." + extenstion)
         self.generator.define("output_file_name_and_path", output_file_name_and_path.get_name_and_path_relative_to(self.base_path))
         return output_file_name_and_path.get_full_file_name()
      

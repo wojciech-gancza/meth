@@ -92,5 +92,6 @@ builder = simple_data_object_builder(globals(), "Data", "../test/_generated/")
 builder.create_simple_type("story points", "uint16_t", 0)
 builder.create_string_type("comment")
 builder.create_enum_type("type", ["Task", "Index", "Sprint"], True)
+builder.create_composite("task", ["story points", "comment", "type"])
 
 # ----------------------------------------------------------
