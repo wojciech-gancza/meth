@@ -203,11 +203,7 @@ class file_name:
         return self.full_file_name
         
     def _get_cwd(self):
-<<<<<<< HEAD
-        cwd = self._change_directory_separators(os.getcwd())
-=======
         cwd = self._change_directory_separators(os.getcwd()) + "/"
->>>>>>> development
         return cwd
         
     def _change_directory_separators(self, path):
