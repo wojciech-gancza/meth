@@ -153,7 +153,11 @@ class code_generator:
         stored_file = target_content(result_file_name)
         output_content = self._combine_with_user_code(transformed, stored_file)  
         output = result_file(output_content)
-        output.store(result_file_name)
+        if stored_file != output_content:
+            output.store(result_file_name)
+            return True
+        else:
+            return False
         
     def _transform(self, template):
         walker = list_walker(template)
