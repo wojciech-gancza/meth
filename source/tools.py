@@ -168,21 +168,18 @@ class file_name:
     def __init__(self, file_with_path):
         file_with_path = self._change_directory_separators(file_with_path)
         if not self._is_full_path(file_with_path):
-            working_directory = self._get_cwd()
-            file_elements = file_with_path.split("/")
-            working_directory = working_directory.split("/")
-            while file_elements:
-                if file_elements[0] == "" or file_elements[0] == ".":
-                    file_elements = file_elements[1:]
-                elif file_elements[0] == "..":
-                    file_elements = file_elements[1:]
-                    working_directory = working_directory[:-1]
-                else:
-                    break
-            file_with_path = working_directory + file_elements
-            self.full_file_name = "/".join(file_with_path)
-        else:
-            self.full_file_name = file_with_path
+            file_with_path = self._get_cwd() + "/" + file_with_path;
+        result_path = []
+        path_elements = file_with_path.split("/")
+        while path_elements:
+            if path_elements[0] == "" or path_elements[0] == ".":
+                pass
+            elif path_elements[0] == "..":
+                result_path = result_path[:-1]
+            else:
+                result_path.append(path_elements[0])
+            path_elements = path_elements[1:]
+        self.full_file_name = "/".join(result_path)
     
     def get_name_and_path_relative_to(self, base_path):
         if base_path[-1] == "/":
