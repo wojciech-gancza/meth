@@ -237,6 +237,11 @@ class code_generator:
     
     # emits lines created returned by metaexpression
     def _process_metatatement(self, before, after, expression, source_reader):
+        match = re.search("^\s*INCLUDE\s*", expression)
+        if match:
+            name = expression[match.end(0):].strip();
+            sniplet_file_name = os.path.dirname(self.template_file_name) + "/" + name
+            return file_lines(sniplet_file_name)
         match = re.search("^\s*IF\s*", expression)
         if match:
             condition = expression[match.end(0):]
