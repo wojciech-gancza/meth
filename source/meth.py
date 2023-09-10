@@ -241,7 +241,9 @@ class code_generator:
         if match:
             name = expression[match.end(0):].strip();
             sniplet_file_name = os.path.dirname(self.template_file_name) + "/" + name
-            return file_lines(sniplet_file_name)
+            code_lines = file_lines(sniplet_file_name)
+            code_lines = [before + line for line in code_lines]
+            return code_lines
         match = re.search("^\s*IF\s*", expression)
         if match:
             condition = expression[match.end(0):]
