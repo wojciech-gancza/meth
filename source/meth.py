@@ -239,11 +239,8 @@ class code_generator:
     def _process_metatatement(self, before, after, expression, source_reader):
         match = re.search("^\s*INCLUDE\s*", expression)
         if match:
-            name = expression[match.end(0):].strip();
-            sniplet_file_name = os.path.dirname(self.template_file_name) + "/" + name
-            code_lines = file_lines(sniplet_file_name)
-            code_lines = [before + line for line in code_lines]
-            return code_lines
+            command = expression[match.end(0):].strip();
+            return self._process_meta_INCLUDE(before, command)
         match = re.search("^\s*IF\s*", expression)
         if match:
             condition = expression[match.end(0):]
@@ -329,7 +326,24 @@ class code_generator:
                 return key_name.strip(), value_name.strip()
             else:
                 raise Exception("expecting pair of identifiers to iterate dictionary (Found '" + identifiers + "')")
-          
+    
+    def _process_meta_INCLUDE(self, before, command):
+        pos = command.strip().find(" ")
+        if pos < 0:
+            include_file_name = command
+            variables = None
+        else:
+            include_file_name = command[0:pos]
+            variables = command[pos:].strip()
+        if variables:
+            values = eval("{" + variables + "}")
+            for key, value in values.items():
+                self.define(key, value)
+        sniplet_file_name = os.path.dirname(self.template_file_name) + "/" + include_file_name
+        code_lines = file_lines(sniplet_file_name)
+        code_lines = [before + line for line in code_lines]
+        return code_lines
+
     def _process_meta_FOR(self, variable, collection_expression, before, after, source_reader):
         collection = self._calculate_result(collection_expression)   
         source_reader.set_mark_range_to_delete()
