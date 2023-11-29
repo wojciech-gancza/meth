@@ -385,16 +385,6 @@ class code_generator:
         else:
             loop_iterator = code_generator._list_iteration_controller(variable, collection, before, block, after, is_end_in_same_line)
         
-        #block = loop_iterator.get_next_block()
-        #loop_iterator.set_values(self.symbols)
-        #should_continue = loop_iterator.go_to_next_iteration()
-        #
-        #if should_continue:
-        #    block.append("${#NEXT}")
-        #    self.processing_stack.append(loop_iterator)
-        #
-        #return block
-        
         self.processing_stack.append(loop_iterator)
         return self._process_loop_iteration("")
         
