@@ -154,7 +154,11 @@ class code_generator:
         stored_file = target_content(result_file_name)
         output_content = self._combine_with_user_code(transformed, stored_file)  
         output = result_file(output_content)
-        output.store(result_file_name)
+        if stored_file != output_content:
+            output.store(result_file_name)
+            return True
+        else:
+            return False
         
     def _transform(self, template):
         walker = list_walker(template)
@@ -348,7 +352,24 @@ class code_generator:
                 return key_name.strip(), value_name.strip()
             else:
                 raise Exception("expecting pair of identifiers to iterate dictionary (Found '" + identifiers + "')")
-          
+    
+    def _process_meta_INCLUDE(self, before, command):
+        pos = command.strip().find(" ")
+        if pos < 0:
+            include_file_name = command
+            variables = None
+        else:
+            include_file_name = command[0:pos]
+            variables = command[pos:].strip()
+        if variables:
+            values = eval("{" + variables + "}")
+            for key, value in values.items():
+                self.define(key, value)
+        sniplet_file_name = os.path.dirname(self.template_file_name) + "/" + include_file_name
+        code_lines = file_lines(sniplet_file_name)
+        code_lines = [before + line for line in code_lines]
+        return code_lines
+
     def _process_meta_FOR(self, variable, collection_expression, before, after, source_reader):
         collection = self._calculate_result(collection_expression)   
         source_reader.set_mark_range_to_delete()
