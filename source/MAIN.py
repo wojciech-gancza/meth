@@ -88,10 +88,19 @@ builder.generate(generated_result)
 
 #builder.generate(output_file_name_and_path.get_full_file_name())
 
-builder = simple_data_object_builder(globals(), "Data", "../test/_generated/")
-builder.create_simple_type("story points", "uint16_t", 0)
-builder.create_string_type("comment")
-builder.create_enum_type("type", ["Task", "Index", "Sprint"], True)
-builder.create_composite("task", ["story points", "comment", "type"])
+#builder = simple_data_object_builder(globals(), "Data", "../test/_generated/")
+#builder.create_simple_type("story points", "uint16_t", 0)
+#builder.create_string_type("comment")
+#builder.create_enum_type("type", ["Task", "Index", "Sprint"], True)
+#builder.create_composite("task", ["story points", "comment", "type"])
+
+source = ["aaa${#FOR i : [1, 2, 3, 4]}${i}${#END}XX" ]
+generator = code_generator(globals())
+target = generator._transform(source)
+print("---Result---------------------------------------------------------")
+print(target)
+print("---Expected-------------------------------------------------------")
+print(["aaa1234XX"])
+print("---End000---------------------------------------------------------")  
 
 # ----------------------------------------------------------

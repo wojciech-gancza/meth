@@ -7,6 +7,7 @@
 
 import os
 import re
+import copy
 
 # file loaded into memory in forn of list of lines.
 # whole file content is read during construction.
@@ -233,6 +234,10 @@ class code_generator:
     
     # emits lines created returned by metaexpression
     def _process_metatatement(self, before, after, expression, source_reader):
+        match = re.search("^\s*INCLUDE\s*", expression)
+        if match:
+            command = expression[match.end(0):].strip();
+            return self._process_meta_INCLUDE(before, command)
         match = re.search("^\s*IF\s*", expression)
         if match:
             condition = expression[match.end(0):]
@@ -244,35 +249,60 @@ class code_generator:
             return self._process_meta_FOR(variable, collection_expression, before, after, source_reader)
         match = re.search("^\s*NEXT\s*$", expression)
         if match:
-            return self._process_loop_iteration()
+            return self._process_loop_iteration(before)
         return None
     
-    def _process_loop_iteration(self):
+    def _process_meta_INCLUDE(self, before, command):
+        pos = command.strip().find(" ")
+        if pos < 0:
+            include_file_name = command
+            variables = None
+        else:
+            include_file_name = command[0:pos]
+            variables = command[pos:].strip()
+        if variables:
+            values = eval("{" + variables + "}")
+            for key, value in values.items():
+                self.define(key, value)
+        sniplet_file_name = os.path.dirname(self.template_file_name) + "/" + include_file_name
+        code_lines = file_lines(sniplet_file_name)
+        code_lines = [before + line for line in code_lines]
+        return code_lines
+
+    def _process_loop_iteration(self, before):
         loop_iterator = self.processing_stack[-1]
         block = loop_iterator.get_next_block()
         loop_iterator.set_values(self.symbols)
         should_continue = loop_iterator.go_to_next_iteration()
         if should_continue:
-            return block + [ "${#NEXT}" ]
+            if loop_iterator.is_end_in_same_line:
+                block[0] = before + block[0]
+                block[-1] = block[-1] + "${#NEXT}"
+                return block
+            else:
+                return block + [ "${#NEXT}" ]
         else:
             self.processing_stack = self.processing_stack[:-1]
+            if loop_iterator.is_end_in_same_line:
+                block[0] = before + block[0]
             return block
     
     class _iteration_controller:
         
-        def __init__(self, collection, before, block, after):
+        def __init__(self, collection, before, block, after, is_end_in_same_line):
             self.collection = collection
             self.length = len(collection)
             self.first_line_prefix = before
             self.block = block
             self.last_line_suffix = after
             self.current_position = 0
+            self.is_end_in_same_line = is_end_in_same_line
             
         def set_values(self, symbols):
             pass
             
         def get_next_block(self):
-            block = self.block
+            block = copy.deepcopy(self.block)
             if self.current_position == 0:
                 block = _add_head(block, self.first_line_prefix)
             if self.current_position == self.length - 1:
@@ -289,8 +319,8 @@ class code_generator:
               
     class _list_iteration_controller(_iteration_controller):
     
-        def __init__(self, var_name, collection, before, block, after):
-            code_generator._iteration_controller.__init__(self, list(collection), before, block, after)
+        def __init__(self, var_name, collection, before, block, after, is_end_in_same_line):
+            code_generator._iteration_controller.__init__(self, list(collection), before, block, after, is_end_in_same_line)
             self.variable_name = var_name
            
         def set_values(self, symbols):
@@ -298,8 +328,8 @@ class code_generator:
     
     class _dict_iteration_controller(_iteration_controller):
     
-        def __init__(self, var_name, collection, before, block, after):
-            code_generator._iteration_controller.__init__(self, collection, before, block, after)
+        def __init__(self, var_name, collection, before, block, after, is_end_in_same_line):
+            code_generator._iteration_controller.__init__(self, collection, before, block, after, is_end_in_same_line)
             key_name, value_name = self._get_key_value_pair(var_name)
             self.key_name = key_name
             self.value_name = value_name
@@ -322,7 +352,7 @@ class code_generator:
     def _process_meta_FOR(self, variable, collection_expression, before, after, source_reader):
         collection = self._calculate_result(collection_expression)   
         source_reader.set_mark_range_to_delete()
-        blocks, after = self._read_metastatement_body(after, source_reader)
+        blocks, after, is_end_in_same_line = self._read_metastatement_body(after, source_reader)
             
         if len(collection) == 0:
             return self._decorate_with_start_end([], before, after)
@@ -330,9 +360,9 @@ class code_generator:
         block = self._select_metastatement_block(blocks, 0)
         
         if type(collection) == dict:
-            loop_iterator = code_generator._dict_iteration_controller(variable, collection, before, block, after)
+            loop_iterator = code_generator._dict_iteration_controller(variable, collection, before, block, after, is_end_in_same_line)
         else:
-            loop_iterator = code_generator._list_iteration_controller(variable, collection, before, block, after)
+            loop_iterator = code_generator._list_iteration_controller(variable, collection, before, block, after, is_end_in_same_line)
         
         #block = loop_iterator.get_next_block()
         #loop_iterator.set_values(self.symbols)
@@ -345,7 +375,7 @@ class code_generator:
         #return block
         
         self.processing_stack.append(loop_iterator)
-        return self._process_loop_iteration()
+        return self._process_loop_iteration("")
         
         
     def _get_loop_elements(self, loop_expression):
@@ -360,7 +390,7 @@ class code_generator:
     def _process_meta_IF(self, condition, before, after, source_reader):
         condition_value = self._calculate_result(condition)
         source_reader.set_mark_range_to_delete()
-        blocks, after = self._read_metastatement_body(after, source_reader)
+        blocks, after, is_end_in_same_line = self._read_metastatement_body(after, source_reader)
         if condition_value:
             select_block = 0
         else:
@@ -423,6 +453,7 @@ class code_generator:
         check_from_position = 0
         after_metastatement = ""
         begin_of_data = 0
+        is_end_in_same_line = False
         while True:
             found = self._check_metastatement(line, check_from_position)
             if not found:
@@ -444,12 +475,13 @@ class code_generator:
                         check_from_position = found.end
                         begin_of_data = found.end
                     else:
+                        is_end_in_same_line = (line[:found.start].strip() != "")
                         break
                 else:
                     check_from_position = found.end
                     current_level = current_level + found.depth_change
         if current_block != []:
             result.append(current_block)
-        return self._strip_starting_empty_lines(result), after_metastatement   
+        return self._strip_starting_empty_lines(result), after_metastatement, is_end_in_same_line   
     
 # ----------------------------------------------------------

@@ -458,7 +458,7 @@ class test_of_code_generator(unittest.TestCase):
         self.assertTrue(walker.is_end())
 
 class test_of_metastatememts(unittest.TestCase):
-    
+     
     def test_of_meta_if_true(self):
         source = [
             "aaa",
@@ -580,7 +580,7 @@ class test_of_metastatememts(unittest.TestCase):
     
     def test_of_inline_nested_meta_for(self):
         source = [
-            "X"
+            "X",
             "aaa${#FOR i : [1, 2, 3, 4]}${#FOR j : ['a', 'b', 'c']}${i}${j}${#END}${#END}bbb",
             "Y" ]
         generator = code_generator(globals())
@@ -605,6 +605,7 @@ class test_of_metastatememts(unittest.TestCase):
         self.assertEqual(target, ["aaa", "inside condition", 
             " - a", " - b", " - c", 
             "XX"])
+            
     def test_of_meta_for_inside_false_if(self):
         source = [
             "aaa",
