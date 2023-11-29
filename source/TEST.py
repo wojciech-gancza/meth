@@ -337,10 +337,6 @@ class test_of_code_generator(unittest.TestCase):
         builder.set_template("filename")
         self.assertEqual(builder.template_file_name, "filename")
     
-    #def test_of_generate(self):
-    #    # test already covered by functional tests
-    #    pass
-    
     def test_of_transform(self):
         template = [
             "first",
@@ -381,10 +377,10 @@ class test_of_code_generator(unittest.TestCase):
     def test_of_process_line(self):
         builder = code_generator(globals())
         line = "line without code"
-        result = builder._process_line(line_content(line))
+        result = builder._process_line(line_content(line), list_walker([]))
         self.assertEqual(result, None)
         line = "line ${1} end"
-        result = builder._process_line(line_content(line))
+        result = builder._process_line(line_content(line), list_walker([]))
         self.assertEqual(result, ["line 1 end"])
 
     def test_of_calculate_result(self):
@@ -460,7 +456,232 @@ class test_of_code_generator(unittest.TestCase):
         builder._copy_lines(walker, target)
         self.assertEqual(target, ["1", "2", "3", "end"])
         self.assertTrue(walker.is_end())
+
+class test_of_metastatememts(unittest.TestCase):
     
+    def test_of_meta_if_true(self):
+        source = [
+            "aaa",
+            "${#IF b}",
+            "bbb",
+            "${#END}",
+            "XX" ]
+        generator = code_generator(globals())
+        generator.define("b", True)
+        target = generator._transform(source)
+        self.assertEqual(target, ["aaa", "bbb", "XX"])
+        
+    def test_of_inline_meta_if_true(self):
+        source = [
+            "aaa${#IF b}bbb${#END}XX" ]
+        generator = code_generator(globals())
+        generator.define("b", True)
+        target = generator._transform(source)
+        self.assertEqual(target, ["aaabbbXX"])
+
+    def test_of_meta_if_false(self):
+        source = [
+            "aaa",
+            "${#IF b}",
+            "bbb",
+            "${#END}",
+            "XX" ]
+        generator = code_generator(globals())
+        generator.define("b", False)
+        target = generator._transform(source)
+        self.assertEqual(target, ["aaa", "XX"])
+    
+    def test_of_inline_meta_if_false(self):
+        source = [
+            "aaa${#IF b}bbb${#END}XX" ]
+        generator = code_generator(globals())
+        generator.define("b", False)
+        target = generator._transform(source)
+        self.assertEqual(target, ["aaaXX"])
+    
+    def test_of_meta_if_else_true(self):
+        source = [
+            "aaa",
+            "${#IF b}",
+            "bbb",
+            "${#ELSE}",
+            "cdfe",
+            "${#END}",
+            "XX" ]
+        generator = code_generator(globals())
+        generator.define("b", True)
+        target = generator._transform(source)
+        self.assertEqual(target, ["aaa", "bbb", "XX"])
+    
+    def test_of_inline_meta_if_else_true(self):
+        source = [
+            "aaa${#IF b}bbb${#ELSE}cdfe${#END}XX" ]
+        generator = code_generator(globals())
+        generator.define("b", True)
+        target = generator._transform(source)
+        self.assertEqual(target, ["aaabbbXX"])
+    
+    def test_of_meta_if_else_false(self):
+        source = [
+            "aaa",
+            "${#IF b}",
+            "bbb",
+            "${#ELSE}",
+            "cdfe",
+            "${#END}",
+            "XX" ]
+        generator = code_generator(globals())
+        generator.define("b", False)
+        target = generator._transform(source)
+        self.assertEqual(target, ["aaa", "cdfe", "XX"])
+    
+    def test_of_inline_meta_if_else_false(self):
+        source = [
+            "aaa${#IF b}bbb${#ELSE}cdfe${#END}XX" ]
+        generator = code_generator(globals())
+        generator.define("b", False)
+        target = generator._transform(source)
+        self.assertEqual(target, ["aaacdfeXX"])
+    
+    def test_of_meta_for(self):
+        source = [
+            "aaa",
+            "${#FOR i : [1, 2, 3, 4]}",
+            "${i}",
+            "${#END}",
+            "XX" ]
+        generator = code_generator(globals())
+        target = generator._transform(source)
+        self.assertEqual(target, ["aaa", "1", "2", "3", "4", "XX"])
+    
+    def test_of_inline_meta_for(self):
+        source = [
+            "aaa${#FOR i : [1, 2, 3, 4]}${i}${#END}XX" ]
+        generator = code_generator(globals())
+        target = generator._transform(source)
+        self.assertEqual(target, ["aaa1234XX"])
+    
+    def test_of_meta_for_inside_for(self):
+        source = [
+            "aaa",
+            "${#FOR i : [1, 2, 3, 4]}",
+            "${i}:",
+            "${#FOR j : ['a', 'b', 'c']}",
+            " - ${j}",
+            "${#END}",
+            "${#END}",
+            "XX" ]
+        generator = code_generator(globals())
+        target = generator._transform(source)
+        self.assertEqual(target, ["aaa", "1:", " - a", " - b", " - c", 
+            "2:", " - a", " - b", " - c", 
+            "3:", " - a", " - b", " - c", 
+            "4:", " - a", " - b", " - c", "XX"])
+    
+    def test_of_inline_nested_meta_for(self):
+        source = [
+            "X"
+            "aaa${#FOR i : [1, 2, 3, 4]}${#FOR j : ['a', 'b', 'c']}${i}${j}${#END}${#END}bbb",
+            "Y" ]
+        generator = code_generator(globals())
+        target = generator._transform(source)
+        self.assertEqual(target, ["X", 
+            "aaa1a1b1c2a2b2c3a3b3c4a4b4cbbb", 
+            "Y"])
+    
+    def test_of_meta_for_inside_if(self):
+        source = [
+            "aaa",
+            "${#IF b}",
+            "inside condition",
+            "${#FOR j : ['a', 'b', 'c']}",
+            " - ${j}",
+            "${#END}",
+            "${#END}",
+            "XX" ]
+        generator = code_generator(globals())
+        generator.define("b", True)
+        target = generator._transform(source)
+        self.assertEqual(target, ["aaa", "inside condition", 
+            " - a", " - b", " - c", 
+            "XX"])
+    def test_of_meta_for_inside_false_if(self):
+        source = [
+            "aaa",
+            "${#IF b}",
+            "inside condition",
+            "${#FOR j : ['a', 'b', 'c']}",
+            " - ${j}",
+            "${#END}",
+            "${#END}",
+            "XX" ]
+        generator = code_generator(globals())
+        generator.define("b", False)
+        target = generator._transform(source)
+        self.assertEqual(target, ["aaa", "XX"])
+    
+    def test_of_meta_if_inside_for(self):
+        source = [
+            "aaa",
+            "${#FOR j : ['a', 'b']}",
+            "${#IF b}",
+            "inside condition",
+            "${#END}",
+            " - ${j}",
+            "${#END}",
+            "XX" ]
+        generator = code_generator(globals())
+        generator.define("b", False)
+        target = generator._transform(source)
+        self.assertEqual(target, ["aaa", 
+            " - a",
+            " - b",
+            "XX"])
+
+    def test_of_meta_if_else_inside_for_1(self):
+        source = [
+            "aaa",
+            "${#FOR j : ['a', 'b']}",
+            "${#IF b}",
+            "inside condition",
+            "${#ELSE}",
+            "---",
+            "${#END}",
+            " - ${j}",
+            "${#END}",
+            "XX" ]
+        generator = code_generator(globals())
+        generator.define("b", True)
+        target = generator._transform(source)
+        self.assertEqual(target, ["aaa", 
+            "inside condition",
+            " - a",
+            "inside condition",
+            " - b",
+            "XX"])
+
+    def test_of_meta_if_else_inside_for_2(self):
+        source = [
+            "aaa",
+            "${#FOR j : ['a', 'b']}",
+            "${#IF b}",
+            "inside condition",
+            "${#ELSE}",
+            "---",
+            "${#END}",
+            " - ${j}",
+            "${#END}",
+            "XX" ]
+        generator = code_generator(globals())
+        generator.define("b", False)
+        target = generator._transform(source)
+        self.assertEqual(target, ["aaa", 
+            "---",
+            " - a",
+            "---",
+            " - b",
+            "XX"])
+
 # -------------------------------------------------------------------
 
 if __name__ == "__main__":

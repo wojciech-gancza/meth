@@ -10,7 +10,7 @@ import os
 # tools classes and objects
 # some nice to use tools which could be usefull when generating the code
 
-from .meth import code_block
+from meth import code_block
 
 # class transforming string to identifier with variours notations
 class general_name:
@@ -203,11 +203,7 @@ class file_name:
         return self.full_file_name
         
     def _get_cwd(self):
-<<<<<<< HEAD
-        cwd = self._change_directory_separators(os.getcwd())
-=======
         cwd = self._change_directory_separators(os.getcwd()) + "/"
->>>>>>> development
         return cwd
         
     def _change_directory_separators(self, path):
