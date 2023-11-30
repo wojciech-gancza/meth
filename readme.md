@@ -59,7 +59,7 @@ were added:
  - '${#IF condition}' ... - conditionally added code. Conditional code ends at '${#END}' tag. 
    It is also possible to use ${ELSE}. 'condition' is any python expression which value is 
    evalueted when condition is calculated.
- - '${#FOR varname : collection}' - loop. All template text between this tag and ${#END} is repeated
+ - '${#FOR varname : collection}' - loop. All template text between this tag and '${#END}' is repeated
    for variable named 'varname' trawersing the collection. When the collection is dictionary - 
    use '${#FOR key, value : dictionary}' form of loop.
 
