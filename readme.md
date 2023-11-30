@@ -62,5 +62,12 @@ were added:
  - '${#FOR varname : collection}' - loop. All template text between this tag and '${#END}' is repeated
    for variable named 'varname' trawersing the collection. When the collection is dictionary - 
    use '${#FOR key, value : dictionary}' form of loop.
-
+   
 Metastatements can be nested.
+   
+### common sniplet can be in inclkuded common files
+
+When same part of code is used in different code templates, you can just write it once, save in separate
+file and just include it into your template using metastatement '${INCLUDE filename}'. It works similar to the 
+'#include' known from C or C++ - the content of included file replaces this metastatememt/
+
