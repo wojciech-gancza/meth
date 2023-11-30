@@ -65,9 +65,8 @@ were added:
    
 Metastatements can be nested.
    
-### common sniplet can be in inclkuded common files
+### common sniplets can be in included common files
 
 When same part of code is used in different code templates, you can just write it once, save in separate
 file and just include it into your template using metastatement '${INCLUDE filename}'. It works similar to the 
-'#include' known from C or C++ - the content of included file replaces this metastatememt/
-
+'#include' known from C or C++ - the content of included file replaces this metastatememt.
