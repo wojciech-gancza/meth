@@ -10,7 +10,7 @@ import os
 # tools classes and objects
 # some nice to use tools which could be usefull when generating the code
 
-from meth import code_block
+from .meth import code_block
 
 # class transforming string to identifier with variours notations
 class general_name:
