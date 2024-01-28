@@ -111,8 +111,7 @@ class cpp_enum:
                 return [prefix + "if( " + selector + " == " + str(condition_value) + " )"] + \
                     self._generate_result(prefix + "    ", first) + \
                     [ prefix + "else"] + \
-                    self._generate_result(prefix + "    ", second) + \
-                    [ prefix + "};" ]
+                    self._generate_result(prefix + "    ", second)
             else:
                 return [prefix + "switch( " + selector + " )", "{"] + \
                     self._generate_case(prefix, case_map) + \
