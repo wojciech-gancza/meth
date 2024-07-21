@@ -9,6 +9,8 @@ import os
 import re
 import copy
 
+from pathlib import Path
+
 # file loaded into memory in forn of list of lines.
 # whole file content is read during construction.
 # futher modification of file is not reflected in object
@@ -35,6 +37,8 @@ class result_file:
         self.lines = file_content
 
     def store(self, file_name):
+        file_path = Path(os.path.dirname(file_name))
+        file_path.mkdir(parents=True, exist_ok=True)
         with open(file_name, "w", encoding = 'utf-8') as file:
             file.write("\n".join(self.lines))
 
