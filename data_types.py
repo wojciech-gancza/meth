@@ -39,20 +39,33 @@ class data_types_generator:
         created_file_location = self._generate()
         self.generated_files.append(created_file_location)
 
+    def create_string_type(self, namespace, name, *, default_value = "", max_length=None, compareable=False, ordered=False):
+        self._set_name(namespace, name)
+        self._set_type_properties(max_length, default_value)
+        self._set_comparision(compareable, ordered)
+        self._set_template("string_type.h.template")
+        self._set_trace()
+        created_file_location = self._generate()
+        self.generated_files.append(created_file_location)
+
     def _set_name(self, namespace, name):
         self.namespace = general_name(namespace)
         self.generator.define("namespace",self.namespace.CamelCase())
-
         self.type_name = general_name(name)
         self.generator.define("class_name",self.type_name.CamelCase())
         self.generator.define("field_name",self.type_name.lowercase())
-
         self.output_file_name = file_name(self.target_folder.get_full_file_name() + "/" + self.namespace.lowercase() + "_" + self.type_name.lowercase() + ".h")
         self.generator.define("file_name", self.output_file_name.get_name_and_path_relative_to(self.solution_root_folder))
 
     def _set_base_type(self, base_type, default_value):
         self.base_type = base_type
         self.generator.define("base_type", base_type)
+        self.default_value = default_value
+        self.generator.define("default_value", str(default_value))
+
+    def _set_type_properties(self, max_length, default_value):
+        self.max_length = max_length
+        self.generator.define("max_length", max_length)
         self.default_value = default_value
         self.generator.define("default_value", str(default_value))
 

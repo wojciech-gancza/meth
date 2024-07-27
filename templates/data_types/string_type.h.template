@@ -2,10 +2,9 @@ ${#INCLUDE _file_header.part}
 
 #pragma once
 
+#include <string>
 #include <sstream>
-${#IF ${range_controll}}
 #include <assert.h>
-${#END}
 
 #include "${meth_headers_directory}/meth_toolbox_serialization_interface.h"
 #include "${meth_headers_directory}/meth_toolbox_deserialization_interface.h"
@@ -22,18 +21,17 @@ namespace ${namespace}
     public:
       static constexpr bool is_compareable = ${compareable_flag_text};
       static constexpr bool is_ordered = ${ordered_flag_text};
-${#IF ${range_controll}}
-      static constexpr ${base_type} min_value = ${min_value};
-      static constexpr ${base_type} max_value = ${max_value};
-${#END}
+      static constexpr size_t max_length = ${max_length};
 
-      explicit ${class_name}(${base_type} ${field_name}) noexcept   : m_${field_name}(${field_name}) { ${#IF range_controll}checkValue();${#END} }
-      ${class_name}() noexcept    : m_${field_name}(${default_value}) {  }
+      explicit ${class_name}(const std::string& ${field_name}) noexcept   : m_${field_name}(${field_name}) { checkValue(); }
+      explicit ${class_name}(std::string&& ${field_name}) noexcept   : m_${field_name}(${field_name}) { checkValue(); }
+      ${class_name}() noexcept    ${#IF default_value}: m_${field_name}("${default_value}") ${#END}{  }
       ${class_name}(const ${class_name}& ${field_name}) noexcept    : m_${field_name}(${field_name}.m_${field_name}) {  }
       ${class_name}(${class_name}&& ${field_name}) noexcept    : m_${field_name}(${field_name}.m_${field_name}) {  }
       
-      ${base_type} get${class_name}() const noexcept   { return m_${field_name}; }
-      void set${class_name}(${base_type} ${field_name}) noexcept    { m_${field_name} = ${field_name}; }
+      const std::string& get${class_name}() const noexcept   { return m_${field_name}; }
+      void set${class_name}(const std::string& ${field_name}) noexcept    { m_${field_name} = ${field_name}; }
+      void set${class_name}(std::string&& ${field_name}) noexcept    { m_${field_name} = ${field_name}; }
 
       void setFrom(const ${class_name}& ${field_name}) noexcept    { m_${field_name} = ${field_name}.m_${field_name}; }
 
@@ -43,6 +41,9 @@ ${#END}
       // -vvv YOU CAN PUT ADDITIONAL PUBLIC METHODS HERE
 
       // -^^^ YOU CAN PUT ADDITIONAL PUBLIC METHODS HERE
+
+
+
 
 ${#IF compareable}
       bool operator==(const ${class_name}& other) const noexcept     { return m_${field_name} == other.m_${field_name}; }
@@ -74,18 +75,19 @@ ${#END}
         return ${class_name}(${field_name}); 
       }
 
-    private:
-      ${base_type} m_${field_name};
 
-${#IF range_controll}
+
+
+    private:
+      std::string m_${field_name};
+
       void checkValue()
       {
-        assert(m_${field_name} >= min_value);
-        assert(m_${field_name} <= max_value);
+        assert(m_${field_name}.size() < max_length);
 
         // -vvv YOU CAN PUT RUNTIME VALUE ERROR HANDLING HERE REPLACING DEFAULT EXCEPTION
 
-        if(m_${field_name} < min_value || m_${field_name} > max_value)
+        if(m_${field_name}.size() < max_length)
         {
           throw MethToolbox::ValueError();
         }
@@ -93,7 +95,6 @@ ${#IF range_controll}
         // -^^^ YOU CAN PUT RUNTIME VALUE ERROR HANDLING HERE REPLACING DEFAULT EXCEPTION
       }
 
-${#END}
       // -vvv YOU CAN PUT ADDITIONAL PRIVATE METHODS AND FIELDS HERE
 
       // -^^^ YOU CAN PUT ADDITIONAL PRIVATE METHODS AND FIELDS HERE
