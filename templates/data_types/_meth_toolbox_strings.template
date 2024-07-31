@@ -1,0 +1,10 @@
+${#INCLUDE _file_header.part}
+
+#pragma once
+
+#include <string>
+
+namespace MethToolbox
+{
+
+}

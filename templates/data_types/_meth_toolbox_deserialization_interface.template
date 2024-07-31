@@ -1,10 +1,4 @@
-// -----------------------------------------------------------------
-// (c) WGan mataprogram code generator - data_types
-// -----------------------------------------------------------------
-// Deserailizer interface - when providing data for deserialization
-// of data objects (and messages) implement this interface to allow
-// deserialization of all generated clesses.
-// -----------------------------------------------------------------
+${#INCLUDE _file_header.part}
 
 #pragma once
 

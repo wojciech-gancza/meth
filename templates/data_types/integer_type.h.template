@@ -7,9 +7,7 @@ ${#IF ${range_controll}}
 #include <assert.h>
 ${#END}
 
-#include "${meth_headers_directory}/meth_toolbox_serialization_interface.h"
-#include "${meth_headers_directory}/meth_toolbox_deserialization_interface.h"
-#include "${meth_headers_directory}/meth_toolbox_error.h"
+${#INCLUDE _serialization_includes.part}
 
 // -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
 

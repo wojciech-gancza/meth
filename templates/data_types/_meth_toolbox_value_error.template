@@ -1,0 +1,8 @@
+${#INCLUDE _file_header.part}
+
+#pragma once
+
+namespace MethToolbox
+{
+  class ValueError {  };
+};
