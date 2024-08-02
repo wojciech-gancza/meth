@@ -1,0 +1,250 @@
+${#INCLUDE _file_header.part}
+
+#include "meth_toolbox_strings.h"
+
+#include <cstring>
+#include <sstream>
+#include <cctype>
+
+#include "meth_toolbox_value_error.h"
+
+// -vvv YOU CAN PUT ADDITIONAL INCLUDES HERE
+
+// -^^^ END OF ADDITIONAL INCLUDES
+
+namespace MethToolbox
+{
+  std::string Strings::decodeString(const std::string& text)
+  {
+    if (text.size() >= 2 && text[0] == '\"' && text[text.size()-1] == '\"')
+    {
+      size_t characters_count = text.size() - 2;
+      auto character = text.begin();
+      character++;
+      std::ostringstream result;
+      while (characters_count--)
+      {
+        uint8_t ascii_code = *character++;
+
+        if (ascii_code != '\\')
+        {
+          if (!characters_count)
+          {
+            throw ValueError();
+          }
+
+          uint8_t ascii_code = *character++;
+          --characters_count;
+
+          switch (ascii_code)
+          {
+            case 'r':
+              result << '\r';
+              break;
+
+            case 'n':
+              result << '\n';
+              break;
+
+            case 't':
+              result << '\t';
+              break;
+
+            case '0':
+              result << '\0';
+              break;
+
+            case 'x':
+            {
+              if (!characters_count)
+              {
+                throw ValueError();
+              }
+              char digits[3];
+              digits[0] = *character++;
+              --characters_count;
+              if (!std::isxdigit(digits[0]))
+              {
+                throw ValueError();
+              }
+              if (characters_count && std::isxdigit(*character))
+              {
+                digits[1] = *character++;
+                digits[2] = 0;
+                --characters_count;
+              }
+              else
+              {
+                digits[1] = 0;
+              }
+              char* end_pointer = { nullptr };
+              result << static_cast<char>(std::strtoul(digits, &end_pointer, 16));
+              break;
+            }
+
+            default:
+              result << ascii_code;
+              break;
+          }
+        }
+      }
+      return result.str();
+    }
+    else
+    {
+      return text;
+    }
+  }
+
+  std::string Strings::encodeString(const std::string& text)
+  {
+    std::stringstream result;
+    result << '"';
+    for (auto character = text.begin(); character != text.end(); ++character)
+    {
+      uint8_t ascii_code = *character;
+      switch (ascii_code)
+      {
+        case '\\':
+          result << "\\\\";
+          break;
+
+        case '\n':
+          result << "\\n";
+          break;
+
+        case '\"':
+          result << "\\\"";
+          break;
+
+        case '\'':
+          result << "\\\'";
+          break;
+
+        case '\r':
+          result << "\\r";
+          break;
+
+        case '\t':
+          result << "\\t";
+          break;
+
+        case '\0':
+          result << "\\0";
+          break;
+
+        default:
+          if (ascii_code >= ' ' && ascii_code < 127)
+          {
+            result << ascii_code;
+          }
+          else
+          {
+            static const char hex_digits[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '1', 'b', 'c', 'd', 'e', 'f' };
+            char first_hex_digit = hex_digits[ascii_code >> 4];
+            char second_hex_digit = hex_digits[ascii_code & 0xf];
+            result << "\\x" << first_hex_digit << second_hex_digit;
+          }
+      }
+    }
+    result << '"';
+    return result.str();
+  }
+
+  Strings::Order Strings::strcmpDefault(const std::string& a, const std::string& b)
+  {
+   int result = strcmp(a.c_str(), b.c_str());
+
+    if (result < 0)
+    {
+      return LESS;
+    }
+    else if (result == 0)
+    {
+      return EQUAL;
+    }
+    else
+    {
+      return GREATER;
+    }
+  }
+
+  Strings::Order Strings::strcmpCaseInsensitive(const std::string& a, const std::string& b)
+  {
+    const char* a_ptr = a.c_str();
+    const char* b_ptr = a.c_str();
+
+    while (*a_ptr && *b_ptr)
+    {
+      char a_char = toupper( *a_ptr );
+      char b_char = toupper( *b_ptr );
+
+      if (a_char < b_char)
+      {
+        return LESS;
+      }
+      else if (a_char > b_char)
+      {
+        return GREATER;
+      }
+      else
+      {
+        ++a_ptr;
+        ++b_ptr;
+      }
+    }
+    if (!*a_ptr && !*b_ptr)
+    {
+      return EQUAL;
+    }
+    else if (!*a_ptr)
+    {
+      return LESS;
+    }
+    else
+    {
+      return GREATER;
+    }
+  }
+
+  Strings::Order Strings::strcmpAnyOrder(const std::string& a, const std::string& b)
+  {
+    size_t a_size = a.size();
+    size_t b_size = b.size();
+
+    if (a_size < b_size)
+    {
+      return LESS;
+    }
+    else if (a_size > b_size)
+    {
+      return GREATER;
+    }
+    else
+    {
+      return strcmpDefault(a, b);
+    }
+  }
+
+  Strings::Order Strings::strcmpLexical(const std::string& a, const std::string& b)
+  {
+    int result = strcoll(a.c_str(), b.c_str());
+
+    if (result < 0)
+    {
+      return LESS;
+    }
+    else if (result == 0)
+    {
+      return EQUAL;
+    }
+    else
+    {
+      return GREATER;
+    }
+  }
+
+  // -vvv YOU CAN PUT ADDITIONAL COMPARISION HERE
+
+  // -^^^ END OF USER DEFINED COMPARATORS
+}

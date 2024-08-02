@@ -1,0 +1,39 @@
+${#INCLUDE _file_header.part}
+
+#include "meth_toolbox_deserialization_interface.h"
+
+namespace MethToolbox
+{
+  void DeserializationInterface::deserializeShortString(std::string& text)
+  {
+    uint8_t text_length = 0;
+    deserializeInteger<uint8_t>(text_length);
+    text.resize(text_length);
+    for (size_t position = 0; position < text_length; ++position)
+    {
+      text[position] = getByte();
+    }
+  }
+
+  void DeserializationInterface::deserializeLongString(std::string& text)
+  {
+    uint16_t text_length = 0;
+    deserializeInteger<uint16_t>(text_length);
+    text.resize(text_length);
+    for (size_t position = 0; position < text_length; ++position)
+    {
+      text[position] = getByte();
+    }
+  }
+
+  void DeserializationInterface::deserializeVeryLongString(std::string& text)
+  {
+    uint32_t text_length = 0;
+    deserializeInteger<uint32_t>(text_length);
+    text.resize(text_length);
+    for (size_t position = 0; position < text_length; ++position)
+    {
+      text[position] = getByte();
+    }
+  }
+};

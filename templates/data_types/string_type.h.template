@@ -42,23 +42,23 @@ namespace ${namespace}
       // -^^^ YOU CAN PUT ADDITIONAL PUBLIC METHODS HERE
 
 ${#IF compareable}
-      bool operator==(const ${class_name}& other) const noexcept     { return Meth::StringTypeToolbox::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) == 0; }
-      bool operator!=(const ${class_name}& other) const noexcept     { return Meth::StringTypeToolbox::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) != 0; }
+      bool operator==(const ${class_name}& other) const noexcept     { return MethToolbox::Strings::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) == MethToolbox::Strings::EQUAL; }
+      bool operator!=(const ${class_name}& other) const noexcept     { return MethToolbox::Strings::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) != MethToolbox::Strings::EQUAL; }
 ${#IF ordered}
-      bool operator<(const ${class_name}& other) const noexcept     { return Meth::StringTypeToolbox::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) < 0; }
-      bool operator>(const ${class_name}& other) const noexcept     { return Meth::StringTypeToolbox::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) > 0; }
-      bool operator<=(const ${class_name}& other) const noexcept     { return Meth::StringTypeToolbox::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) <= 0; }
-      bool operator>=(const ${class_name}& other) const noexcept     { return Meth::StringTypeToolbox::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) >= 0; }
+      bool operator<(const ${class_name}& other) const noexcept     { return MethToolbox::Strings::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) == MethToolbox::Strings::LESS; }
+      bool operator>(const ${class_name}& other) const noexcept     { return MethToolbox::Strings::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) == MethToolbox::Strings::GREATER; }
+      bool operator<=(const ${class_name}& other) const noexcept     { return MethToolbox::Strings::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) != MethToolbox::Strings::GREATER; }
+      bool operator>=(const ${class_name}& other) const noexcept     { return MethToolbox::Strings::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) != MethToolbox::Strings::LESS; }
 ${#END}
 
 ${#END}
-      friend std::ostream& operator<<(std::ostream& out, const ${class_name}& ${field_name})    { out << Meth::StringTypeToolbox::encodeString(${field_name}.m_${field_name}); return out; }
+      friend std::ostream& operator<<(std::ostream& out, const ${class_name}& ${field_name})    { out << MethToolbox::Strings::encodeString(${field_name}.m_${field_name}); return out; }
 
       friend MethToolbox::SerializationInterface& operator<<(MethToolbox::SerializationInterface& serializer, const ${class_name}& ${field_name})    { serializer.serialize${length_cathegory}String(${field_name}.m_${field_name}); return serializer; }
       friend MethToolbox::DeserializationInterface& operator>>(MethToolbox::DeserializationInterface& deserializer, ${class_name}& ${field_name})    { deserializer.deserialize${length_cathegory}String(${field_name}.m_${field_name}); ${#IF range_controll}${field_name}.checkValue(); ${#END}return deserializer; }
 
       std::string toString() const    { std::stringstream buffer; buffer << *this; return buffer.str(); }
-      static ${class_name} fromString(const std::string& text)    { ${class_name}(Meth::StringTypeToolbox::decodeString(text)); }
+      static ${class_name} fromString(const std::string& text)    { return ${class_name}(MethToolbox::Strings::decodeString(text)); }
 
     private:
       std::string m_${field_name};

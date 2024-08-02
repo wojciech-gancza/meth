@@ -2,12 +2,17 @@ ${#INCLUDE _file_header.part}
 
 #pragma once
 
+${#IF export_definition_include}
+#include "${export_definition_include}"
+
+${#END}
+#include <string>
 #include <cstdint>
 #include <bit>
 
 namespace MethToolbox
 {
-  class DeserializationInterface
+  class ${#IF export_specifier}${export_specifier} ${#END}DeserializationInterface
   {
     public:
       virtual ~DeserializationInterface()
@@ -39,5 +44,9 @@ namespace MethToolbox
           }
         }
       }
+
+      void deserializeShortString(std::string& text);
+      void deserializeLongString(std::string& text);
+      void deserializeVeryLongString(std::string& text);
   };
 };

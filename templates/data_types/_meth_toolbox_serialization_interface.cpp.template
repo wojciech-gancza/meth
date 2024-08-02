@@ -1,0 +1,37 @@
+${#INCLUDE _file_header.part}
+
+#include "meth_toolbox_serialization_interface.h"
+#include <bit>
+
+namespace MethToolbox
+{
+  void SerializationInterface::serializeShortString(const std::string& text)
+  {
+    uint8_t size = static_cast<uint8_t>(text.size());
+    serializeInteger(size);
+    for (size_t index = 0; index < size; ++index)
+    {
+      putByte(text[index]);
+    }
+  }
+
+  void SerializationInterface::serializeLongString(const std::string& text)
+  {
+    uint16_t size = static_cast<uint16_t>(text.size());
+    serializeInteger(size);
+    for (size_t index = 0; index < size; ++index)
+    {
+      putByte(text[index]);
+    }
+  }
+
+  void SerializationInterface::serializeVeryLongString(const std::string& text)
+  {
+    uint32_t size = static_cast<uint32_t>(text.size());
+    serializeInteger(size);
+    for (size_t index = 0; index < size; ++index)
+    {
+      putByte(text[index]);
+    }
+  }
+}

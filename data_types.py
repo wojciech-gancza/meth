@@ -18,20 +18,28 @@ from inspect import currentframe, getmodule
 
 class data_types_generator:
 
-    def __init__(self, solution_root_folder, target_folder, library_files_folder):
-        self.generated_files = []
+    def __init__(self, solution_root_folder):
         self.solution_root_folder = file_name(solution_root_folder).get_full_file_name()
+        self.generated_files = []
+        self.generator = code_generator( {} )
+        self.need_integer_toolbox = False
+        self.need_string_toolbox = False
+
+    def define_output_directories(self, target_folder, library_files_folder):
         self.library_files_folder = file_name(library_files_folder)
         self.target_folder = file_name(target_folder)
         self.meth_directory = file_name(__file__ + "/..");
         self.template_folder = file_name(self.meth_directory.get_full_file_name() + "/templates/data_types")
-        self.generator = code_generator( {} )
-        self.generator.define("meth_directory",self.meth_directory.get_name_and_path_relative_to(self.solution_root_folder))
-        self.need_integer_toolbox = False
-        self.need_string_toolbox = False
         tools_relative_path = self._add_path_separator_if_needed(self.library_files_folder.get_name_and_path_relative_to(self.target_folder.get_full_file_name()))
         tools_relative_path = self._add_path_separator_if_needed(tools_relative_path)
+        self.generator.define("meth_directory",self.meth_directory.get_name_and_path_relative_to(self.solution_root_folder))
         self.generator.define("tools_path", tools_relative_path)
+        self.generator.define("export_specifier", "")
+        self.generator.define("export_definition_include", "")
+
+    def define_export(self, export_specifier, export_definition_include):
+        self.generator.define("export_specifier", export_specifier)
+        self.generator.define("export_definition_include", export_definition_include)
 
     def create_integer_type(self, namespace, name, *, base_type="int", default_value=0, min_value=None, max_value=None, compareable=False, ordered=False):
         self._set_name(namespace, name)
@@ -59,12 +67,15 @@ class data_types_generator:
         if self.need_string_toolbox:
             need_common_tools = True
         if self.need_string_toolbox:
-            self._create_library_file("meth_toolbox_strings.h", "_meth_toolbox_strings.template")
+            self._create_library_file("meth_toolbox_strings.h", "_meth_toolbox_strings.h.template")
+            self._create_library_file("meth_toolbox_strings.cpp", "_meth_toolbox_strings.cpp.template")
             need_common_tools = True
         if need_common_tools:
-            self._create_library_file("meth_toolbox_value_error.h", "_meth_toolbox_value_error.template")
-            self._create_library_file("meth_toolbox_deserialization_interface.h", "_meth_toolbox_deserialization_interface.template")
-            self._create_library_file("meth_toolbox_serialization_interface.h", "_meth_toolbox_serialization_interface.template")
+            self._create_library_file("meth_toolbox_value_error.h", "_meth_toolbox_value_error.h.template")
+            self._create_library_file("meth_toolbox_deserialization_interface.h", "_meth_toolbox_deserialization_interface.h.template")
+            self._create_library_file("meth_toolbox_deserialization_interface.cpp", "_meth_toolbox_deserialization_interface.cpp.template")
+            self._create_library_file("meth_toolbox_serialization_interface.h", "_meth_toolbox_serialization_interface.h.template")
+            self._create_library_file("meth_toolbox_serialization_interface.cpp", "_meth_toolbox_serialization_interface.cpp.template")
 
     def _add_path_separator_if_needed(self, path):
         if not path:

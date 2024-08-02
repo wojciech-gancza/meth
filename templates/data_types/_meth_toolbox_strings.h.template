@@ -1,0 +1,34 @@
+${#INCLUDE _file_header.part}
+
+#pragma once
+
+${#IF export_definition_include}
+#include "${export_definition_include}"
+
+${#END}
+#include <string>
+
+// -vvv YOU CAN PUT ADDITIONAL INCLUDES HERE
+
+// -^^^ END OF ADDITIONAL INCLUDES
+
+namespace MethToolbox
+{
+  class ${#IF export_specifier}${export_specifier} ${#END}Strings
+  {
+    public:
+      enum Order { LESS, EQUAL, GREATER };
+      
+      static std::string decodeString(const std::string& text);
+      static std::string encodeString(const std::string& text);
+
+      static Order strcmpDefault(const std::string& a, const std::string& b);
+      static Order strcmpCaseInsensitive(const std::string& a, const std::string& b);
+      static Order strcmpAnyOrder(const std::string& a, const std::string& b);
+      static Order strcmpLexical(const std::string& a, const std::string& b);
+
+      // -vvv YOU CAN PUT ADDITIONAL COMPARISION HERE
+
+      // -^^^ END OF USER DEFINED COMPARATORS
+  };
+}
