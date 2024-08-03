@@ -69,7 +69,7 @@ ${#END}
 
         // -vvv YOU CAN PUT RUNTIME VALUE ERROR HANDLING HERE REPLACING DEFAULT EXCEPTION
 
-        if(m_${field_name}.size() < max_length)
+        if(m_${field_name}.size() >= max_length)
         {
           throw MethToolbox::ValueError();
         }
