@@ -1,0 +1,38 @@
+${#INCLUDE _file_header.part}
+
+#include "${header_file_name}"
+
+#include <cstring>
+
+// -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
+
+// -^^^ END OF USER DEFINED INCLUDES
+
+namespace ${namespace}
+{
+  const char* const ${class_name}::names[] = {
+		${cpp_enum(values).get_items_as_list('\"')}
+  };
+	
+  ${class_name}::e_${class_name} ${class_name}::tryConvertFromString(const std::string& text)
+  {
+    ${cpp_enum(values).code_of_convert_from_string()}
+  }
+
+  ${class_name} ${class_name}::fromString(const std::string& text)
+  {
+    e_${class_name} ${field_name} = tryConvertFromString(text);
+    if (0 == strcmp(names[${field_name}], text.c_str()))
+    {
+      return ${class_name}(${field_name});
+    }
+    else
+    {
+      throw MethToolbox::ValueError();
+    }
+  }
+
+  // -vvv YOU CAN PUT ADDITIONAL CODE HERE
+
+  // -^^^ YOU CAN PUT ADDITIONAL CODE HERE
+}

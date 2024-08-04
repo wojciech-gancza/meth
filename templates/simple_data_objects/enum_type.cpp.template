@@ -7,29 +7,23 @@
 
 #include "${header_file_name}.h"
 
-// -vvv additional includes and declarations could be written here
+// -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
 
-	// code written here will be preserved during future 
-	// generation of this file 
-
-// -^^^ end of manualy entered code
+// -^^^ END OF USER DEFINED INCLUDES
 
 namespace ${namespace}
 {
-	const char* const ${type_name}::names[] =
+	const char* const ${class_name}::names[] =
     {
-		${cpp_enum(enum_values).get_items_as_list('\"')}
+		${cpp_enum(values).get_items_as_list('\"')}
     }
 	
-	${type_name} ${type_name}::from_string(const std::string& text)
+	${class_name} ${class_name}::from_string(const std::string& text)
 	{
-		${cpp_enum(enum_values).code_of_convert_from_string()}
+		${cpp_enum(values).code_of_convert_from_string()}
 	}
 
-	// -vvv additional methods could be written here
+    // -vvv YOU CAN PUT ADDITIONAL CODE HERE
 
-		// code written here will be preserved during future 
-		// generation of this file 
-
-	// -^^^ end of manualy entered code
+    // -^^^ YOU CAN PUT ADDITIONAL CODE HERE
 }

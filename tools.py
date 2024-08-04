@@ -68,6 +68,9 @@ class file_name:
         else:
             file_name = "./" + file_name
         return file_name
+
+    def get_full_path(self):
+        return self.full_file_name[:self.full_file_name.rfind('/')]
         
     def get_full_file_name(self):
         return self.full_file_name

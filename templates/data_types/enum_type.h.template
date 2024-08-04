@@ -1,0 +1,77 @@
+${#INCLUDE _file_header.part}
+
+#pragma once
+
+${#IF export_definition_include}
+#include "${export_definition_include}"
+
+${#END}
+#include <sstream>
+
+${#INCLUDE _serialization_includes.part}
+
+// -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
+
+// -^^^ END OF USER DEFINED INCLUDES
+
+namespace ${namespace}
+{
+  class ${#IF export_specifier}${export_specifier} ${#END}${class_name}
+  {
+    public:
+      enum e_${class_name} : ${base_type} { ${cpp_enum(values).get_items_as_list('')} };
+
+      static constexpr bool is_compareable = ${compareable_flag_text};
+      static constexpr bool is_ordered = ${ordered_flag_text};
+      typedef ${base_type} base_type;
+      static constexpr e_${class_name} first = ${values[0]};
+      static constexpr e_${class_name} last = ${values[-1]};
+
+      static const char* const names[];
+
+      explicit ${class_name}(e_${class_name} ${field_name}) noexcept   : m_${field_name}(${field_name}) {  }
+      ${class_name}() noexcept    : m_${field_name}(${default_value}) {  }
+      ${class_name}(const ${class_name}& ${field_name}) noexcept    : m_${field_name}(${field_name}.m_${field_name}) {  }
+      ${class_name}(${class_name}&& ${field_name}) noexcept    : m_${field_name}(${field_name}.m_${field_name}) {  }
+      
+      e_${class_name} get${class_name}() const noexcept   { return m_${field_name}; }
+      void set${class_name}(e_${class_name} ${field_name}) noexcept    { m_${field_name} = ${field_name}; }
+
+      void setFrom(const ${class_name}& ${field_name}) noexcept    { m_${field_name} = ${field_name}.m_${field_name}; }
+
+      ${class_name}& operator=(const ${class_name}& ${field_name}) noexcept    { m_${field_name} = ${field_name}.m_${field_name}; return *this; }
+      ${class_name}& operator=(${class_name}&& ${field_name}) noexcept    { m_${field_name} = ${field_name}.m_${field_name}; return *this; }
+
+      // -vvv YOU CAN PUT ADDITIONAL PUBLIC METHODS HERE
+
+      // -^^^ YOU CAN PUT ADDITIONAL PUBLIC METHODS HERE
+
+${#IF compareable}
+      bool operator==(const ${class_name}& other) const noexcept     { return m_${field_name} == other.m_${field_name}; }
+      bool operator!=(const ${class_name}& other) const noexcept     { return m_${field_name} != other.m_${field_name}; }
+${#IF ordered}
+      bool operator<(const ${class_name}& other) const noexcept     { return m_${field_name} < other.m_${field_name}; }
+      bool operator>(const ${class_name}& other) const noexcept     { return m_${field_name} > other.m_${field_name}; }
+      bool operator<=(const ${class_name}& other) const noexcept     { return m_${field_name} <= other.m_${field_name}; }
+      bool operator>=(const ${class_name}& other) const noexcept     { return m_${field_name} >= other.m_${field_name}; }
+${#END}
+
+${#END}
+      friend std::ostream& operator<<(std::ostream& out, const ${class_name}& ${field_name})    { out << ${class_name}::names[${field_name}.m_${field_name}]; return out; }
+
+      friend MethToolbox::SerializationInterface& operator<<(MethToolbox::SerializationInterface& serializer, const ${class_name}& ${field_name})    { serializer.serializeInteger(reinterpret_cast<const ${class_name}::base_type&>(${field_name}.m_${field_name})); return serializer; }
+      friend MethToolbox::DeserializationInterface& operator>>(MethToolbox::DeserializationInterface& deserializer, ${class_name}& ${field_name})    { deserializer.deserializeInteger(reinterpret_cast<${class_name}::base_type&>(${field_name}.m_${field_name})); return deserializer; }
+
+      std::string toString() const    { std::stringstream buffer; buffer << *this; return buffer.str(); }
+      static ${class_name} fromString(const std::string& text);
+
+    private:
+      e_${class_name} m_${field_name};
+
+      static e_${class_name} tryConvertFromString(const std::string& text);
+
+      // -vvv YOU CAN PUT ADDITIONAL PRIVATE METHODS AND FIELDS HERE
+
+      // -^^^ YOU CAN PUT ADDITIONAL PRIVATE METHODS AND FIELDS HERE
+  };
+}
