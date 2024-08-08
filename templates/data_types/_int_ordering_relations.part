@@ -1,0 +1,18 @@
+${#IF compareable}
+      bool operator==(const ${class_name}& other) const noexcept     { return m_${field_name} == other.m_${field_name}; }
+      bool operator!=(const ${class_name}& other) const noexcept     { return m_${field_name} != other.m_${field_name}; }
+${#IF ordered}
+      bool operator<(const ${class_name}& other) const noexcept     { return m_${field_name} < other.m_${field_name}; }
+      bool operator>(const ${class_name}& other) const noexcept     { return m_${field_name} > other.m_${field_name}; }
+      bool operator<=(const ${class_name}& other) const noexcept     { return m_${field_name} <= other.m_${field_name}; }
+      bool operator>=(const ${class_name}& other) const noexcept     { return m_${field_name} >= other.m_${field_name}; }
+${#END}
+
+${#END}
+${#IF compareable}
+      bool isEqual(const ${class_name}& other) const    { return m_${field_name} == other.m_${field_name}; }
+${#IF ordered}
+      MethToolbox::CompareResult compareWith(const ${class_name}& other) const    { return isEqual(other) ? MethToolbox::EQUAL : (m_${field_name} < other.m_${field_name} ? MethToolbox::LESS : MethToolbox::GREATER); }
+${#END}
+
+${#END}

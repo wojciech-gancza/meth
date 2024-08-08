@@ -1,0 +1,32 @@
+${#INCLUDE _file_header.part}
+
+#pragma once
+
+#include "meth_toolbox_compare_result.h"
+
+namespace MethToolbox
+{
+  template <class T> bool is_record_field_equal(const T& a, const T& b)
+  {
+    if constexpr (T::is_compareable)
+    {
+      return a.isEqual(b);
+    }
+    else
+    {
+      return true;
+    }
+  }
+
+  template <class T> MethToolbox::CompareResult record_field_compare(const T& a, const T& b)
+  {
+    if constexpr (T::is_ordered)
+    {
+      return a.compareWith(b);
+    }
+    else
+    {
+      return MethToolbox::EQUAL;
+    }
+  }
+}

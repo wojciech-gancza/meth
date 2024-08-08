@@ -7,6 +7,9 @@ ${#INCLUDE _file_header.part}
 #include <assert.h>
 
 ${#INCLUDE _serialization_includes.part}
+${#IF ordered}
+#include "${tools_path}meth_toolbox_compare_result.h"
+${#END}
 #include "${tools_path}meth_toolbox_strings.h"
 
 // -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
@@ -18,9 +21,8 @@ namespace ${namespace}
   class ${class_name}
   {
     public:
-      static constexpr bool is_compareable = ${compareable_flag_text};
-      static constexpr bool is_ordered = ${ordered_flag_text};
-      static constexpr size_t max_length = ${max_length};
+${#INCLUDE _type_traits.part}
+      static constexpr size_t max_length { ${max_length} };
 
       explicit ${class_name}(const std::string& ${field_name}) noexcept   : m_${field_name}(${field_name}) { checkValue(); }
       explicit ${class_name}(std::string&& ${field_name}) noexcept   : m_${field_name}(${field_name}) { checkValue(); }
@@ -33,6 +35,7 @@ namespace ${namespace}
       void set${class_name}(std::string&& ${field_name}) noexcept    { m_${field_name} = ${field_name}; }
 
       void setFrom(const ${class_name}& ${field_name}) noexcept    { m_${field_name} = ${field_name}.m_${field_name}; }
+      void setFrom(${class_name}&& ${field_name}) noexcept    { m_${field_name} = std::move(${field_name}.m_${field_name}); }
 
       ${class_name}& operator=(const ${class_name}& ${field_name}) noexcept    { m_${field_name} = ${field_name}.m_${field_name}; return *this; }
       ${class_name}& operator=(${class_name}&& ${field_name}) noexcept    { m_${field_name} = ${field_name}.m_${field_name}; return *this; }
@@ -41,14 +44,11 @@ namespace ${namespace}
 
       // -^^^ YOU CAN PUT ADDITIONAL PUBLIC METHODS HERE
 
+${#INCLUDE _ordering_relations.part}
 ${#IF compareable}
-      bool operator==(const ${class_name}& other) const noexcept     { return MethToolbox::Strings::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) == MethToolbox::Strings::EQUAL; }
-      bool operator!=(const ${class_name}& other) const noexcept     { return MethToolbox::Strings::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) != MethToolbox::Strings::EQUAL; }
+      bool isEqual(const ${class_name}& other) const    { return MethToolbox::Strings::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) == MethToolbox::EQUAL; }
 ${#IF ordered}
-      bool operator<(const ${class_name}& other) const noexcept     { return MethToolbox::Strings::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) == MethToolbox::Strings::LESS; }
-      bool operator>(const ${class_name}& other) const noexcept     { return MethToolbox::Strings::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) == MethToolbox::Strings::GREATER; }
-      bool operator<=(const ${class_name}& other) const noexcept     { return MethToolbox::Strings::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) != MethToolbox::Strings::GREATER; }
-      bool operator>=(const ${class_name}& other) const noexcept     { return MethToolbox::Strings::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) != MethToolbox::Strings::LESS; }
+      MethToolbox::CompareResult compareWith(const ${class_name}& other) const    { return MethToolbox::Strings::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) == 0; }
 ${#END}
 
 ${#END}

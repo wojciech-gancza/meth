@@ -1,0 +1,82 @@
+${#INCLUDE _file_header.part}
+
+#include "${header_file_name}"
+
+${#IF compareable}
+#include "${tools_path}meth_toolbox_composite.h"
+${#END}
+
+// -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
+
+// -^^^ END OF USER DEFINED INCLUDES
+
+namespace ${namespace} 
+{
+  ${class_name}::${class_name}(${copy_parameters})
+  : ${copy_initializators}
+  {  }
+
+  ${class_name}::${class_name}(${move_parameters})
+  :${move_initializators}
+  {  }
+
+  std::ostream& operator<<(std::ostream& out, const ${class_name}& object) 
+  {
+    out << "{ ";
+    const char* separator = "";
+${#FOR field : fields}
+    out << separator << "${field.lowercase()}: " << static_cast<const ${ field.CamelCase() }&>(object);
+    separator = ", ";
+${#END}
+    out << " }";
+    return out;
+  }
+    
+  MethToolbox::SerializationInterface& operator<<(MethToolbox::SerializationInterface& serializer, const ${class_name}& object)
+  {  
+${#FOR field : fields}
+    serializer << static_cast<const ${ field.CamelCase() }&>(object);
+${#END}
+    return serializer;
+  }
+
+  MethToolbox::DeserializationInterface& operator>>(MethToolbox::DeserializationInterface& deserializer, ${class_name}& object)
+  {  
+${#FOR field : fields}
+    deserializer >> static_cast<${ field.CamelCase() }&>(object);
+${#END}
+    return deserializer;
+  }
+
+${#IF compareable}
+  bool ${class_name}::isEqual(const ${class_name}& other) const
+  {
+${#FOR field : fields}
+    if (!MethToolbox::is_record_field_equal(static_cast<const ${ field.CamelCase() }&>(*this), static_cast<const ${ field.CamelCase() }&>(other)))
+    {
+      return false;
+    }
+${#END}
+    return true;
+  }
+${#IF ordered}
+
+  MethToolbox::CompareResult ${class_name}::compareWith(const ${class_name}& other) const
+  {
+    MethToolbox::CompareResult result = MethToolbox::EQUAL;
+${#FOR field : fields}
+    result = MethToolbox::record_field_compare(static_cast<const ${ field.CamelCase() }&>(*this), static_cast<const ${ field.CamelCase() }&>(other));
+    if (MethToolbox::EQUAL != result)
+    {
+      return result;
+    }
+${#END}
+    return result;
+  }
+${#END}
+
+${#END}
+  // -vvv YOU CAN PUT ADDITIONAL IMPLEMENTATION PUBLIC METHODS HERE
+
+  // -^^^ YOU CAN PUT ADDITIONAL IMPLEMENTATION PUBLIC METHODS HERE
+} 

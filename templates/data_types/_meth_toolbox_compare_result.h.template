@@ -1,0 +1,12 @@
+${ #INCLUDE _file_header.part }
+
+#pragma once 
+
+namespace MethToolbox
+{
+  enum CompareResult { 
+    LESS, 
+    EQUAL, 
+    GREATER 
+  };
+};

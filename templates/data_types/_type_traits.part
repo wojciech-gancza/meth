@@ -1,0 +1,2 @@
+      static constexpr bool is_compareable { ${compareable_flag_text} };
+      static constexpr bool is_ordered { ${ordered_flag_text} };

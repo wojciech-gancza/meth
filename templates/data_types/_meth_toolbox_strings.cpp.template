@@ -155,7 +155,7 @@ namespace MethToolbox
     return result.str();
   }
 
-  Strings::Order Strings::strcmpDefault(const std::string& a, const std::string& b)
+  CompareResult Strings::strcmpDefault(const std::string& a, const std::string& b)
   {
    int result = strcmp(a.c_str(), b.c_str());
 
@@ -173,7 +173,7 @@ namespace MethToolbox
     }
   }
 
-  Strings::Order Strings::strcmpCaseInsensitive(const std::string& a, const std::string& b)
+  CompareResult Strings::strcmpCaseInsensitive(const std::string& a, const std::string& b)
   {
     const char* a_ptr = a.c_str();
     const char* b_ptr = a.c_str();
@@ -211,7 +211,7 @@ namespace MethToolbox
     }
   }
 
-  Strings::Order Strings::strcmpAnyOrder(const std::string& a, const std::string& b)
+  CompareResult Strings::strcmpAnyOrder(const std::string& a, const std::string& b)
   {
     size_t a_size = a.size();
     size_t b_size = b.size();
@@ -230,7 +230,7 @@ namespace MethToolbox
     }
   }
 
-  Strings::Order Strings::strcmpLexical(const std::string& a, const std::string& b)
+  CompareResult Strings::strcmpLexical(const std::string& a, const std::string& b)
   {
     int result = strcoll(a.c_str(), b.c_str());
 

@@ -22,25 +22,23 @@ namespace MethToolbox
 
       template <class INTEGER> void deserializeInteger(INTEGER& value)
       {
+        unsigned len = sizeof(INTEGER);
         if constexpr (std::endian::native == std::endian::big)
         {
           // Big-endian system
           uint8_t* bytes = reinterpret_cast<uint8_t*>(&value);
           for (unsigned i = 0; i < sizeof(INTEGER); ++i)
           {
-              bytes[i] = getByte();
+              *bytes++ = getByte();
           }
         }
         else
         {
           // Little endian system
-          unsigned len = sizeof(INTEGER);
-          uint8_t* bytes = reinterpret_cast<uint8_t*>(&value) + len - 1;
-          while (len)
+          uint8_t* bytes = reinterpret_cast<uint8_t*>(&value) + len;
+          while (len--)
           {
-            *bytes = getByte();
-            --bytes;
-            --len;
+            *--bytes = getByte();
           }
         }
       }

@@ -22,25 +22,23 @@ namespace MethToolbox
 
       template <class INTEGER> void serializeInteger(const INTEGER& value)
       {
+        unsigned len = sizeof(INTEGER);
         if constexpr (std::endian::native == std::endian::big)
         {
           // Big-endian system
           uint8_t* bytes = reinterpret_cast<const uint8_t*>(&value);
-          for (unsigned i = 0; i < sizeof(INTEGER); ++i)
+          while (len--)
           {
-              putByte(bytes[i]);
+            putByte(*bytes++);
           }
         }
         else
         {
           // Little endian system
-          unsigned len = sizeof(INTEGER);
-          const uint8_t* bytes = reinterpret_cast<const uint8_t*>(&value) + len - 1;
-          while (len)
+          const uint8_t* bytes = reinterpret_cast<const uint8_t*>(&value) + len;
+          while (len--)
           {
-            putByte(*bytes);
-            --bytes;
-            --len;
+            putByte(*--bytes);
           }
         }
       }

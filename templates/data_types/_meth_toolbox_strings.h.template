@@ -6,6 +6,8 @@ ${#IF export_definition_include}
 #include "${export_definition_include}"
 
 ${#END}
+#include "meth_toolbox_compare_result.h"
+
 #include <string>
 
 // -vvv YOU CAN PUT ADDITIONAL INCLUDES HERE
@@ -17,15 +19,13 @@ namespace MethToolbox
   class ${#IF export_specifier}${export_specifier} ${#END}Strings
   {
     public:
-      enum Order { LESS, EQUAL, GREATER };
-      
       static std::string decodeString(const std::string& text);
       static std::string encodeString(const std::string& text);
 
-      static Order strcmpDefault(const std::string& a, const std::string& b);
-      static Order strcmpCaseInsensitive(const std::string& a, const std::string& b);
-      static Order strcmpAnyOrder(const std::string& a, const std::string& b);
-      static Order strcmpLexical(const std::string& a, const std::string& b);
+      static CompareResult strcmpDefault(const std::string& a, const std::string& b);
+      static CompareResult strcmpCaseInsensitive(const std::string& a, const std::string& b);
+      static CompareResult strcmpAnyOrder(const std::string& a, const std::string& b);
+      static CompareResult strcmpLexical(const std::string& a, const std::string& b);
 
       // -vvv YOU CAN PUT ADDITIONAL COMPARISION HERE
 

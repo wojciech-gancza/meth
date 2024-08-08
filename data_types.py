@@ -25,6 +25,7 @@ class data_types_generator:
         self.need_integer_toolbox = False
         self.need_string_toolbox = False
         self.need_enum_toolbox = False
+        self.need_record_toolbox = False
 
     def define_output_directories(self, target_folder, library_files_folder):
         self.library_files_folder = file_name(library_files_folder)
@@ -43,8 +44,12 @@ class data_types_generator:
         self.generator.define("export_specifier", export_specifier)
         self.export_definition_include = export_definition_include
 
-    def create_integer_type(self, namespace, name, *, base_type="int", default_value=0, min_value=None, max_value=None, compareable=False, ordered=False):
-        self._set_name(namespace, name)
+    def set_namespace(self, namespace):
+        self.namespace = general_name(namespace)
+        self.generator.define("namespace",self.namespace.CamelCase())
+
+    def create_integer_type(self, name, *, base_type="int", default_value=0, min_value=None, max_value=None, compareable=False, ordered=False):
+        self._set_name(name)
         self._set_base_type(base_type, default_value)
         self._set_range(min_value, max_value)
         self._set_comparision(compareable, ordered)
@@ -54,8 +59,8 @@ class data_types_generator:
         self.generated_files.append(created_file_location)
         self.need_integer_toolbox = True
 
-    def create_string_type(self, namespace, name, *, default_value = "", max_length=None, compareable=False, ordered=False, compare_strategy="Default"):
-        self._set_name(namespace, name)
+    def create_string_type(self, name, *, default_value = "", max_length=None, compareable=False, ordered=False, compare_strategy="Default"):
+        self._set_name(name)
         self._set_type_properties(max_length, default_value)
         self._set_comparision(compareable, ordered, compare_strategy)
         self._set_template("string_type.h.template", ".h")
@@ -64,8 +69,8 @@ class data_types_generator:
         self.generated_files.append(created_file_location)
         self.need_string_toolbox = True
 
-    def create_enum_type(self, namespace, name, values, *, default_value = None, compareable=False, ordered=False):
-        self._set_name(namespace, name)
+    def create_enum_type(self, name, values, *, default_value = None, compareable=False, ordered=False):
+        self._set_name(name)
         self._set_values(values, default_value)
         self._set_comparision(compareable, ordered)
         self._set_template("enum_type.h.template", ".h")
@@ -78,11 +83,28 @@ class data_types_generator:
         self.generated_files.append(created_file_location)
         self.need_enum_toolbox = True
 
+    def create_record_type(self, name, fields, *, compareable=False, ordered=False):
+        self._set_name(name)
+        self._set_fields(fields)
+        self._set_comparision(compareable, ordered)
+        self._set_template("record_type.h.template", ".h")
+        self._set_trace()
+        created_file_location = self._generate()
+        self.generated_files.append(created_file_location)
+        self._set_template("record_type.cpp.template", ".cpp")
+        self._set_trace()
+        created_file_location = self._generate()
+        self.generated_files.append(created_file_location)
+        self.need_record_toolbox = True
+
     def add_toolbox_files(self):
         need_common_tools = False
         if self.need_integer_toolbox:
             need_common_tools = True
         if self.need_enum_toolbox:
+            need_common_tools = True
+        if self.need_record_toolbox:
+            self._create_library_file("meth_toolbox_composite.h", "_meth_toolbox_composite.h.template")
             need_common_tools = True
         if self.need_string_toolbox:
             self._create_library_file("meth_toolbox_strings.h", "_meth_toolbox_strings.h.template")
@@ -94,7 +116,18 @@ class data_types_generator:
             self._create_library_file("meth_toolbox_deserialization_interface.cpp", "_meth_toolbox_deserialization_interface.cpp.template")
             self._create_library_file("meth_toolbox_serialization_interface.h", "_meth_toolbox_serialization_interface.h.template")
             self._create_library_file("meth_toolbox_serialization_interface.cpp", "_meth_toolbox_serialization_interface.cpp.template")
+            self._create_library_file("meth_toolbox_compare_result.h", "_meth_toolbox_compare_result.h.template")
     
+    def _set_fields(self, fields):
+        self.fields = [general_name(field) for field in fields]
+        self.generator.define("fields", self.fields)
+        self.generator.define("include_files", [self.namespace.lowercase() + "_" + field.lowercase() + ".h" for field in self.fields])
+        self.generator.define("derived_classes", ["public " + field.CamelCase() for field in self.fields])
+        self.generator.define("copy_parameters", ["const " + field.CamelCase() + "& " + field.lowercase() for field in self.fields])
+        self.generator.define("move_parameters", [field.CamelCase() + "&& " + field.lowercase() for field in self.fields])
+        self.generator.define("copy_initializators", [field.CamelCase() + "(" + field.lowercase() + ")" for field in self.fields])
+        self.generator.define("move_initializators", [field.CamelCase() + "(std::move(" + field.lowercase() + "))" for field in self.fields])
+
     def _set_values(self, values, default_value):
         self.values = values
         self.generator.define("values",values)
@@ -125,9 +158,7 @@ class data_types_generator:
         created_file_location = self._generate()
         self.generated_files.append(created_file_location)
 
-    def _set_name(self, namespace, name):
-        self.namespace = general_name(namespace)
-        self.generator.define("namespace",self.namespace.CamelCase())
+    def _set_name(self, name):
         self.type_name = general_name(name)
         self.generator.define("class_name",self.type_name.CamelCase())
         self.generator.define("field_name",self.type_name.lowercase())

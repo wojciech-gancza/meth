@@ -1,0 +1,85 @@
+${#INCLUDE _file_header.part}
+
+#pragma once
+
+${#IF export_definition_include}
+#include "${export_definition_include}"
+
+${#END}
+#include <type_traits>
+
+${#FOR include_file : include_files}
+#include "${include_file}"
+${#END}
+${#IF ordered}
+#include "${tools_path}meth_toolbox_compare_result.h"
+${#END}
+
+// -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
+
+// -^^^ END OF USER DEFINED INCLUDES
+
+namespace ${namespace} 
+{
+  class ${class_name} :
+    ${derived_classes}
+  {
+    public:
+${#INCLUDE _type_traits.part}
+
+    public:
+      ${class_name}() = default;
+      ${class_name}(${copy_parameters});
+      ${class_name}(${move_parameters});
+
+      template <class OTHER>
+      void setFrom(const OTHER& other)
+      {
+${#FOR field : fields}
+        if constexpr(std::is_base_of_v<${field.CamelCase()}, OTHER>)
+        {
+          ${field.CamelCase()}::setFrom(other);
+        }
+${#END}
+      }
+
+      template <class OTHER>
+      void setFrom(OTHER&& other)
+      {
+${#FOR field : fields}
+        if constexpr(std::is_base_of_v<${field.CamelCase()}, OTHER>)
+        {
+          ${field.CamelCase()}::setFrom(other);
+        }
+${#END}
+      }
+
+      ${class_name}& operator=(const ${class_name}& ${field_name}) noexcept    { setFrom(${field_name}); return *this; };
+      ${class_name}& operator=(${class_name}&& ${field_name}) noexcept    { setFrom(${field_name}); return *this; };
+
+      friend std::ostream& operator<<(std::ostream& out, const ${class_name}& object);
+    
+      friend MethToolbox::SerializationInterface& operator<<(MethToolbox::SerializationInterface& serializer, const ${class_name}& object);
+      friend MethToolbox::DeserializationInterface& operator>>(MethToolbox::DeserializationInterface& deserializer, ${class_name}& object);
+
+      std::string toString() const { std::ostringstream buffer; buffer << *this; return buffer.str(); }
+
+${#INCLUDE _ordering_relations.part}
+${#IF compareable}
+      bool isEqual(const ${class_name}& other) const;
+${#IF ordered}
+      MethToolbox::CompareResult compareWith(const ${class_name}& other) const;
+${#END}
+
+${#END}
+
+      // -vvv YOU CAN PUT ADDITIONAL PUBLIC METHODS HERE
+
+      // -^^^ YOU CAN PUT ADDITIONAL PUBLIC METHODS HERE
+
+    private:
+      // -vvv YOU CAN PUT ADDITIONAL PRIVATE METHODS AND FIELDS HERE
+
+      // -^^^ YOU CAN PUT ADDITIONAL PRIVATE METHODS AND FIELDS HERE
+  };
+} 

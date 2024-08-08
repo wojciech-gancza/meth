@@ -1,0 +1,11 @@
+${#IF compareable}
+      bool operator==(const ${class_name}& other) const noexcept     { return isEqual(other); }
+      bool operator!=(const ${class_name}& other) const noexcept     { return !isEqual(other); }
+${#IF ordered}
+      bool operator<(const ${class_name}& other) const noexcept     { return compareWith(other) == MethToolbox::LESS; }
+      bool operator>(const ${class_name}& other) const noexcept     { return compareWith(other) == MethToolbox::GREATER; }
+      bool operator<=(const ${class_name}& other) const noexcept     { return compareWith(other) != MethToolbox::GREATER; }
+      bool operator>=(const ${class_name}& other) const noexcept     { return compareWith(other) != MethToolbox::LESS; }
+${#END}
+
+${#END}
