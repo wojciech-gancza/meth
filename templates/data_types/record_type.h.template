@@ -19,9 +19,11 @@ ${#END}
 
 // -^^^ END OF USER DEFINED INCLUDES
 
+#pragma warning(disable: 4275)
+
 namespace ${namespace} 
 {
-  class ${class_name} :
+  class ${#IF export_specifier}${export_specifier} ${#END}${class_name} :
     ${derived_classes}
   {
     public:
@@ -29,6 +31,8 @@ ${#INCLUDE _type_traits.part}
 
     public:
       ${class_name}() = default;
+      ${class_name}(const ${class_name}& ${field_name});
+      ${class_name}(${class_name}&& ${field_name}) noexcept;
       ${class_name}(${copy_parameters});
       ${class_name}(${move_parameters});
 
@@ -47,7 +51,7 @@ ${#END}
       void setFrom(OTHER&& other)
       {
 ${#FOR field : fields}
-        if constexpr(std::is_base_of_v<${field.CamelCase()}, OTHER>)
+        if constexpr(std::is_base_of_v<${field.CamelCase()}, typename std::remove_reference<OTHER>::type>)
         {
           ${field.CamelCase()}::setFrom(other);
         }
@@ -57,10 +61,10 @@ ${#END}
       ${class_name}& operator=(const ${class_name}& ${field_name}) noexcept    { setFrom(${field_name}); return *this; };
       ${class_name}& operator=(${class_name}&& ${field_name}) noexcept    { setFrom(${field_name}); return *this; };
 
-      friend std::ostream& operator<<(std::ostream& out, const ${class_name}& object);
+      friend ${#IF export_specifier}${export_specifier} ${#END}std::ostream& operator<<(std::ostream& out, const ${class_name}& object);
     
-      friend MethToolbox::SerializationInterface& operator<<(MethToolbox::SerializationInterface& serializer, const ${class_name}& object);
-      friend MethToolbox::DeserializationInterface& operator>>(MethToolbox::DeserializationInterface& deserializer, ${class_name}& object);
+      friend ${#IF export_specifier}${export_specifier} ${#END}MethToolbox::SerializationInterface& operator<<(MethToolbox::SerializationInterface& serializer, const ${class_name}& object);
+      friend ${#IF export_specifier}${export_specifier} ${#END}MethToolbox::DeserializationInterface& operator>>(MethToolbox::DeserializationInterface& deserializer, ${class_name}& object);
 
       std::string toString() const { std::ostringstream buffer; buffer << *this; return buffer.str(); }
 
@@ -72,7 +76,6 @@ ${#IF ordered}
 ${#END}
 
 ${#END}
-
       // -vvv YOU CAN PUT ADDITIONAL PUBLIC METHODS HERE
 
       // -^^^ YOU CAN PUT ADDITIONAL PUBLIC METHODS HERE

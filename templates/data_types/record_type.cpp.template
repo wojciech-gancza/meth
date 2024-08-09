@@ -3,7 +3,7 @@ ${#INCLUDE _file_header.part}
 #include "${header_file_name}"
 
 ${#IF compareable}
-#include "${tools_path}meth_toolbox_composite.h"
+#include "${tools_path}meth_toolbox_record.h"
 ${#END}
 
 // -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
@@ -12,6 +12,14 @@ ${#END}
 
 namespace ${namespace} 
 {
+  ${class_name}::${class_name}(const ${class_name}& ${field_name})
+  : ${object_copy_initializators}
+  {  }
+
+  ${class_name}::${class_name}(${class_name}&& ${field_name}) noexcept
+  : ${object_move_initializators}
+  {  }
+
   ${class_name}::${class_name}(${copy_parameters})
   : ${copy_initializators}
   {  }
