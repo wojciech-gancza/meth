@@ -18,14 +18,22 @@ from inspect import currentframe, getmodule
 
 class data_types_generator:
 
-    def __init__(self, solution_root_folder):
+    def __init__(self, solution_root_folder, *, add_serialization_id = False):
+        self.serialization_identifiers = [ "NoObject" ]
+        self.all_generated_object_ids_and_type_names = [ ]
+        self.generated_type_headers = []
+        self.next_serialization_id = 1
+        self.is_serialization_id_supported = add_serialization_id
         self.solution_root_folder = file_name(solution_root_folder).get_full_file_name()
         self.generated_files = []
         self.generator = code_generator( globals() )
+        self.generator.define("is_serialization_id_supported", add_serialization_id)
         self.need_integer_toolbox = False
         self.need_string_toolbox = False
         self.need_enum_toolbox = False
         self.need_record_toolbox = False
+        self.generator.define("export_specifier", "")
+        self.generator.define("export_definition_include", "")
 
     def define_output_directories(self, target_folder, library_files_folder):
         self.library_files_folder = file_name(library_files_folder)
@@ -36,8 +44,6 @@ class data_types_generator:
         tools_relative_path = self._add_path_separator_if_needed(tools_relative_path)
         self.generator.define("meth_directory",self.meth_directory.get_name_and_path_relative_to(self.solution_root_folder))
         self.generator.define("tools_path", tools_relative_path)
-        self.generator.define("export_specifier", "")
-        self.generator.define("export_definition_include", "")
 
     def define_export(self, export_specifier, export_definition_include):
         self.export_specifier = export_specifier
@@ -55,7 +61,9 @@ class data_types_generator:
         self._set_comparision(compareable, ordered)
         self._set_template("integer_type.h.template", ".h")
         self._set_trace()
+        self._add_serialization_id()
         created_file_location = self._generate()
+        self._add_to_objects_collection(created_file_location)
         self.generated_files.append(created_file_location)
         self.need_integer_toolbox = True
 
@@ -65,7 +73,9 @@ class data_types_generator:
         self._set_comparision(compareable, ordered, compare_strategy)
         self._set_template("string_type.h.template", ".h")
         self._set_trace()
+        self._add_serialization_id()
         created_file_location = self._generate()
+        self._add_to_objects_collection(created_file_location)
         self.generated_files.append(created_file_location)
         self.need_string_toolbox = True
 
@@ -75,7 +85,9 @@ class data_types_generator:
         self._set_comparision(compareable, ordered)
         self._set_template("enum_type.h.template", ".h")
         self._set_trace()
+        self._add_serialization_id()
         created_file_location = self._generate()
+        self._add_to_objects_collection(created_file_location)
         self.generated_files.append(created_file_location)
         self._set_template("enum_type.cpp.template", ".cpp")
         self._set_trace()
@@ -89,7 +101,9 @@ class data_types_generator:
         self._set_comparision(compareable, ordered)
         self._set_template("record_type.h.template", ".h")
         self._set_trace()
+        self._add_serialization_id()
         created_file_location = self._generate()
+        self._add_to_objects_collection(created_file_location)
         self.generated_files.append(created_file_location)
         self._set_template("record_type.cpp.template", ".cpp")
         self._set_trace()
@@ -117,7 +131,31 @@ class data_types_generator:
             self._create_library_file("meth_toolbox_serialization_interface.h", "_meth_toolbox_serialization_interface.h.template")
             self._create_library_file("meth_toolbox_serialization_interface.cpp", "_meth_toolbox_serialization_interface.cpp.template")
             self._create_library_file("meth_toolbox_compare_result.h", "_meth_toolbox_compare_result.h.template")
-    
+        if self.is_serialization_id_supported:
+            self.set_namespace("meth toolbox")
+            output_path = self.target_folder.get_name_and_path_relative_to(self.solution_root_folder) + "/meth_tools"
+            self.define_output_directories(output_path, output_path)
+            self.create_enum_type("serialization id", self.serialization_identifiers, default_value = "NoObject", ordered=True)
+            self.generator.define("all_generated_type_headers", [file_name(include_file).get_name_and_path_relative_to(self.output_file_name.get_full_path()) for include_file in self.generated_type_headers])
+            self.generator.define("all_generated_object_ids_and_type_names", self.all_generated_object_ids_and_type_names)
+            self._create_library_file("meth_toolbox_dump_serialized_data.h", "_meth_toolbox_dump_serialized_data.h.template")
+            self._create_library_file("meth_toolbox_dump_serialized_data.cpp", "_meth_toolbox_dump_serialized_data.cpp.template")
+
+    def _add_to_objects_collection(self, file_name):
+        self.generated_type_headers.append(file_name)
+        identifier = self.namespace.CamelCase() + "_" + self.type_name.CamelCase();
+        qualified_class_name = self.namespace.CamelCase() + "::" + self.type_name.CamelCase();
+        self.all_generated_object_ids_and_type_names.append( (identifier, qualified_class_name) )
+
+    def _add_serialization_id(self):
+        serialization_id = self.namespace.CamelCase() + "_" + self.type_name.CamelCase()
+        self.serialization_id = serialization_id
+        self.generator.define("serialization_id", serialization_id)
+        self.serialization_id_value = self.next_serialization_id
+        self.generator.define("serialization_id_value", self.next_serialization_id)
+        self.serialization_identifiers.append(serialization_id)
+        self.next_serialization_id = self.next_serialization_id + 1
+
     def _set_fields(self, fields):
         self.fields = [general_name(field) for field in fields]
         self.generator.define("fields", self.fields)

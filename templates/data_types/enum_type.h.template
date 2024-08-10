@@ -8,10 +8,7 @@ ${#IF export_definition_include}
 ${#END}
 #include <sstream>
 
-${#INCLUDE _serialization_includes.part}
-${#IF ordered}
-#include "${tools_path}meth_toolbox_compare_result.h"
-${#END}
+${#INCLUDE _tools_includes.part}
 
 // -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
 
@@ -53,7 +50,7 @@ ${#INCLUDE _int_ordering_relations.part}
       friend std::ostream& operator<<(std::ostream& out, const ${class_name}& ${field_name})    { out << ${class_name}::names[${field_name}.m_${field_name}]; return out; }
 
       friend MethToolbox::SerializationInterface& operator<<(MethToolbox::SerializationInterface& serializer, const ${class_name}& ${field_name})    { serializer.serializeInteger(reinterpret_cast<const ${class_name}::base_type&>(${field_name}.m_${field_name})); return serializer; }
-      friend MethToolbox::DeserializationInterface& operator>>(MethToolbox::DeserializationInterface& deserializer, ${class_name}& ${field_name})    { deserializer.deserializeInteger(reinterpret_cast<${class_name}::base_type&>(${field_name}.m_${field_name})); return deserializer; }
+      friend MethToolbox::DeserializationInterface& operator>>(MethToolbox::DeserializationInterface& deserializer, ${class_name}& ${field_name})    { deserializer.deserializeInteger(reinterpret_cast<${class_name}::base_type&>(${field_name}.m_${field_name})); if(${field_name}.m_${field_name} > ${class_name}::last) throw MethToolbox::ValueError();  return deserializer; }
 
       std::string toString() const    { std::stringstream buffer; buffer << *this; return buffer.str(); }
       static ${class_name} fromString(const std::string& text);

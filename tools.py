@@ -65,8 +65,8 @@ class file_name:
         file_name = "/".join(file)
         if path:
             file_name = ("../" * len(path)) + file_name
-        else:
-            file_name = "./" + file_name
+        #else:
+        #    file_name = "./" + file_name
         return file_name
 
     def get_full_path(self):

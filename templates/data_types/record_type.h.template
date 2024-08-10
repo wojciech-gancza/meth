@@ -11,9 +11,7 @@ ${#END}
 ${#FOR include_file : include_files}
 #include "${include_file}"
 ${#END}
-${#IF ordered}
-#include "${tools_path}meth_toolbox_compare_result.h"
-${#END}
+${#INCLUDE _tools_includes.part}
 
 // -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
 

@@ -1,0 +1,21 @@
+${#INCLUDE _file_header.part}
+
+#pragma once
+
+${#IF export_definition_include}
+#include "${export_definition_include}"
+
+${#END}
+#include <string>
+
+#include "meth_toolbox_deserialization_interface.h"
+
+namespace MethToolbox
+{
+  class ${#IF export_specifier}${export_specifier} ${#END}DumpSerializedData
+  {
+    public:
+      static std::string toObject(DeserializationInterface& deserializator);
+      static std::string toHex(DeserializationInterface& deserializator, uint16_t length);
+  };
+}

@@ -6,10 +6,7 @@ ${#INCLUDE _file_header.part}
 #include <sstream>
 #include <assert.h>
 
-${#INCLUDE _serialization_includes.part}
-${#IF ordered}
-#include "${tools_path}meth_toolbox_compare_result.h"
-${#END}
+${#INCLUDE _tools_includes.part}
 #include "${tools_path}meth_toolbox_strings.h"
 
 // -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW

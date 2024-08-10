@@ -1,0 +1,57 @@
+${#INCLUDE _file_header.part}
+
+#include <sstream>
+#include <iomanip>
+
+#include "meth_toolbox_dump_serialized_data.h"
+#include "meth_toolbox_serialization_id.h"
+${#FOR header_name : all_generated_type_headers}
+#include "${header_name}"
+${#END}
+
+namespace MethToolbox
+{
+  std::string DumpSerializedData::toObject(DeserializationInterface& deserializator)
+  {
+    SerializationId object_type;
+    deserializator >> object_type;
+
+    std::stringstream output_buffer;
+
+    switch (object_type.getSerializationId())
+    {
+      case MethToolbox::SerializationId::NoObject:
+      {
+        output_buffer << object_type << ": <NO DATA>";
+        break;
+      }
+${#FOR object_id_and_type_name : all_generated_object_ids_and_type_names}
+
+      case MethToolbox::SerializationId::${object_id_and_type_name[0]}:
+      {
+        ${object_id_and_type_name[1]} object;
+        deserializator >> object;
+        output_buffer << object_type << ": " << object;
+        break;
+      }
+${#END}
+    }
+    return output_buffer.str();
+   }
+
+  std::string DumpSerializedData::toHex(DeserializationInterface& deserializator, uint16_t length)
+  {
+    std::stringstream output_buffer;
+
+    const char* separator = "";
+
+    for (uint16_t counter = 0; counter < length; ++counter)
+    {
+      uint8_t byte = deserializator.getByte();
+      output_buffer << separator << std::setfill('0') << std::setw(2) << std::right << std::hex << static_cast<int>(byte);
+      separator = " ";
+    }
+
+    return output_buffer.str();
+  };
+}

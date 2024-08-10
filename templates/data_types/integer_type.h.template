@@ -7,10 +7,7 @@ ${#IF ${range_controll}}
 #include <assert.h>
 ${#END}
 
-${#INCLUDE _serialization_includes.part}
-${#IF ordered}
-#include "${tools_path}meth_toolbox_compare_result.h"
-${#END}
+${#INCLUDE _tools_includes.part}
 
 // -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
 

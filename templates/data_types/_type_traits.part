@@ -1,2 +1,5 @@
       static constexpr bool is_compareable { ${compareable_flag_text} };
       static constexpr bool is_ordered { ${ordered_flag_text} };
+${#IF is_serialization_id_supported}
+      static constexpr MethToolbox::SerializationId::e_SerializationId serialization_id { MethToolbox::SerializationId::${serialization_id} }; // = ${serialization_id_value}
+${#END}
