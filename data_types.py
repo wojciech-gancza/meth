@@ -111,6 +111,23 @@ class data_types_generator:
         self.generated_files.append(created_file_location)
         self.need_record_toolbox = True
 
+    def create_timepoint_type(self, name, format_string, *, compareable=False, ordered=False):
+        self._set_name(name)
+        self._set_comparision(compareable, ordered)
+        self._set_template("timepoint_type.h.template", ".h")
+        self._set_trace()
+        self._add_serialization_id()
+        created_file_location = self._generate()
+        self._add_to_objects_collection(created_file_location)
+        self.generated_files.append(created_file_location)
+        self._set_template("timepoint_type.cpp.template", ".cpp")
+        self._set_trace()
+        code_generator = timepoint_code_generator(self.type_name.lowercase, format_string)
+        self.generator.define("serialization_code",code_generator.get_serialization_code())
+        created_file_location = self._generate()
+        self.generated_files.append(created_file_location)
+        self.need_record_toolbox = True
+
     def add_toolbox_files(self):
         need_common_tools = False
         if self.need_integer_toolbox:
@@ -398,5 +415,46 @@ class cpp_enum:
             return map_by_len, -1
         else:
             return best_map, best_position
+
+class timepoint_code_generator:
+
+    def __init__(self, variable_name, format_string):
+        self.varaible_name = variable_name
+        self.format_string = format_string
+
+    def get_serialization_code(self):
+        code_elements = []
+        format_string = self.format_string
+        while format_string != "":
+            if format_string[0] != '$':
+                for i in range(1, len(format_string)):
+                    if format_string[i] == '$':
+                        code_elements.append("\"" + format_string[:i] + "\"")
+                        format_string = format_string[i:]
+                        break
+            else:
+                time_element_code = format_string[1]
+                output_code = self._get_output_code(time_element_code)
+                code_elements.append(output_code)
+                format_string = format_string[2:]
+        return code_block(code_elements)
+
+    def _get_output_code(self, time_element_code):
+        if time_element_code == 'Y':
+            return "day_date.year()"
+        elif time_element_code == "M":
+            return "std::setw(2) << std::setfill('0') << (unsigned int)(day_date.month())"
+        elif time_element_code == "D":
+            return "std::setw(2) << std::setfill('0') << day_date.day()"
+        elif time_element_code == "h":
+            return "std::setw(2) << std::setfill('0') << day_time.hours().count()"
+        elif time_element_code == "m":
+            return "std::setw(2) << std::setfill('0') << day_time.minutes().count()"
+        elif time_element_code == "s":
+            return "std::setw(2) << std::setfill('0') << day_time.seconds().count()"
+        elif time_element_code == "f":
+            return "std::setw(3) << std::setfill('0') << day_time.subseconds().count()"
+        else:
+            return "\"<?>\"";
 
 # -------------------------------------------------------------------

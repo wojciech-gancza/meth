@@ -45,7 +45,7 @@ ${#INCLUDE _ordering_relations.part}
 ${#IF compareable}
       bool isEqual(const ${class_name}& other) const    { return MethToolbox::Strings::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) == MethToolbox::EQUAL; }
 ${#IF ordered}
-      MethToolbox::CompareResult compareWith(const ${class_name}& other) const    { return MethToolbox::Strings::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}) == 0; }
+      MethToolbox::CompareResult compareWith(const ${class_name}& other) const    { return MethToolbox::Strings::strcmp${compare_strategy}(m_${field_name}, other.m_${field_name}); }
 ${#END}
 
 ${#END}

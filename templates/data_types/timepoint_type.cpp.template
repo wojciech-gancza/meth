@@ -1,0 +1,38 @@
+${#INCLUDE _file_header.part}
+
+#include "${header_file_name}"
+
+#include <iomanip>
+
+// -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
+
+// -^^^ END OF USER DEFINED INCLUDES
+
+namespace ${namespace} 
+{
+  std::ostream& operator<<(std::ostream& out, const ${namespace}::${class_name}& ${field_name})
+  {
+    auto tday = floor<std::chrono::days>(${field_name}.m_${field_name});
+    std::chrono::year_month_day day_date { tday };
+    std::chrono::hh_mm_ss day_time { floor<std::chrono::milliseconds>(${field_name}.m_${field_name} - tday) };
+
+    out << ${serialization_code};
+
+    return out;
+  }
+
+  ${class_name} ${class_name}::fromString(const std::string& text)
+  {
+    ${class_name} time;
+    //
+    //
+    //
+    //
+    //
+    return time;
+  }
+
+  // -vvv YOU CAN PUT ADDITIONAL IMPLEMENTATION PUBLIC METHODS HERE
+
+  // -^^^ YOU CAN PUT ADDITIONAL IMPLEMENTATION PUBLIC METHODS HERE
+} 
