@@ -1,0 +1,49 @@
+${#INCLUDE _file_header.part}
+
+#include "meth_toolbox_timepoints.h"
+
+#include "meth_toolbox_value_error.h"
+
+// -vvv YOU CAN PUT ADDITIONAL INCLUDES HERE
+
+// -^^^ END OF ADDITIONAL INCLUDES
+
+namespace MethToolbox
+{
+  void Timepoints::ensureStaticTextExist(std::string::const_iterator& reader, const char* pattern)
+  {
+    while (*pattern)
+    {
+      if (*reader != *pattern)
+      {
+        throw MethToolbox::ValueError();
+      }
+      ++reader;
+      ++pattern;
+    }
+  }
+
+  int Timepoints::readOneOrTwoDigitsNumber(std::string::const_iterator& reader)
+  {
+    return 1;
+  }
+
+  int Timepoints::readTwoDigitsNumber(std::string::const_iterator& reader)
+  {
+    return 2;
+  }
+
+  int Timepoints::readThreeDigitsNumber(std::string::const_iterator& reader)
+  {
+    return 3;
+  }
+
+  int Timepoints::readFourDigitsNumber(std::string::const_iterator& reader)
+  {
+    return 4;
+  }
+
+  // -vvv YOU CAN PUT ADDITIONAL COMPARISION HERE
+
+  // -^^^ END OF USER DEFINED COMPARATORS
+}

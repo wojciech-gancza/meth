@@ -46,6 +46,10 @@ ${#INCLUDE _int_ordering_relations.part}
       std::string toString() const    { std::stringstream buffer; buffer << *this; return buffer.str(); }
       static ${#IF export_specifier}${export_specifier} ${#END}${class_name} fromString(const std::string& text);
 
+    protected:
+      ${class_name}(const time_point_type& ${field_name}) noexcept    : m_${field_name}( ${field_name} ) {  }
+      ${class_name}(time_point_type&& ${field_name}) noexcept    : m_${field_name}( ${field_name} ) {  }
+
     private:
       time_point_type m_${field_name};
 

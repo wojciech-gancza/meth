@@ -1,0 +1,30 @@
+${#INCLUDE _file_header.part}
+
+#pragma once
+
+${#IF export_definition_include}
+#include "${export_definition_include}"
+
+${#END}
+#include <string>
+
+// -vvv YOU CAN PUT ADDITIONAL INCLUDES HERE
+
+// -^^^ END OF ADDITIONAL INCLUDES
+
+namespace MethToolbox
+{
+  class ${#IF export_specifier}${export_specifier} ${#END}Timepoints
+  {
+    public:
+      static void ensureStaticTextExist(std::string::const_iterator& reader, const char* pattern);
+      static int readOneOrTwoDigitsNumber(std::string::const_iterator& reader);
+      static int readTwoDigitsNumber(std::string::const_iterator& reader);
+      static int readThreeDigitsNumber(std::string::const_iterator& reader);
+      static int readFourDigitsNumber(std::string::const_iterator& reader);
+
+      // -vvv YOU CAN PUT ADDITIONAL COMPARISION HERE
+
+      // -^^^ END OF USER DEFINED COMPARATORS
+  };
+}

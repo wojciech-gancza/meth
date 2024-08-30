@@ -1,6 +1,7 @@
 ${#INCLUDE _file_header.part}
 
 #include "${header_file_name}"
+#include "${tools_path}meth_toolbox_timepoints.h"
 
 #include <iomanip>
 
@@ -23,13 +24,20 @@ namespace ${namespace}
 
   ${class_name} ${class_name}::fromString(const std::string& text)
   {
-    ${class_name} time;
-    //
-    //
-    //
-    //
-    //
-    return time;
+${#FOR statement : string_readers_collection}
+    ${statement}
+${#END}
+
+    std::tm tm = { 
+      /* .tm_sec  = */ ${#IF use_seconds}seconds${#ELSE}0${#END},
+      /* .tm_min  = */ ${#IF use_minutes}minutes${#ELSE}0${#END},
+      /* .tm_hour = */ ${#IF use_hour}hour${#ELSE}0${#END},
+      /* .tm_mday = */ ${#IF use_day}day${#ELSE}0${#END},
+      /* .tm_mon  = */ ${#IF use_month}month${#ELSE}0${#END},
+      /* .tm_year = */ ${#IF use_year}year - 1900${#ELSE}0${#END}
+    };
+    tm.tm_isdst = -1; // Use DST value from local time zone
+    return Timestamp(std::chrono::system_clock::from_time_t(std::mktime(&tm))${#IF use_milliseconds} + std::chrono::milliseconds(milliseconds)${#END});
   }
 
   // -vvv YOU CAN PUT ADDITIONAL IMPLEMENTATION PUBLIC METHODS HERE

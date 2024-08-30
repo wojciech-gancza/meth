@@ -32,6 +32,7 @@ class data_types_generator:
         self.need_string_toolbox = False
         self.need_enum_toolbox = False
         self.need_record_toolbox = False
+        self.need_timepoint_toolbox = False
         self.generator.define("export_specifier", "")
         self.generator.define("export_definition_include", "")
 
@@ -122,11 +123,22 @@ class data_types_generator:
         self.generated_files.append(created_file_location)
         self._set_template("timepoint_type.cpp.template", ".cpp")
         self._set_trace()
-        code_generator = timepoint_code_generator(self.type_name.lowercase, format_string)
-        self.generator.define("serialization_code",code_generator.get_serialization_code())
+        self._set_time_format(format_string)
         created_file_location = self._generate()
         self.generated_files.append(created_file_location)
-        self.need_record_toolbox = True
+        self.need_timepoint_toolbox = True
+
+    def _set_time_format(self, format_string):
+        code_generator = timepoint_code_generator(self.type_name.lowercase(), format_string)
+        self.generator.define("serialization_code", code_generator.get_serialization_code())
+        self.generator.define("string_readers_collection", code_generator.get_string_reader_code())
+        self.generator.define("use_milliseconds", code_generator.use_milliseconds)
+        self.generator.define("use_seconds", code_generator.use_seconds)
+        self.generator.define("use_minutes", code_generator.use_minutes)
+        self.generator.define("use_hour", code_generator.use_hour)
+        self.generator.define("use_day", code_generator.use_day)
+        self.generator.define("use_month", code_generator.use_month)
+        self.generator.define("use_year", code_generator.use_year)
 
     def add_toolbox_files(self):
         need_common_tools = False
@@ -140,6 +152,10 @@ class data_types_generator:
         if self.need_string_toolbox:
             self._create_library_file("meth_toolbox_strings.h", "_meth_toolbox_strings.h.template")
             self._create_library_file("meth_toolbox_strings.cpp", "_meth_toolbox_strings.cpp.template")
+            need_common_tools = True
+        if self.need_timepoint_toolbox:
+            self._create_library_file("meth_toolbox_timepoints.h", "_meth_toolbox_timepoints.h.template")
+            self._create_library_file("meth_toolbox_timepoints.cpp", "_meth_toolbox_timepoints.cpp.template")
             need_common_tools = True
         if need_common_tools:
             self._create_library_file("meth_toolbox_value_error.h", "_meth_toolbox_value_error.h.template")
@@ -419,8 +435,15 @@ class cpp_enum:
 class timepoint_code_generator:
 
     def __init__(self, variable_name, format_string):
-        self.varaible_name = variable_name
+        self.variable_name = variable_name
         self.format_string = format_string
+        self.use_milliseconds = False
+        self.use_seconds = False
+        self.use_minutes = False
+        self.use_hour = False
+        self.use_day = False
+        self.use_month = False
+        self.use_year = False
 
     def get_serialization_code(self):
         code_elements = []
@@ -456,5 +479,83 @@ class timepoint_code_generator:
             return "std::setw(3) << std::setfill('0') << day_time.subseconds().count()"
         else:
             return "\"<?>\"";
+
+    def get_string_reader_code(self):
+        code_elements = [ "std::string::const_iterator reader = text.begin();" ]
+        format_string = self.format_string
+        while format_string != "":
+            if format_string[0] != '$':
+                for i in range(1, len(format_string)):
+                    if format_string[i] == '$':
+                        code_elements.append("MethToolbox::Timepoints::ensureStaticTextExist(reader, \"" + format_string[:i] + "\");")
+                        format_string = format_string[i:]
+                        break
+            else:
+                time_element_code = format_string[1]
+                output_code = self._get_format_code(time_element_code)
+                code_elements = code_elements + output_code
+                format_string = format_string[2:]
+        return code_elements
+
+    def _get_format_code(self, time_element_code):
+        if time_element_code == 'Y':
+            self.use_year = True          
+            return [
+                "int year = MethToolbox::Timepoints::readFourDigitsNumber(reader);",
+                "if (year < 0 || year > 2999)",
+                "{",
+                "  throw MethToolbox::ValueError();",
+                "}" ]
+        elif time_element_code == "M":
+            self.use_month = True
+            return [
+                "int month = MethToolbox::Timepoints::readOneOrTwoDigitsNumber(reader);",
+                "if (month < 0 || month >= 12)",
+                "{",
+                "  throw MethToolbox::ValueError();",
+                "}" ]
+        elif time_element_code == "D":
+            self.use_day = True
+            return  [
+                "int day = MethToolbox::Timepoints::readOneOrTwoDigitsNumber(reader);",
+                "if (day < 0 || day >= 31)",
+                "{",
+                "  throw MethToolbox::ValueError();",
+                "}" ]
+        elif time_element_code == "h":
+            self.use_hour = True
+            return  [
+                "int hour = MethToolbox::Timepoints::readOneOrTwoDigitsNumber(reader);",
+                "if (hour < 0 || hour >= 24)",
+                "{",
+                "  throw MethToolbox::ValueError();",
+                "}" ]
+        elif time_element_code == "m":
+            self.use_minutes = True
+            return  [
+                "int minutes = MethToolbox::Timepoints::readOneOrTwoDigitsNumber(reader);",
+                "if (minutes < 0 || minutes >= 60)",
+                "{",
+                "  throw MethToolbox::ValueError();",
+                "}" ]
+        elif time_element_code == "s":
+            self.use_seconds = True
+            return  [
+                "int seconds = MethToolbox::Timepoints::readOneOrTwoDigitsNumber(reader);",
+                "if (seconds < 0 || seconds >= 60)",
+                "{",
+                "  throw MethToolbox::ValueError();",
+                "}" ]
+        elif time_element_code == "f":
+            self.use_milliseconds = True
+            return  [
+                "int milliseconds = MethToolbox::Timepoints::readOneOrTwoDigitsNumber(reader);",
+                "if (milliseconds < 0 || milliseconds >= 1000)",
+                "{",
+                "  throw MethToolbox::ValueError();",
+                "}" ]
+        else:
+            return  [
+                "// unknown format" ];
 
 # -------------------------------------------------------------------
