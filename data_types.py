@@ -128,6 +128,18 @@ class data_types_generator:
         self.generated_files.append(created_file_location)
         self.need_timepoint_toolbox = True
 
+    def create_alias(self, type_name, namespace):
+        self._set_name(type_name)
+        self._set_external_namespace(namespace)
+        self._set_template("alias_type.h.template", ".h")
+        self._set_trace()
+        created_file_location = self._generate()
+        self.generated_files.append(created_file_location)
+
+    def _set_external_namespace(self, namespace):
+        self.generator.define("external_namespace", general_name(namespace).CamelCase())
+        self.generator.define("include_file", general_name(namespace).lowercase() + "_" + self.type_name.lowercase() + ".h")
+
     def _set_time_format(self, format_string):
         code_generator = timepoint_code_generator(self.type_name.lowercase(), format_string)
         self.generator.define("serialization_code", code_generator.get_serialization_code())

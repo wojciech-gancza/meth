@@ -1,0 +1,18 @@
+${#INCLUDE _file_header.part}
+
+#pragma once
+
+#include "${include_file}"
+
+// -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
+
+// -^^^ END OF USER DEFINED INCLUDES
+
+namespace ${namespace}
+{
+  using ${class_name} = ${external_namespace}::${class_name};
+
+  // -vvv YOU CAN PUT ADDITIONAL DEFINITIONS BELOW
+
+  // -^^^ END OF USER DEFINED ADDITIONAL DEFINITIONS
+}
