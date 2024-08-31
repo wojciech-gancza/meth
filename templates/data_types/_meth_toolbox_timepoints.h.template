@@ -17,11 +17,11 @@ namespace MethToolbox
   class ${#IF export_specifier}${export_specifier} ${#END}Timepoints
   {
     public:
-      static void ensureStaticTextExist(std::string::const_iterator& reader, const char* pattern);
-      static int readOneOrTwoDigitsNumber(std::string::const_iterator& reader);
-      static int readTwoDigitsNumber(std::string::const_iterator& reader);
-      static int readThreeDigitsNumber(std::string::const_iterator& reader);
-      static int readFourDigitsNumber(std::string::const_iterator& reader);
+      static void ensureStaticTextExist(std::string::const_iterator& reader, std::string::const_iterator& limit, const char* pattern);
+      static int readOneOrTwoDigitsNumber(std::string::const_iterator& reader, std::string::const_iterator& limit);
+      static int readTwoDigitsNumber(std::string::const_iterator& reader, std::string::const_iterator& limit);
+      static int readThreeDigitsNumber(std::string::const_iterator& reader, std::string::const_iterator& limit);
+      static int readFourDigitsNumber(std::string::const_iterator& reader, std::string::const_iterator& limit);
 
       // -vvv YOU CAN PUT ADDITIONAL COMPARISION HERE
 

@@ -13,9 +13,9 @@ namespace ${namespace}
 {
   std::ostream& operator<<(std::ostream& out, const ${namespace}::${class_name}& ${field_name})
   {
-    auto tday = floor<std::chrono::days>(${field_name}.m_${field_name});
-    std::chrono::year_month_day day_date { tday };
-    std::chrono::hh_mm_ss day_time { floor<std::chrono::milliseconds>(${field_name}.m_${field_name} - tday) };
+    time_t t = std::chrono::system_clock::to_time_t(timestamp.m_timestamp);
+    std::tm tm;
+    localtime_s(&tm, &t);
 
     out << ${serialization_code};
 
@@ -33,7 +33,7 @@ ${#END}
       /* .tm_min  = */ ${#IF use_minutes}minutes${#ELSE}0${#END},
       /* .tm_hour = */ ${#IF use_hour}hour${#ELSE}0${#END},
       /* .tm_mday = */ ${#IF use_day}day${#ELSE}0${#END},
-      /* .tm_mon  = */ ${#IF use_month}month${#ELSE}0${#END},
+      /* .tm_mon  = */ ${#IF use_month}month - 1${#ELSE}0${#END},
       /* .tm_year = */ ${#IF use_year}year - 1900${#ELSE}0${#END}
     };
     tm.tm_isdst = -1; // Use DST value from local time zone

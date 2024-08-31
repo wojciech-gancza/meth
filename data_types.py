@@ -464,30 +464,33 @@ class timepoint_code_generator:
 
     def _get_output_code(self, time_element_code):
         if time_element_code == 'Y':
-            return "day_date.year()"
+            return "(tm.tm_year + 1900)"
         elif time_element_code == "M":
-            return "std::setw(2) << std::setfill('0') << (unsigned int)(day_date.month())"
+            return "std::setw(2) << std::setfill('0') << (tm.tm_mon + 1)"
         elif time_element_code == "D":
-            return "std::setw(2) << std::setfill('0') << day_date.day()"
+            return "std::setw(2) << std::setfill('0') << tm.tm_mday"
         elif time_element_code == "h":
-            return "std::setw(2) << std::setfill('0') << day_time.hours().count()"
+            return "std::setw(2) << std::setfill('0') << tm.tm_hour"
         elif time_element_code == "m":
-            return "std::setw(2) << std::setfill('0') << day_time.minutes().count()"
+            return "std::setw(2) << std::setfill('0') << tm.tm_min"
         elif time_element_code == "s":
-            return "std::setw(2) << std::setfill('0') << day_time.seconds().count()"
+            return "std::setw(2) << std::setfill('0') << tm.tm_sec"
         elif time_element_code == "f":
-            return "std::setw(3) << std::setfill('0') << day_time.subseconds().count()"
+            return "std::setw(3) << (floor<std::chrono::milliseconds>(timestamp.m_timestamp - floor<std::chrono::seconds>(timestamp.m_timestamp)).count())"
         else:
             return "\"<?>\"";
 
     def get_string_reader_code(self):
-        code_elements = [ "std::string::const_iterator reader = text.begin();" ]
+        code_elements = [ 
+                "std::string::const_iterator reader = text.begin();",
+                "std::string::const_iterator limit = text.end();",
+                "" ]
         format_string = self.format_string
         while format_string != "":
             if format_string[0] != '$':
                 for i in range(1, len(format_string)):
                     if format_string[i] == '$':
-                        code_elements.append("MethToolbox::Timepoints::ensureStaticTextExist(reader, \"" + format_string[:i] + "\");")
+                        code_elements.append("MethToolbox::Timepoints::ensureStaticTextExist(reader, limit, \"" + format_string[:i] + "\");")
                         format_string = format_string[i:]
                         break
             else:
@@ -495,13 +498,17 @@ class timepoint_code_generator:
                 output_code = self._get_format_code(time_element_code)
                 code_elements = code_elements + output_code
                 format_string = format_string[2:]
-        return code_elements
+        return code_elements + [
+                "if (reader != limit)",
+                "{",
+                "  throw MethToolbox::ValueError();",
+                "}" ]
 
     def _get_format_code(self, time_element_code):
         if time_element_code == 'Y':
             self.use_year = True          
             return [
-                "int year = MethToolbox::Timepoints::readFourDigitsNumber(reader);",
+                "int year = MethToolbox::Timepoints::readFourDigitsNumber(reader, limit);",
                 "if (year < 0 || year > 2999)",
                 "{",
                 "  throw MethToolbox::ValueError();",
@@ -509,7 +516,7 @@ class timepoint_code_generator:
         elif time_element_code == "M":
             self.use_month = True
             return [
-                "int month = MethToolbox::Timepoints::readOneOrTwoDigitsNumber(reader);",
+                "int month = MethToolbox::Timepoints::readOneOrTwoDigitsNumber(reader, limit);",
                 "if (month < 0 || month >= 12)",
                 "{",
                 "  throw MethToolbox::ValueError();",
@@ -517,7 +524,7 @@ class timepoint_code_generator:
         elif time_element_code == "D":
             self.use_day = True
             return  [
-                "int day = MethToolbox::Timepoints::readOneOrTwoDigitsNumber(reader);",
+                "int day = MethToolbox::Timepoints::readOneOrTwoDigitsNumber(reader, limit);",
                 "if (day < 0 || day >= 31)",
                 "{",
                 "  throw MethToolbox::ValueError();",
@@ -525,7 +532,7 @@ class timepoint_code_generator:
         elif time_element_code == "h":
             self.use_hour = True
             return  [
-                "int hour = MethToolbox::Timepoints::readOneOrTwoDigitsNumber(reader);",
+                "int hour = MethToolbox::Timepoints::readOneOrTwoDigitsNumber(reader, limit);",
                 "if (hour < 0 || hour >= 24)",
                 "{",
                 "  throw MethToolbox::ValueError();",
@@ -533,7 +540,7 @@ class timepoint_code_generator:
         elif time_element_code == "m":
             self.use_minutes = True
             return  [
-                "int minutes = MethToolbox::Timepoints::readOneOrTwoDigitsNumber(reader);",
+                "int minutes = MethToolbox::Timepoints::readOneOrTwoDigitsNumber(reader, limit);",
                 "if (minutes < 0 || minutes >= 60)",
                 "{",
                 "  throw MethToolbox::ValueError();",
@@ -541,7 +548,7 @@ class timepoint_code_generator:
         elif time_element_code == "s":
             self.use_seconds = True
             return  [
-                "int seconds = MethToolbox::Timepoints::readOneOrTwoDigitsNumber(reader);",
+                "int seconds = MethToolbox::Timepoints::readOneOrTwoDigitsNumber(reader, limit);",
                 "if (seconds < 0 || seconds >= 60)",
                 "{",
                 "  throw MethToolbox::ValueError();",
@@ -549,7 +556,7 @@ class timepoint_code_generator:
         elif time_element_code == "f":
             self.use_milliseconds = True
             return  [
-                "int milliseconds = MethToolbox::Timepoints::readOneOrTwoDigitsNumber(reader);",
+                "int milliseconds = MethToolbox::Timepoints::readThreeDigitsNumber(reader, limit);",
                 "if (milliseconds < 0 || milliseconds >= 1000)",
                 "{",
                 "  throw MethToolbox::ValueError();",

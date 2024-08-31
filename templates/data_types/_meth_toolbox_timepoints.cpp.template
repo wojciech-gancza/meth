@@ -10,11 +10,11 @@ ${#INCLUDE _file_header.part}
 
 namespace MethToolbox
 {
-  void Timepoints::ensureStaticTextExist(std::string::const_iterator& reader, const char* pattern)
+  void Timepoints::ensureStaticTextExist(std::string::const_iterator& reader, std::string::const_iterator& limit, const char* pattern)
   {
     while (*pattern)
     {
-      if (*reader != *pattern)
+      if (reader == limit || *reader != *pattern)
       {
         throw MethToolbox::ValueError();
       }
@@ -23,24 +23,112 @@ namespace MethToolbox
     }
   }
 
-  int Timepoints::readOneOrTwoDigitsNumber(std::string::const_iterator& reader)
+  int Timepoints::readOneOrTwoDigitsNumber(std::string::const_iterator& reader, std::string::const_iterator& limit)
   {
-    return 1;
+    if (reader == limit)
+    {
+      throw MethToolbox::ValueError();
+    }
+    char digit = *reader++;
+    if (!isdigit(digit))
+    {
+      throw MethToolbox::ValueError();
+    }
+    int value = digit - '0';
+    if (reader != limit)
+    {
+      digit = *reader;
+      if (isdigit(digit))
+      {
+        value = 10 * value + digit - '0';
+        ++reader;
+      }
+    }
+    return value;
   }
 
-  int Timepoints::readTwoDigitsNumber(std::string::const_iterator& reader)
+  int Timepoints::readTwoDigitsNumber(std::string::const_iterator& reader, std::string::const_iterator& limit)
   {
-    return 2;
+    if (reader == limit)
+    {
+      throw MethToolbox::ValueError();
+    }
+    char digit = *reader++;
+    if (!isdigit(digit) || reader == limit)
+    {
+      throw MethToolbox::ValueError();
+    }
+    int value = digit - '0';
+    digit = *reader++;
+    if (!isdigit(digit))
+    {
+      throw MethToolbox::ValueError();
+    }
+    value = 10 * value + digit - '0';
+
+    return value;
   }
 
-  int Timepoints::readThreeDigitsNumber(std::string::const_iterator& reader)
+  int Timepoints::readThreeDigitsNumber(std::string::const_iterator& reader, std::string::const_iterator& limit)
   {
-    return 3;
+    if (reader == limit)
+    {
+      throw MethToolbox::ValueError();
+    }
+    char digit = *reader++;
+    if (!isdigit(digit) || reader == limit)
+    {
+      throw MethToolbox::ValueError();
+    }
+    int value = digit - '0';
+    digit = *reader++;
+    if (!isdigit(digit) || reader == limit)
+    {
+      throw MethToolbox::ValueError();
+    }
+    value = 10 * value + digit - '0';
+    digit = *reader++;
+    if (!isdigit(digit))
+    {
+      throw MethToolbox::ValueError();
+    }
+    value = 10 * value + digit - '0';
+
+    return value;
   }
 
-  int Timepoints::readFourDigitsNumber(std::string::const_iterator& reader)
+  int Timepoints::readFourDigitsNumber(std::string::const_iterator& reader, std::string::const_iterator& limit)
   {
-    return 4;
+    if (reader == limit)
+    {
+      throw MethToolbox::ValueError();
+    }
+    char digit = *reader++;
+    if (!isdigit(digit) || reader == limit)
+    {
+      throw MethToolbox::ValueError();
+    }
+    int value = digit - '0';
+    digit = *reader++;
+    if (!isdigit(digit) || reader == limit)
+    {
+      throw MethToolbox::ValueError();
+    }
+    value = 10 * value + digit - '0';
+    digit = *reader++;
+    if (!isdigit(digit) || reader == limit)
+    {
+      throw MethToolbox::ValueError();
+    }
+    value = 10 * value + digit - '0';
+    digit = *reader++;
+    if (!isdigit(digit))
+    {
+      throw MethToolbox::ValueError();
+    }
+    value = 10 * value + digit - '0';
+
+    return value;
   }
 
   // -vvv YOU CAN PUT ADDITIONAL COMPARISION HERE
