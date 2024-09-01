@@ -27,6 +27,9 @@ namespace ${namespace}
     public:
 ${#INCLUDE _type_traits.part}
 
+      typedef std::unique_ptr<${class_name}> Owner;
+      typedef ${class_name}& Reference;
+
     public:
       ${class_name}() = default;
       ${class_name}(const ${class_name}& ${field_name});
