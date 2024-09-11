@@ -1,0 +1,87 @@
+${#INCLUDE _file_header.part}
+
+#include "${header_file_name}"
+#include "${element_header_file_name}"
+
+// -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
+
+// -^^^ END OF USER DEFINED INCLUDES
+
+namespace ${namespace} 
+{
+  ${element_class_name}& ${class_name}::new${element_class_name}()
+  {
+    m_${field_name}.push_back( ${element_class_name}() );
+    return *m_${field_name}.rbegin();
+  }
+
+  ${element_class_name}& ${class_name}::add${element_class_name}(const ${element_class_name}& element)
+  {
+    m_${field_name}.push_back( element );
+    return *m_${field_name}.rbegin();
+  }
+
+  ${element_class_name}& ${class_name}::add${element_class_name}(${element_class_name}&& element)
+  {
+    m_${field_name}.push_back( element );
+    return *m_${field_name}.rbegin();
+  }
+
+  std::ostream& operator<<(std::ostream& out, const ${class_name}& object)
+  {
+    out << "[ ";
+    std::vector<${element_class_name}>::const_iterator element = object.m_${field_name}.begin();
+    std::vector<${element_class_name}>::const_iterator end = object.m_${field_name}.end();
+    if (element != end)
+    {
+      out << *element++;
+      while( element != end)
+      {
+        out << ", " << *element++;
+      }
+    }
+    out << " ]";
+    return out;
+  }
+    
+  MethToolbox::SerializationInterface& operator<<(MethToolbox::SerializationInterface& serializer, const ${class_name}& object)
+  {
+    ${size_type} size = object.get${class_name}Size();
+    serializer.serializeInteger(size);
+    for (${class_name}::SizeType index = 0; index < size; ++index)
+    {
+      serializer << object.get${element_class_name}(index);
+    }
+    return serializer;
+  }
+
+  MethToolbox::DeserializationInterface& operator>>(MethToolbox::DeserializationInterface& deserializer, ${class_name}& object)
+  {
+    ${size_type} size = 0;
+    deserializer.deserializeInteger(size);
+    object.clear${class_name}();
+    for (${class_name}::SizeType index = 0; index < size; ++index)
+    {
+      deserializer >> object.new${element_class_name}();
+    }
+    return deserializer;
+  }
+
+${#IF compareable}
+  bool ${class_name}::isEqual(const ${class_name}& other) const
+  {
+    return true;
+  }
+
+${#IF ordered}
+  MethToolbox::CompareResult ${class_name}::compareWith(const ${class_name}& other) const
+  {
+    return MethToolbox::EQUAL;
+  }
+
+${#END}
+${#END}
+  // -vvv YOU CAN PUT ADDITIONAL IMPLEMENTATION PUBLIC METHODS HERE
+
+  // -^^^ YOU CAN PUT ADDITIONAL IMPLEMENTATION PUBLIC METHODS HERE
+}

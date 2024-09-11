@@ -33,6 +33,7 @@ class data_types_generator:
         self.need_enum_toolbox = False
         self.need_record_toolbox = False
         self.need_timepoint_toolbox = False
+        self.need_collection_toolbox = False
         self.generator.define("export_specifier", "")
         self.generator.define("export_definition_include", "")
 
@@ -136,21 +137,22 @@ class data_types_generator:
         created_file_location = self._generate()
         self.generated_files.append(created_file_location)
 
-    def _set_external_namespace(self, namespace):
-        self.generator.define("external_namespace", general_name(namespace).CamelCase())
-        self.generator.define("include_file", general_name(namespace).lowercase() + "_" + self.type_name.lowercase() + ".h")
-
-    def _set_time_format(self, format_string):
-        code_generator = timepoint_code_generator(self.type_name.lowercase(), format_string)
-        self.generator.define("serialization_code", code_generator.get_serialization_code())
-        self.generator.define("string_readers_collection", code_generator.get_string_reader_code())
-        self.generator.define("use_milliseconds", code_generator.use_milliseconds)
-        self.generator.define("use_seconds", code_generator.use_seconds)
-        self.generator.define("use_minutes", code_generator.use_minutes)
-        self.generator.define("use_hour", code_generator.use_hour)
-        self.generator.define("use_day", code_generator.use_day)
-        self.generator.define("use_month", code_generator.use_month)
-        self.generator.define("use_year", code_generator.use_year)
+    def create_collection_type(self, type_name, element_type, compareable=False, ordered=False, size_type=16, max_size=None):
+        self._set_name(type_name)
+        self._set_element_type(element_type)
+        self._set_comparision(compareable, ordered)
+        self._set_template("collection_type.h.template", ".h")
+        self._set_collection_size(size_type, max_size)
+        self._set_trace()
+        self._add_serialization_id()
+        created_file_location = self._generate()
+        self._add_to_objects_collection(created_file_location)
+        self.generated_files.append(created_file_location)
+        self._set_template("collection_type.cpp.template", ".cpp")
+        self._set_trace()
+        created_file_location = self._generate()
+        self.generated_files.append(created_file_location)
+        self.need_collection_toolbox = True
 
     def add_toolbox_files(self):
         need_common_tools = False
@@ -169,6 +171,8 @@ class data_types_generator:
             self._create_library_file("meth_toolbox_timepoints.h", "_meth_toolbox_timepoints.h.template")
             self._create_library_file("meth_toolbox_timepoints.cpp", "_meth_toolbox_timepoints.cpp.template")
             need_common_tools = True
+        if self.need_collection_toolbox:
+             self.need_common_tools = True
         if need_common_tools:
             self._create_library_file("meth_toolbox_value_error.h", "_meth_toolbox_value_error.h.template")
             self._create_library_file("meth_toolbox_deserialization_interface.h", "_meth_toolbox_deserialization_interface.h.template")
@@ -185,6 +189,33 @@ class data_types_generator:
             self.generator.define("all_generated_object_ids_and_type_names", self.all_generated_object_ids_and_type_names)
             self._create_library_file("meth_toolbox_dump_serialized_data.h", "_meth_toolbox_dump_serialized_data.h.template")
             self._create_library_file("meth_toolbox_dump_serialized_data.cpp", "_meth_toolbox_dump_serialized_data.cpp.template")
+
+    def _set_collection_size(self, size_type, max_size):
+        self.generator.define("size_type", "uint" + str(size_type) + "_t")
+        self.generator.define("max_size", max_size)
+
+    def _set_element_type(self, element_type):
+        self.element_type_name = general_name(element_type)
+        self.generator.define("element_class_name",self.element_type_name.CamelCase())
+        self.generator.define("element_field_name",self.element_type_name.lowercase())
+        self.element_header_file_name = self.namespace.lowercase() + "_" + self.element_type_name.lowercase() + ".h"
+        self.generator.define("element_header_file_name", self.element_header_file_name)
+
+    def _set_external_namespace(self, namespace):
+        self.generator.define("external_namespace", general_name(namespace).CamelCase())
+        self.generator.define("include_file", general_name(namespace).lowercase() + "_" + self.type_name.lowercase() + ".h")
+
+    def _set_time_format(self, format_string):
+        code_generator = timepoint_code_generator(self.type_name.lowercase(), format_string)
+        self.generator.define("serialization_code", code_generator.get_serialization_code())
+        self.generator.define("string_readers_collection", code_generator.get_string_reader_code())
+        self.generator.define("use_milliseconds", code_generator.use_milliseconds)
+        self.generator.define("use_seconds", code_generator.use_seconds)
+        self.generator.define("use_minutes", code_generator.use_minutes)
+        self.generator.define("use_hour", code_generator.use_hour)
+        self.generator.define("use_day", code_generator.use_day)
+        self.generator.define("use_month", code_generator.use_month)
+        self.generator.define("use_year", code_generator.use_year)
 
     def _add_to_objects_collection(self, file_name):
         self.generated_type_headers.append(file_name)

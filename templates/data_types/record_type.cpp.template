@@ -30,13 +30,11 @@ namespace ${namespace}
 
   std::ostream& operator<<(std::ostream& out, const ${class_name}& object) 
   {
-    out << "{ ";
-    const char* separator = "";
+    out << "{ "
 ${#FOR field : fields}
-    out << separator << "${field.lowercase()}: " << static_cast<const ${ field.CamelCase() }&>(object);
-    separator = ", ";
+        << "${#IF field!=fields[0]}, ${#END}${field.lowercase()}: " << static_cast<const ${ field.CamelCase() }&>(object)
 ${#END}
-    out << " }";
+        << " }";
     return out;
   }
     
