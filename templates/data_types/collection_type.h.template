@@ -50,6 +50,26 @@ ${#END}
 
       void clear${class_name}()    { m_${field_name}.clear(); }
 
+      ${#IF export_specifier}${export_specifier} ${#END}void remove${element_class_name}(SizeType index);
+      template <class KEY> SizeType removeFrom${class_name}(KEY key)
+      {
+        SizeType erased_count = 0;
+        SizeType index = 0;
+        while(index < get${class_name}Size())
+        {
+          if (key == m_nodes[index])
+          {
+            remove${element_class_name}(index);
+            ++erased_count;
+          }
+          else
+          {
+            ++index;
+          }
+        }
+        return erased_count;
+      }
+
       ${class_name}& operator=(const ${class_name}& ${field_name}) noexcept    { setFrom(${field_name}); return *this; };
       ${class_name}& operator=(${class_name}&& ${field_name}) noexcept    { setFrom(${field_name}); return *this; };
 

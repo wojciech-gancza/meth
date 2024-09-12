@@ -2,6 +2,7 @@ ${#INCLUDE _file_header.part}
 
 #include "${header_file_name}"
 #include "${element_header_file_name}"
+#include "${tools_path}meth_toolbox_value_error.h"
 
 // -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
 
@@ -11,20 +12,43 @@ namespace ${namespace}
 {
   ${element_class_name}& ${class_name}::new${element_class_name}()
   {
+${#IF max_size}
+    if (${element_class_name}::max_size <= get${class_name}Size())
+    {
+      throw MethToolbox::ValueError();
+    }
+${#END}
     m_${field_name}.push_back( ${element_class_name}() );
     return *m_${field_name}.rbegin();
   }
 
   ${element_class_name}& ${class_name}::add${element_class_name}(const ${element_class_name}& element)
   {
+${#IF max_size}
+    if (${element_class_name}::max_size <= get${class_name}Size())
+    {
+      throw MethToolbox::ValueError();
+    }
+${#END}
     m_${field_name}.push_back( element );
     return *m_${field_name}.rbegin();
   }
 
   ${element_class_name}& ${class_name}::add${element_class_name}(${element_class_name}&& element)
   {
+${#IF max_size}
+    if (${element_class_name}::max_size <= get${class_name}Size())
+    {
+      throw MethToolbox::ValueError();
+    }
+${#END}
     m_${field_name}.push_back( element );
     return *m_${field_name}.rbegin();
+  }
+
+  void ${class_name}::remove${element_class_name}(SizeType index)
+  { 
+    m_${field_name}.erase(m_${field_name}.begin() + index); 
   }
 
   std::ostream& operator<<(std::ostream& out, const ${class_name}& object)
@@ -70,13 +94,52 @@ namespace ${namespace}
 ${#IF compareable}
   bool ${class_name}::isEqual(const ${class_name}& other) const
   {
-    return true;
+    std::vector<${element_class_name}>::const_iterator first_array_element = m_${field_name}.begin();
+    std::vector<${element_class_name}>::const_iterator first_limit = m_${field_name}.end();
+    std::vector<${element_class_name}>::const_iterator second_array_element = other.m_${field_name}.begin();
+    std::vector<${element_class_name}>::const_iterator second_limit = other.m_${field_name}.end();
+    while(first_array_element != first_limit && second_array_element != second_limit)
+    {
+      if (*first_array_element++ != *second_array_element++)
+      {
+        return false;
+      }
+    }
+    return first_array_element == first_limit && second_array_element == second_limit;
   }
 
 ${#IF ordered}
   MethToolbox::CompareResult ${class_name}::compareWith(const ${class_name}& other) const
   {
-    return MethToolbox::EQUAL;
+    std::vector<${element_class_name}>::const_iterator first_array_element = m_${field_name}.begin();
+    std::vector<${element_class_name}>::const_iterator first_limit = m_${field_name}.end();
+    std::vector<${element_class_name}>::const_iterator second_array_element = other.m_${field_name}.begin();
+    std::vector<${element_class_name}>::const_iterator second_limit = other.m_${field_name}.end();
+    while(first_array_element != first_limit && second_array_element != second_limit)
+    {
+      MethToolbox::CompareResult compare_result = first_array_element->compareWith(*second_array_element);
+      if (compare_result != MethToolbox::EQUAL)
+      {
+        return compare_result;
+      }
+      ++first_array_element;
+      ++second_array_element;
+    }
+    if ( first_array_element == first_limit )
+    {
+      if ( second_array_element == second_limit )
+      {
+        return MethToolbox::EQUAL;
+      }
+      else
+      {
+        return MethToolbox::LESS;
+      }
+    }
+    else
+    {
+      return MethToolbox::GREATER;
+    }
   }
 
 ${#END}
