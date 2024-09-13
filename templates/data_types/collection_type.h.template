@@ -93,6 +93,10 @@ ${#END}
 
       // -^^^ YOU CAN PUT ADDITIONAL PUBLIC METHODS HERE
 
+      ${#INCLUDE _collection_search.part "resultset_name":"SearchResult", "is_result_const":False }
+
+      ${#INCLUDE _collection_search.part "resultset_name":"SearchResultConst", "is_result_const":True }
+
       class Iterator;
       class ConstIterator;
       class ReverseIterator;

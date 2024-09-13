@@ -1,0 +1,34 @@
+class ${resultset_name}
+{
+  public:
+    ${resultset_name}() = default;
+    ${resultset_name}(const ${resultset_name}& other) = default;
+    ${resultset_name}(${resultset_name}&& other) = default;
+    ${resultset_name}& operator=(const ${resultset_name}& other) = default;
+    ${resultset_name}& operator=(${resultset_name}&& other) = default;
+
+    void append(${#IF is_result_const}const ${#END}${element_class_name}& ${element_field_name})    { m_found_${field_name}.push_back(&${element_field_name}); }
+    void append(const ${resultset_name}& ${field_name})    { for (auto i = ${field_name}.m_found_${field_name}.begin(); i != ${field_name}.m_found_${field_name}.end(); ++i) m_found_${field_name}.push_back(*i); }
+    void append(${#IF is_result_const}const ${#END}${class_name}& ${field_name})    { for (auto i = ${field_name}.m_${field_name}.begin(); i != ${field_name}.m_${field_name}.end(); ++i) { m_found_${field_name}.push_back(&(*i)); } }
+
+    ${#IF is_result_const}${#ELSE}${element_class_name}& get${element_class_name}(SizeType index)    { return *(m_found_${field_name}[index]); }
+    ${#END}const ${element_class_name}& get${element_class_name}(SizeType index) const    { return *(m_found_${field_name}[index]); }
+
+    SizeType get${class_name}Size() const    { return static_cast<SizeType>(m_found_${field_name}.size()); }
+
+  private:
+    std::vector<${#IF is_result_const}const ${#END}${element_class_name}*> m_found_${field_name};
+};
+
+template <class KEY> ${resultset_name} search${class_name}(const KEY& key)${#IF is_result_const} const${#END}
+{
+  ${resultset_name} found_${field_name};
+  for (auto i = m_${field_name}.begin(); i != m_${field_name}.end(); ++i)
+  {
+    if (*i == key)
+    {
+      found_${field_name}.append(*i);
+    }
+  }
+  return found_${field_name};
+}
