@@ -24,6 +24,7 @@ namespace ${namespace}
   {
     public:
 ${#INCLUDE _type_traits.part}
+      typedef ${element_class_name} ElementType;
       typedef ${size_type} SizeType;
 ${#IF max_size}
       static constexpr SizeType max_size = ${max_size};
@@ -91,6 +92,32 @@ ${#END}
       // -vvv YOU CAN PUT ADDITIONAL PUBLIC METHODS HERE
 
       // -^^^ YOU CAN PUT ADDITIONAL PUBLIC METHODS HERE
+
+      class Iterator;
+      class ConstIterator;
+      class ReverseIterator;
+      class ConstReverseIterator;
+
+      Iterator get${class_name}Begin()    { return Iterator(*this, 0); }
+      Iterator get${class_name}End()    { return Iterator(*this, get${class_name}Size()); }
+      ConstIterator get${class_name}Begin() const    { return ConstIterator(*this, 0); }
+      ConstIterator get${class_name}End() const    { return ConstIterator(*this, get${class_name}Size()); }
+      ConstIterator get${class_name}CBegin() const    { return ConstIterator(*this, 0); }
+      ConstIterator get${class_name}CEnd() const    { return ConstIterator(*this, get${class_name}Size()); }
+      ReverseIterator get${class_name}RBegin()    { return ReverseIterator(*this, get${class_name}Size() - 1); }
+      ReverseIterator get${class_name}REnd()    { return ReverseIterator(*this, SizeType(-1)); }
+      ConstReverseIterator get${class_name}RBegin() const    { return ConstReverseIterator(*this, get${class_name}Size() - 1); }
+      ConstReverseIterator get${class_name}REnd() const    { return ConstReverseIterator(*this, SizeType(-1)); }
+      ConstReverseIterator get${class_name}CRBegin() const    { return ConstReverseIterator(*this, get${class_name}Size() - 1); }
+      ConstReverseIterator get${class_name}CREnd() const    { return ConstReverseIterator(*this, SizeType(-1)); }
+
+      ${#INCLUDE _collection_iterator.part "iterator_name":"Iterator", "iterator_collection_type":"${class_name}", "iterator_item_type":"${element_class_name}", "inc":"+", "dec":"-", "le":"<", "gt":">", "corrected_position":"m_position", "other_corrected_position":"other.m_position" }
+
+      ${#INCLUDE _collection_iterator.part "iterator_name":"ReverseIterator", "iterator_collection_type":"${class_name}", "iterator_item_type":"${element_class_name}", "inc":"-", "dec":"+", "le":">", "gt":"<", "corrected_position":"(m_position + 1)", "other_corrected_position":"(other.m_position + 1)" }
+
+      ${#INCLUDE _collection_iterator.part "iterator_name":"ConstIterator", "iterator_collection_type":"const ${class_name}", "iterator_item_type":"const ${element_class_name}", "inc":"+", "dec":"-", "le":"<", "gt":">", "corrected_position":"m_position", "other_corrected_position":"other.m_position" }
+
+      ${#INCLUDE _collection_iterator.part "iterator_name":"ConstReverseIterator", "iterator_collection_type":"const ${class_name}", "iterator_item_type":"const ${element_class_name}", "inc":"-", "dec":"+", "le":">", "gt":"<", "corrected_position":"(m_position + 1)", "other_corrected_position":"(other.m_position + 1)" }
 
     private:
       std::vector<${element_class_name}> m_${field_name};

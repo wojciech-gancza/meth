@@ -1,0 +1,33 @@
+class ${iterator_name}
+{
+  public:
+    ${iterator_name}(${iterator_collection_type}& collection, SizeType position)    : m_collection(collection), m_position(position) {  }
+    ${iterator_name}(const ${iterator_name}& iterator) = default;
+    ${iterator_name}(${iterator_name}&& iterator) = default;
+    ${iterator_name}& operator=(const ${iterator_name}& iterator) = default;
+    ${iterator_name}& operator=(${iterator_name}&& iterator) = default;
+
+    ${iterator_item_type}& operator*()    { return m_collection.get${element_class_name}(m_position); }
+    ${iterator_item_type}* operator->()    { return &m_collection.get${element_class_name}(m_position); }
+
+    ${iterator_name}& operator++()    { ${inc}${inc}m_position; return *this; }
+    ${iterator_name}& operator--()    { ${dec}${dec}m_position; return *this; }
+    ${iterator_name} operator++(int)    { ${iterator_name} current = *this; ${inc}${inc}m_position; return current; }
+    ${iterator_name} operator--(int)    { ${iterator_name} current = *this; ${dec}${dec}m_position; return current; }
+
+    ${iterator_name}& operator+=(int displacement)    { m_position = static_cast<SizeType>(m_position ${inc} displacement); }
+    ${iterator_name}& operator-=(int displacement)    { m_position = static_cast<SizeType>(m_position ${dec} displacement); }
+    friend ${iterator_name} operator+(const ${iterator_name}& i, int displacement)    { return ${iterator_name}(i.m_collection, static_cast<SizeType>(i.m_position ${inc} displacement)); }
+    friend ${iterator_name} operator-(const ${iterator_name}& i, int displacement)    { return ${iterator_name}(i.m_collection, static_cast<SizeType>(i.m_position ${dec} displacement)); }
+
+    bool operator==(const ${iterator_name}& other) const    { assert(&m_collection == &other.m_collection); return m_position == other.m_position; }
+    bool operator!=(const ${iterator_name}& other) const    { assert(&m_collection == &other.m_collection); return m_position != other.m_position; }
+    bool operator>(const ${iterator_name}& other) const    { assert(&m_collection == &other.m_collection); return ${corrected_position} ${gt} ${other_corrected_position}; }
+    bool operator<(const ${iterator_name}& other) const    { assert(&m_collection == &other.m_collection); return ${corrected_position} ${le} ${other_corrected_position}; }
+    bool operator>=(const ${iterator_name}& other) const    { assert(&m_collection == &other.m_collection); return ${corrected_position} ${gt}= ${other_corrected_position}; }
+    bool operator<=(const ${iterator_name}& other) const    { assert(&m_collection == &other.m_collection); return ${corrected_position} ${le}= ${other_corrected_position}; }
+
+  public:
+    ${iterator_collection_type}& m_collection;
+    SizeType m_position;
+};
