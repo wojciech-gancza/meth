@@ -8,6 +8,7 @@ ${#IF export_definition_include}
 ${#END}
 #include <vector>
 #include <assert.h>
+#include <memory>
 
 ${#INCLUDE _tools_includes.part}
 
@@ -110,3 +111,7 @@ ${#END}
 } 
 
 #include "${element_header_file_name}"
+
+namespace ${namespace} 
+{
+}

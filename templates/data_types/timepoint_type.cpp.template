@@ -14,8 +14,8 @@ namespace ${namespace}
   std::ostream& operator<<(std::ostream& out, const ${namespace}::${class_name}& ${field_name})
   {
     time_t t = std::chrono::system_clock::to_time_t(timestamp.m_timestamp);
-    std::tm tm;
-    localtime_s(&tm, &t);
+    #pragma warning(suppress : 4996)
+    std::tm* tm = localtime(&t);
 
     out << ${serialization_code};
 

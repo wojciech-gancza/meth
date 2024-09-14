@@ -143,6 +143,22 @@ ${#IF ordered}
 
 ${#END}
 ${#END}
+  void ${class_name}::SearchResult::append(${class_name}& ${field_name})    
+  { 
+    for (auto i = ${field_name}.m_${field_name}.begin(); i != ${field_name}.m_${field_name}.end(); ++i) 
+    { 
+      m_found_${field_name}.push_back(&(*i)); 
+    } 
+  }
+
+  void ${class_name}::SearchResultConst::append(const ${class_name}& ${field_name})    
+  { 
+    for (auto i = ${field_name}.m_${field_name}.begin(); i != ${field_name}.m_${field_name}.end(); ++i) 
+    { 
+      m_found_${field_name}.push_back(&(*i)); 
+    } 
+  }
+
   // -vvv YOU CAN PUT ADDITIONAL IMPLEMENTATION PUBLIC METHODS HERE
 
   // -^^^ YOU CAN PUT ADDITIONAL IMPLEMENTATION PUBLIC METHODS HERE

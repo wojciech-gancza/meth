@@ -507,17 +507,17 @@ class timepoint_code_generator:
 
     def _get_output_code(self, time_element_code):
         if time_element_code == 'Y':
-            return "(tm.tm_year + 1900)"
+            return "(tm->tm_year + 1900)"
         elif time_element_code == "M":
-            return "std::setw(2) << std::setfill('0') << (tm.tm_mon + 1)"
+            return "std::setw(2) << std::setfill('0') << (tm->tm_mon + 1)"
         elif time_element_code == "D":
-            return "std::setw(2) << std::setfill('0') << tm.tm_mday"
+            return "std::setw(2) << std::setfill('0') << tm->tm_mday"
         elif time_element_code == "h":
-            return "std::setw(2) << std::setfill('0') << tm.tm_hour"
+            return "std::setw(2) << std::setfill('0') << tm->tm_hour"
         elif time_element_code == "m":
-            return "std::setw(2) << std::setfill('0') << tm.tm_min"
+            return "std::setw(2) << std::setfill('0') << tm->tm_min"
         elif time_element_code == "s":
-            return "std::setw(2) << std::setfill('0') << tm.tm_sec"
+            return "std::setw(2) << std::setfill('0') << tm->tm_sec"
         elif time_element_code == "f":
             return "std::setw(3) << (floor<std::chrono::milliseconds>(timestamp.m_timestamp - floor<std::chrono::seconds>(timestamp.m_timestamp)).count())"
         else:

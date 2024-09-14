@@ -9,7 +9,7 @@ class ${resultset_name}
 
     void append(${#IF is_result_const}const ${#END}${element_class_name}& ${element_field_name})    { m_found_${field_name}.push_back(&${element_field_name}); }
     void append(const ${resultset_name}& ${field_name})    { for (auto i = ${field_name}.m_found_${field_name}.begin(); i != ${field_name}.m_found_${field_name}.end(); ++i) m_found_${field_name}.push_back(*i); }
-    void append(${#IF is_result_const}const ${#END}${class_name}& ${field_name})    { for (auto i = ${field_name}.m_${field_name}.begin(); i != ${field_name}.m_${field_name}.end(); ++i) { m_found_${field_name}.push_back(&(*i)); } }
+    ${#IF export_specifier}${export_specifier} ${#END}void append(${#IF is_result_const}const ${#END}${class_name}& ${field_name});
 
     ${#IF is_result_const}${#ELSE}${element_class_name}& get${element_class_name}(SizeType index)    { return *(m_found_${field_name}[index]); }
     ${#END}const ${element_class_name}& get${element_class_name}(SizeType index) const    { return *(m_found_${field_name}[index]); }
