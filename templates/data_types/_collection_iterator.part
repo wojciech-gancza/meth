@@ -4,8 +4,8 @@ class ${iterator_name}
     ${iterator_name}(${iterator_collection_type}& collection, SizeType position)    : m_collection(collection), m_position(position) {  }
     ${iterator_name}(const ${iterator_name}& iterator) = default;
     ${iterator_name}(${iterator_name}&& iterator) = default;
-    ${iterator_name}& operator=(const ${iterator_name}& iterator) = default;
-    ${iterator_name}& operator=(${iterator_name}&& iterator) = default;
+    ${iterator_name}& operator=(const ${iterator_name}& other)    { assert(&m_collection == &other.m_collection); m_position = other.m_position; return *this; }
+    ${iterator_name}& operator=(${iterator_name}&& other)    { assert(&m_collection == &other.m_collection); m_position = other.m_position; return *this; }
 
     ${iterator_item_type}& operator*()    { return m_collection.get${element_class_name}(m_position); }
     ${iterator_item_type}* operator->()    { return &m_collection.get${element_class_name}(m_position); }

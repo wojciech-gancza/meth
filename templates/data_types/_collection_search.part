@@ -16,6 +16,8 @@ class ${resultset_name}
 
     SizeType get${class_name}Size() const    { return static_cast<SizeType>(m_found_${field_name}.size()); }
 
+    ${#INCLUDE _collection_iteration.part "iterated_class_name":"${resultset_name}", "element_mutable_class_name":"const ${element_class_name}", "element_const_class_name":"const ${element_class_name}", }
+
   private:
     std::vector<${#IF is_result_const}const ${#END}${element_class_name}*> m_found_${field_name};
 };
