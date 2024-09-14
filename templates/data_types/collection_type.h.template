@@ -7,6 +7,7 @@ ${#IF export_definition_include}
 
 ${#END}
 #include <vector>
+#include <assert.h>
 
 ${#INCLUDE _tools_includes.part}
 
@@ -58,7 +59,7 @@ ${#END}
         SizeType index = 0;
         while(index < get${class_name}Size())
         {
-          if (key == m_nodes[index])
+          if (key == m_${field_name}[index])
           {
             remove${element_class_name}(index);
             ++erased_count;
@@ -107,3 +108,5 @@ ${#END}
       // -^^^ YOU CAN PUT ADDITIONAL PRIVATE METHODS AND FIELDS HERE
   };
 } 
+
+#include "${element_header_file_name}"

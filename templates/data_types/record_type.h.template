@@ -7,6 +7,7 @@ ${#IF export_definition_include}
 
 ${#END}
 #include <type_traits>
+#include <memory>
 
 ${#FOR include_file : include_files}
 #include "${include_file}"

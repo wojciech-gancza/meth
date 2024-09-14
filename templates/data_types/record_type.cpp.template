@@ -4,8 +4,8 @@ ${#INCLUDE _file_header.part}
 
 ${#IF compareable}
 #include "${tools_path}meth_toolbox_record.h"
-${#END}
 
+${#END}
 // -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
 
 // -^^^ END OF USER DEFINED INCLUDES
