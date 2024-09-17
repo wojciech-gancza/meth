@@ -37,6 +37,8 @@ ${#INCLUDE _type_traits.part}
       ${class_name}& operator=(const ${class_name}& ${field_name}) noexcept    { m_${field_name} = ${field_name}.m_${field_name}; return *this; }
       ${class_name}& operator=(${class_name}&& ${field_name}) noexcept    { m_${field_name} = ${field_name}.m_${field_name}; return *this; }
 
+      bool is${class_name}Empty() const     { return m_${field_name}.empty(); }
+
       // -vvv YOU CAN PUT ADDITIONAL PUBLIC METHODS HERE
 
       // -^^^ YOU CAN PUT ADDITIONAL PUBLIC METHODS HERE
