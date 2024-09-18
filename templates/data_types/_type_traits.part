@@ -3,3 +3,4 @@
 ${#IF is_serialization_id_supported}
       static constexpr MethToolbox::SerializationId::e_SerializationId serialization_id { MethToolbox::SerializationId::${serialization_id} }; // = ${serialization_id_value}
 ${#END}
+      static constexpr const char* type_name = "${class_name}";
