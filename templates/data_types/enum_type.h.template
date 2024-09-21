@@ -33,7 +33,9 @@ ${#INCLUDE _type_traits.part}
       ${class_name}(const ${class_name}& ${field_name}) noexcept    : m_${field_name}(${field_name}.m_${field_name}) {  }
       ${class_name}(${class_name}&& ${field_name}) noexcept    : m_${field_name}(${field_name}.m_${field_name}) {  }
       
-      e_${class_name} get${class_name}() const noexcept   { return m_${field_name}; }
+      e_${class_name} get${class_name}AsEnum() const noexcept   { return m_${field_name}; }
+      ${base_type} get${class_name}AsInteger() const noexcept   { return m_${field_name}; }
+      std::string get${class_name}AsString() const noexcept   { return toString(); }
       void set${class_name}(e_${class_name} ${field_name}) noexcept    { m_${field_name} = ${field_name}; }
 
       void setFrom(const ${class_name}& ${field_name}) noexcept    { m_${field_name} = ${field_name}.m_${field_name}; }

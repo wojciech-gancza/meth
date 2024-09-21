@@ -159,6 +159,32 @@ ${#END}
     } 
   }
 
+  std::ostream& operator<<(std::ostream& out, const ${class_name}::SearchResult& object)
+  {
+    out << "[ ";\
+    const char* separator = "";
+    for (auto i = object.m_found_${field_name}.begin(); i != object.m_found_${field_name}.end(); ++i)
+    {
+      out << separator << **i;
+      separator = ", ";
+    }
+    out << " ]";
+    return out;
+  }
+
+  std::ostream& operator<<(std::ostream& out, const ${class_name}::SearchResultConst& object)
+  {
+    out << "[ ";\
+    const char* separator = "";
+    for (auto i = object.m_found_${field_name}.begin(); i != object.m_found_${field_name}.end(); ++i)
+    {
+      out << separator << **i;
+      separator = ", ";
+    }
+    out << " ]";
+    return out;
+  }
+
   // -vvv YOU CAN PUT ADDITIONAL IMPLEMENTATION PUBLIC METHODS HERE
 
   // -^^^ YOU CAN PUT ADDITIONAL IMPLEMENTATION PUBLIC METHODS HERE

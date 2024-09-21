@@ -29,7 +29,7 @@ ${#END}
       ${class_name}(const ${class_name}& ${field_name}) noexcept    : m_${field_name}(${field_name}.m_${field_name}) {  }
       ${class_name}(${class_name}&& ${field_name}) noexcept    : m_${field_name}(${field_name}.m_${field_name}) {  }
       
-      ${base_type} get${class_name}() const noexcept   { return m_${field_name}; }
+      ${base_type} get${class_name}AsInteger() const noexcept   { return m_${field_name}; }
       void set${class_name}(${base_type} ${field_name}) noexcept    { m_${field_name} = ${field_name}; }
 
       void setFrom(const ${class_name}& ${field_name}) noexcept    { m_${field_name} = ${field_name}.m_${field_name}; }

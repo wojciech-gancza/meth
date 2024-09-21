@@ -18,7 +18,7 @@ namespace MethToolbox
 
     std::stringstream output_buffer;
 
-    switch (object_type.getSerializationId())
+    switch (object_type.getSerializationIdAsInteger())
     {
       case MethToolbox::SerializationId::NoObject:
       {

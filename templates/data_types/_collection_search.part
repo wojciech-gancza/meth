@@ -16,6 +16,9 @@ class ${resultset_name}
 
     SizeType get${class_name}Size() const    { return static_cast<SizeType>(m_found_${field_name}.size()); }
 
+    std::string toString() const    { std::stringstream buffer; buffer << *this; return buffer.str(); }
+    friend ${#IF export_specifier}${export_specifier} ${#END}std::ostream& operator<<(std::ostream& out, const ${resultset_name}& object);
+
     ${#INCLUDE _collection_iteration.part "iterated_class_name":"${resultset_name}", "element_mutable_class_name":"const ${element_class_name}", "element_const_class_name":"const ${element_class_name}", }
 
   private:
