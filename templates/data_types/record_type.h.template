@@ -70,6 +70,14 @@ ${#END}
 
       std::string toString() const { std::ostringstream buffer; buffer << *this; return buffer.str(); }
 
+${#FOR field : fields}
+      ${field.CamelCase()}& useAs${field.CamelCase()}()    { return *this; }
+${#END}
+
+${#FOR field : fields}
+      const ${field.CamelCase()}& useAs${field.CamelCase()}() const    { return *this; }
+${#END}
+
 ${#INCLUDE _ordering_relations.part}
 ${#IF compareable}
       bool isEqual(const ${class_name}& other) const;

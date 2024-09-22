@@ -32,7 +32,7 @@ namespace ${namespace}
   {
     out << "{ "
 ${#FOR field : fields}
-        << "${#IF field!=fields[0]}, ${#END}${field.lowercase()}: " << static_cast<const ${ field.CamelCase() }&>(object)
+        << "${#IF field!=fields[0]}, ${#END}${field.lowercase()}: " << object.useAs${ field.CamelCase() }()
 ${#END}
         << " }";
     return out;
@@ -41,7 +41,7 @@ ${#END}
   MethToolbox::SerializationInterface& operator<<(MethToolbox::SerializationInterface& serializer, const ${class_name}& object)
   {  
 ${#FOR field : fields}
-    serializer << static_cast<const ${ field.CamelCase() }&>(object);
+    serializer << object.useAs${ field.CamelCase() }();
 ${#END}
     return serializer;
   }
@@ -49,7 +49,7 @@ ${#END}
   MethToolbox::DeserializationInterface& operator>>(MethToolbox::DeserializationInterface& deserializer, ${class_name}& object)
   {  
 ${#FOR field : fields}
-    deserializer >> static_cast<${ field.CamelCase() }&>(object);
+    deserializer >> object.useAs${ field.CamelCase() }();
 ${#END}
     return deserializer;
   }
@@ -58,7 +58,7 @@ ${#IF compareable}
   bool ${class_name}::isEqual(const ${class_name}& other) const
   {
 ${#FOR field : fields}
-    if (!MethToolbox::is_record_field_equal(static_cast<const ${ field.CamelCase() }&>(*this), static_cast<const ${ field.CamelCase() }&>(other)))
+    if (!MethToolbox::is_record_field_equal(this->useAs${ field.CamelCase() }(), other.useAs${ field.CamelCase() }()))
     {
       return false;
     }
@@ -71,7 +71,7 @@ ${#IF ordered}
   {
     MethToolbox::CompareResult result = MethToolbox::EQUAL;
 ${#FOR field : fields}
-    result = MethToolbox::record_field_compare(static_cast<const ${ field.CamelCase() }&>(*this), static_cast<const ${ field.CamelCase() }&>(other));
+    result = MethToolbox::record_field_compare(this->useAs${ field.CamelCase() }(), other.useAs${ field.CamelCase() }());
     if (MethToolbox::EQUAL != result)
     {
       return result;

@@ -241,8 +241,8 @@ class data_types_generator:
         self.generator.define("move_parameters", [field.CamelCase() + "&& " + field.lowercase() for field in self.fields])
         self.generator.define("copy_initializators", [field.CamelCase() + "(" + field.lowercase() + ")" for field in self.fields])
         self.generator.define("move_initializators", [field.CamelCase() + "(std::move(" + field.lowercase() + "))" for field in self.fields])
-        self.generator.define("object_copy_initializators", [field.CamelCase() + "(static_cast<const " + field.CamelCase() + "&>(" + self.type_name.lowercase() + "))" for field in self.fields])
-        self.generator.define("object_move_initializators", [field.CamelCase() + "(std::move(static_cast<" + field.CamelCase()+ "&>(" + self.type_name.lowercase() + ")))" for field in self.fields])
+        self.generator.define("object_copy_initializators", [field.CamelCase() + "(" + self.type_name.lowercase() + ".useAs" + field.CamelCase() + "())" for field in self.fields])
+        self.generator.define("object_move_initializators", [field.CamelCase() + "(std::move(" + self.type_name.lowercase() + ".useAs" + field.CamelCase() + "()))" for field in self.fields])
 
     def _set_values(self, values, default_value):
         self.values = values
