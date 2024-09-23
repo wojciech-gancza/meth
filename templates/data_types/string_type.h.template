@@ -28,6 +28,7 @@ ${#INCLUDE _type_traits.part}
       ${class_name}(${class_name}&& ${field_name}) noexcept    : m_${field_name}(${field_name}.m_${field_name}) {  }
       
       const std::string& get${class_name}AsString() const noexcept   { return m_${field_name}; }
+      const char* get${class_name}AsCharPtr() const noexcept   { return m_${field_name}.c_str(); }
       void set${class_name}(const std::string& ${field_name}) noexcept    { m_${field_name} = ${field_name}; }
       void set${class_name}(std::string&& ${field_name}) noexcept    { m_${field_name} = ${field_name}; }
 
