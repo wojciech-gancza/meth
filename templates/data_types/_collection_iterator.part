@@ -10,6 +10,8 @@ class ${iterator_name}
     ${iterator_item_type}& operator*()    { return m_collection.get${element_class_name}(m_position); }
     ${iterator_item_type}* operator->()    { return &m_collection.get${element_class_name}(m_position); }
 
+    SizeType getIndex() const    { return m_position; }
+
     ${iterator_name}& operator++()    { ${inc}${inc}m_position; return *this; }
     ${iterator_name}& operator--()    { ${dec}${dec}m_position; return *this; }
     ${iterator_name} operator++(int)    { ${iterator_name} current = *this; ${inc}${inc}m_position; return current; }
