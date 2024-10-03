@@ -13,7 +13,7 @@ namespace ${namespace}
 {
   std::ostream& operator<<(std::ostream& out, const ${namespace}::${class_name}& ${field_name})
   {
-    time_t t = std::chrono::system_clock::to_time_t(timestamp.m_timestamp);
+    time_t t = std::chrono::system_clock::to_time_t(${field_name}.m_${field_name});
     #pragma warning(suppress : 4996)
     std::tm* tm = localtime(&t);
 
@@ -37,7 +37,7 @@ ${#END}
       /* .tm_year = */ ${#IF use_year}year - 1900${#ELSE}0${#END}
     };
     tm.tm_isdst = -1; // Use DST value from local time zone
-    return Timestamp(std::chrono::system_clock::from_time_t(std::mktime(&tm))${#IF use_milliseconds} + std::chrono::milliseconds(milliseconds)${#END});
+    return ${class_name}(std::chrono::system_clock::from_time_t(std::mktime(&tm))${#IF use_milliseconds} + std::chrono::milliseconds(milliseconds)${#END});
   }
 
   // -vvv YOU CAN PUT ADDITIONAL IMPLEMENTATION PUBLIC METHODS HERE

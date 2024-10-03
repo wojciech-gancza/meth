@@ -22,6 +22,7 @@ namespace MethToolbox
       static int readTwoDigitsNumber(std::string::const_iterator& reader, std::string::const_iterator& limit);
       static int readThreeDigitsNumber(std::string::const_iterator& reader, std::string::const_iterator& limit);
       static int readFourDigitsNumber(std::string::const_iterator& reader, std::string::const_iterator& limit);
+      static int readNumber(std::string::const_iterator& reader, std::string::const_iterator& limit);
 
       // -vvv YOU CAN PUT ADDITIONAL COMPARISION HERE
 

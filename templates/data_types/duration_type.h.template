@@ -18,14 +18,16 @@ namespace ${namespace}
     public:
 ${#INCLUDE _type_traits.part}
       typedef std::chrono::system_clock ClockType;
-      typedef std::chrono::time_point<ClockType> TimePointType;
+      typedef std::chrono::system_clock::duration TimeDurationType;
 
-      ${class_name}() noexcept    : m_${field_name}( ClockType::now() ) {  }
+      ${class_name}()    : m_${field_name}() {  }
+      template <class DURATION> ${class_name}(const DURATION& ${field_name})     : m_${field_name}(std::chrono::duration_cast<TimeDurationType>(${field_name})) {  }
       ${class_name}(const ${class_name}& ${field_name}) noexcept    : m_${field_name}(${field_name}.m_${field_name}) {  }
       ${class_name}(${class_name}&& ${field_name}) noexcept    : m_${field_name}(${field_name}.m_${field_name}) {  }
+      ${class_name}(const TimeDurationType& ${field_name})     : m_${field_name}(${field_name}) {  }
       
-      TimePointType get${class_name}() const noexcept   { return m_${field_name}; }
-      void set${class_name}(TimePointType ${field_name}) noexcept    { m_${field_name} = ${field_name}; }
+      TimeDurationType get${class_name}() const noexcept   { return m_${field_name}; }
+      void set${class_name}(TimeDurationType ${field_name}) noexcept    { m_${field_name} = ${field_name}; }
 
       void setFrom(const ${class_name}& ${field_name}) noexcept    { m_${field_name} = ${field_name}.m_${field_name}; }
       void setFrom(${class_name}&& ${field_name}) noexcept    { m_${field_name} = ${field_name}.m_${field_name}; }
@@ -40,18 +42,14 @@ ${#INCLUDE _type_traits.part}
 ${#INCLUDE _int_ordering_relations.part}
       friend ${#IF export_specifier}${export_specifier} ${#END}std::ostream& operator<<(std::ostream& out, const ${class_name}& ${field_name});
 
-      friend MethToolbox::SerializationInterface& operator<<(MethToolbox::SerializationInterface& serializer, const ${class_name}& ${field_name})    { uint64_t time = std::chrono::duration_cast<std::chrono::microseconds>(${field_name}.m_${field_name}.time_since_epoch()).count(); serializer.serializeInteger(time); return serializer; }
-      friend MethToolbox::DeserializationInterface& operator>>(MethToolbox::DeserializationInterface& deserializer, ${class_name}& ${field_name})    { uint64_t time; deserializer.deserializeInteger(time); ${field_name}.m_${field_name} = TimePointType(std::chrono::microseconds(time)); return deserializer; }
+      friend MethToolbox::SerializationInterface& operator<<(MethToolbox::SerializationInterface& serializer, const ${class_name}& ${field_name})    { uint64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(${field_name}.m_${field_name}).count(); serializer.serializeInteger(duration); return serializer; }
+      friend MethToolbox::DeserializationInterface& operator>>(MethToolbox::DeserializationInterface& deserializer, ${class_name}& ${field_name})    { uint64_t duration; deserializer.deserializeInteger(duration); ${field_name}.m_${field_name} = std::chrono::duration_cast<TimeDurationType>(std::chrono::microseconds(duration)); return deserializer; }
 
       std::string toString() const    { std::stringstream buffer; buffer << *this; return buffer.str(); }
       static ${#IF export_specifier}${export_specifier} ${#END}${class_name} fromString(const std::string& text);
 
-    protected:
-      ${class_name}(const TimePointType& ${field_name}) noexcept    : m_${field_name}( ${field_name} ) {  }
-      ${class_name}(TimePointType&& ${field_name}) noexcept    : m_${field_name}( ${field_name} ) {  }
-
     private:
-      TimePointType m_${field_name};
+      TimeDurationType m_${field_name};
 
       // -vvv YOU CAN PUT ADDITIONAL PRIVATE METHODS AND FIELDS HERE
 

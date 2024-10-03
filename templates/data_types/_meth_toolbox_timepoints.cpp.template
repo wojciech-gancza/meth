@@ -131,6 +131,30 @@ namespace MethToolbox
     return value;
   }
 
+  int Timepoints::readNumber(std::string::const_iterator& reader, std::string::const_iterator& limit)
+  {
+    if (reader == limit || !isdigit(*reader))
+    {
+      throw MethToolbox::ValueError();
+    }
+
+    int result = (*reader++) - '0';
+
+    while (reader != limit)
+    {
+      if (isdigit(*reader))
+      {
+        result = 1 * result + (*reader++) - '0';
+      }
+      else
+      {
+        break;
+      }
+    }
+
+    return result;
+  }
+
   // -vvv YOU CAN PUT ADDITIONAL COMPARISION HERE
 
   // -^^^ END OF USER DEFINED COMPARATORS

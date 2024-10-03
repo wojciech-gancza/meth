@@ -1,0 +1,66 @@
+${#INCLUDE _file_header.part}
+
+#include "${header_file_name}"
+#include "${tools_path}meth_toolbox_timepoints.h"
+#include "${tools_path}meth_toolbox_value_error.h"
+
+#include <iomanip>
+
+// -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
+
+// -^^^ END OF USER DEFINED INCLUDES
+
+namespace ${namespace} 
+{
+  std::ostream& operator<<(std::ostream& out, const ${namespace}::${class_name}& ${field_name})
+  {
+    int64_t duration = std::chrono::duration_cast<std::chrono::milliseconds>(${field_name}.m_${field_name}).count();
+    const char* prefix = "";
+    if (duration < 0)
+    {
+      duration = -duration;
+      prefix = "-";
+    }
+       
+    ${decomposition_code}
+
+    out << ${serialization_code};
+
+    return out;
+  }
+
+  ${class_name} ${class_name}::fromString(const std::string& text)
+  {
+    TimeDurationType time_duration;
+
+    std::string::const_iterator reader = text.begin();
+    std::string::const_iterator limit = text.end();
+
+    if (reader != limit)
+    {
+      bool is_negative = false;
+      std::string to_convert = text;
+
+      if (*reader == '-')
+      {
+        is_negative = true;
+        if (++reader == limit)
+        {
+          throw MethToolbox::ValueError();
+        }
+      }
+
+      ${deserialization_code}
+
+      if (is_negative)
+      {
+        time_duration = -time_duration;
+      }
+    }
+    return ${class_name}(time_duration);
+  }
+
+  // -vvv YOU CAN PUT ADDITIONAL IMPLEMENTATION PUBLIC METHODS HERE
+
+  // -^^^ YOU CAN PUT ADDITIONAL IMPLEMENTATION PUBLIC METHODS HERE
+} 

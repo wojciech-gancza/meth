@@ -33,6 +33,7 @@ class data_types_generator:
         self.need_enum_toolbox = False
         self.need_record_toolbox = False
         self.need_timepoint_toolbox = False
+        self.need_duration_toolbox = False
         self.need_collection_toolbox = False
         self.generator.define("export_specifier", "")
         self.generator.define("export_definition_include", "")
@@ -113,12 +114,13 @@ class data_types_generator:
         self.generated_files.append(created_file_location)
         self.need_record_toolbox = True
 
-    def create_timepoint_type(self, name, format_string, *, compareable=False, ordered=False):
+    def create_timepoint_type(self, name, format_string, *, can_be_increaced_by = [], compareable=False, ordered=False):
         self._set_name(name)
         self._set_comparision(compareable, ordered)
         self._set_template("timepoint_type.h.template", ".h")
         self._set_trace()
         self._add_serialization_id()
+        self._add_used_time_difference_types(can_be_increaced_by)
         created_file_location = self._generate()
         self._add_to_objects_collection(created_file_location)
         self.generated_files.append(created_file_location)
@@ -128,6 +130,38 @@ class data_types_generator:
         created_file_location = self._generate()
         self.generated_files.append(created_file_location)
         self.need_timepoint_toolbox = True
+
+
+
+    def _add_used_time_difference_types(self, can_be_increaced_by):
+        #
+        #
+        #
+        #
+        #
+        pass
+
+    def _set_duration_format(self, format_string):
+        duration_code = duration_code_generator(format_string)
+        self.generator.define("decomposition_code", duration_code.get_decomposition_code())
+        self.generator.define("serialization_code", duration_code.get_serializatrion_code())
+        self.generator.define("deserialization_code", duration_code.get_deserializatrion_code())
+
+    def create_duration_type(self, name, format_string, *, compareable=False, ordered=False):
+        self._set_name(name)
+        self._set_comparision(compareable, ordered)
+        self._set_template("duration_type.h.template", ".h")
+        self._set_trace()
+        self._add_serialization_id()
+        created_file_location = self._generate()
+        self._add_to_objects_collection(created_file_location)
+        self.generated_files.append(created_file_location)
+        self._set_template("duration_type.cpp.template", ".cpp")
+        self._set_trace()
+        self._set_duration_format(format_string)
+        created_file_location = self._generate()
+        self.generated_files.append(created_file_location)
+        self.need_duration_toolbox = True
 
     def create_alias(self, type_name, namespace):
         self._set_name(type_name)
@@ -167,10 +201,9 @@ class data_types_generator:
             self._create_library_file("meth_toolbox_strings.h", "_meth_toolbox_strings.h.template")
             self._create_library_file("meth_toolbox_strings.cpp", "_meth_toolbox_strings.cpp.template")
             need_common_tools = True
-        if self.need_timepoint_toolbox:
+        if self.need_timepoint_toolbox or self.need_duration_toolbox:
             self._create_library_file("meth_toolbox_timepoints.h", "_meth_toolbox_timepoints.h.template")
             self._create_library_file("meth_toolbox_timepoints.cpp", "_meth_toolbox_timepoints.cpp.template")
-            need_common_tools = True
         if self.need_collection_toolbox:
              self.need_common_tools = True
         if need_common_tools:
@@ -206,7 +239,7 @@ class data_types_generator:
         self.generator.define("include_file", general_name(namespace).lowercase() + "_" + self.type_name.lowercase() + ".h")
 
     def _set_time_format(self, format_string):
-        code_generator = timepoint_code_generator(self.type_name.lowercase(), format_string)
+        code_generator = timepoint_code_generator(format_string)
         self.generator.define("serialization_code", code_generator.get_serialization_code())
         self.generator.define("string_readers_collection", code_generator.get_string_reader_code())
         self.generator.define("use_milliseconds", code_generator.use_milliseconds)
@@ -477,8 +510,7 @@ class cpp_enum:
 
 class timepoint_code_generator:
 
-    def __init__(self, variable_name, format_string):
-        self.variable_name = variable_name
+    def __init__(self, format_string):
         self.format_string = format_string
         self.use_milliseconds = False
         self.use_seconds = False
@@ -498,6 +530,10 @@ class timepoint_code_generator:
                         code_elements.append("\"" + format_string[:i] + "\"")
                         format_string = format_string[i:]
                         break
+                else:
+                    code_elements.append("\"" + format_string[:i] + "\"")
+                    format_string = ""
+                    break
             else:
                 time_element_code = format_string[1]
                 output_code = self._get_output_code(time_element_code)
@@ -519,7 +555,7 @@ class timepoint_code_generator:
         elif time_element_code == "s":
             return "std::setw(2) << std::setfill('0') << tm->tm_sec"
         elif time_element_code == "f":
-            return "std::setw(3) << (floor<std::chrono::milliseconds>(timestamp.m_timestamp - floor<std::chrono::seconds>(timestamp.m_timestamp)).count())"
+            return "std::setw(3) << (floor<std::chrono::milliseconds>(${field_name}.m_${field_name} - floor<std::chrono::seconds>(${field_name}.m_${field_name})).count())"
         else:
             return "\"<?>\"";
 
@@ -536,6 +572,10 @@ class timepoint_code_generator:
                         code_elements.append("MethToolbox::Timepoints::ensureStaticTextExist(reader, limit, \"" + format_string[:i] + "\");")
                         format_string = format_string[i:]
                         break
+                else:
+                    code_elements.append("MethToolbox::Timepoints::ensureStaticTextExist(reader, limit, \"" + format_string + "\");")
+                    format_string = ""
+                    break
             else:
                 time_element_code = format_string[1]
                 output_code = self._get_format_code(time_element_code)
@@ -607,5 +647,128 @@ class timepoint_code_generator:
         else:
             return  [
                 "// unknown format" ];
+
+class duration_code_generator:
+
+    def __init__(self, format_string):
+        self.format_string = format_string
+        self.use_milliseconds = False
+        self.use_seconds = False
+        self.use_minutes = False
+        self.use_hours = False
+        self.use_days = False
+        for i in range(0, len(format_string)):
+            if (format_string[i] == '$'):
+                if format_string[i+1] == 'D':
+                    self.use_days = True
+                elif format_string[i+1] == 'h':
+                    self.use_hours = True
+                elif format_string[i+1] == 'm':
+                    self.use_minutes = True
+                elif format_string[i+1] == 's':
+                    self.use_seconds = True
+                elif format_string[i+1] == 'f':
+                    self.use_milliseconds = True
+
+    def get_decomposition_code(self):
+        code_elements = [  ]
+        if self.use_days:
+            if not self.use_hours and not self.use_minutes and not self.use_seconds and not self.use_milliseconds:
+                code_elements.append("uint64_t seconds = static_cast<uint64_t>((duration + 43200000) / 86400000);")
+            else:
+                code_elements.append("uint64_t days = static_cast<uint64_t>(duration / 86400000);")
+                code_elements.append("duration = duration % 86400000;")
+        if self.use_hours:
+            if not self.use_minutes and not self.use_seconds and not self.use_milliseconds:
+                code_elements.append("uint64_t seconds = static_cast<uint64_t>((duration + 1800000) / 3600000);")
+            else:
+                code_elements.append("uint64_t hours = static_cast<uint64_t>(duration / 3600000);")
+                code_elements.append("duration = duration % 3600000;")
+        if self.use_minutes:
+            if not self.use_seconds and not self.use_milliseconds:
+                code_elements.append("uint64_t seconds = static_cast<uint64_t>((duration + 3000) / 60000);")
+            else:
+                code_elements.append("uint64_t minutes = static_cast<uint64_t>(duration / 60000);")
+                code_elements.append("duration = duration % 60000;")
+        if self.use_seconds:
+            if not self.use_milliseconds:
+                code_elements.append("uint64_t seconds = static_cast<uint64_t>((duration + 500) / 1000);")
+            else:
+                code_elements.append("uint64_t seconds = static_cast<uint64_t>(duration / 1000);")
+                code_elements.append("duration = duration % 1000;")
+        if self.use_milliseconds:
+            code_elements.append("uint64_t milliseconds = static_cast<uint64_t>(duration);")
+        return code_block(code_elements);
+
+    def get_serializatrion_code(self):
+        code_elements = []
+        format_string = self.format_string
+        while format_string != "":
+            if format_string[0] != '$':
+                for i in range(1, len(format_string)):
+                    if format_string[i] == '$':
+                        code_elements.append("\"" + format_string[:i] + "\"")
+                        format_string = format_string[i:]
+                        break
+                else:
+                    code_elements.append("\"" + format_string + "\"")
+                    format_string = ""
+                    break
+            else:
+                time_element_code = format_string[1]
+                output_code = self._get_output_code(time_element_code)
+                code_elements.append(output_code)
+                format_string = format_string[2:]
+        return code_block(code_elements)
+
+    def get_deserializatrion_code(self):
+        code_elements = []
+        format_string = self.format_string
+        while format_string != "":
+            if format_string[0] != '$':
+                for i in range(1, len(format_string)):
+                    if format_string[i] == '$':
+                        code_elements.append("MethToolbox::Timepoints::ensureStaticTextExist(reader, limit, \"" + format_string[:i] + "\");")
+                        format_string = format_string[i:]
+                        break
+                else:
+                    code_elements.append("MethToolbox::Timepoints::ensureStaticTextExist(reader, limit, \"" + format_string + "\");")
+                    format_string = ""
+                    break
+            else:
+                time_element_code = format_string[1]
+                output_code = self._get_deserialize_code(time_element_code)
+                code_elements.append(output_code)
+                format_string = format_string[2:]
+        return code_block(code_elements)
+
+    def _get_output_code(self, time_element_code):
+        if time_element_code == "D":
+            return "std::setw(2) << std::setfill('0') << days"
+        elif time_element_code == "h":
+            return "std::setw(2) << std::setfill('0') << hours"
+        elif time_element_code == "m":
+            return "std::setw(2) << std::setfill('0') << minutes"
+        elif time_element_code == "s":
+            return "std::setw(2) << std::setfill('0') << seconds"
+        elif time_element_code == "f":
+            return "std::setw(3) << milliseconds"
+        else:
+            return "\"<?>\"";
+
+    def _get_deserialize_code(self, time_element_code):
+        if time_element_code == "D":
+            return "time_duration += std::chrono::days( MethToolbox::Timepoints::readNumber( reader, limit ) );"
+        elif time_element_code == "h":
+            return "time_duration += std::chrono::hours( MethToolbox::Timepoints::readNumber( reader, limit ) );"
+        elif time_element_code == "m":
+            return "time_duration += std::chrono::minutes( MethToolbox::Timepoints::readNumber( reader, limit ) );"
+        elif time_element_code == "s":
+            return "time_duration += std::chrono::seconds( MethToolbox::Timepoints::readNumber( reader, limit ) );"
+        elif time_element_code == "f":
+            return "time_duration += std::chrono::milliseconds( MethToolbox::Timepoints::readNumber( reader, limit ) );"
+        else:
+            return "\"<?>\"";
+
 
 # -------------------------------------------------------------------
