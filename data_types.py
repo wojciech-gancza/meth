@@ -131,22 +131,6 @@ class data_types_generator:
         self.generated_files.append(created_file_location)
         self.need_timepoint_toolbox = True
 
-
-
-    def _add_used_time_difference_types(self, can_be_increaced_by):
-        #
-        #
-        #
-        #
-        #
-        pass
-
-    def _set_duration_format(self, format_string):
-        duration_code = duration_code_generator(format_string)
-        self.generator.define("decomposition_code", duration_code.get_decomposition_code())
-        self.generator.define("serialization_code", duration_code.get_serializatrion_code())
-        self.generator.define("deserialization_code", duration_code.get_deserializatrion_code())
-
     def create_duration_type(self, name, format_string, *, compareable=False, ordered=False):
         self._set_name(name)
         self._set_comparision(compareable, ordered)
@@ -313,6 +297,8 @@ class data_types_generator:
         self.generator.define("field_name",self.type_name.lowercase())
         self.header_file_name = self.namespace.lowercase() + "_" + self.type_name.lowercase() + ".h"
         self.generator.define("header_file_name", self.header_file_name)
+        self.generator.define("namespace_lowercase", self.namespace.lowercase())
+
 
     def _set_base_type(self, base_type, default_value):
         self.base_type = base_type
@@ -341,6 +327,16 @@ class data_types_generator:
             self.generator.define("min_value", 0)
             self.generator.define("max_value", 0)
             self.generator.define("range_controll", False)
+
+    def _add_used_time_difference_types(self, can_be_increaced_by):
+        other_types = [general_name(other_type) for other_type in can_be_increaced_by];
+        self.generator.define("duration_types",other_types)
+
+    def _set_duration_format(self, format_string):
+        duration_code = duration_code_generator(format_string)
+        self.generator.define("decomposition_code", duration_code.get_decomposition_code())
+        self.generator.define("serialization_code", duration_code.get_serializatrion_code())
+        self.generator.define("deserialization_code", duration_code.get_deserializatrion_code())
 
     def _set_comparision(self, compareable, ordered, compare_strategy=None):
         if ordered:

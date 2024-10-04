@@ -15,11 +15,10 @@ namespace ${namespace}
   std::ostream& operator<<(std::ostream& out, const ${namespace}::${class_name}& ${field_name})
   {
     int64_t duration = std::chrono::duration_cast<std::chrono::milliseconds>(${field_name}.m_${field_name}).count();
-    const char* prefix = "";
     if (duration < 0)
     {
       duration = -duration;
-      prefix = "-";
+      out << "-";
     }
        
     ${decomposition_code}
@@ -31,7 +30,7 @@ namespace ${namespace}
 
   ${class_name} ${class_name}::fromString(const std::string& text)
   {
-    TimeDurationType time_duration;
+    TimeDurationType time_duration = {  };
 
     std::string::const_iterator reader = text.begin();
     std::string::const_iterator limit = text.end();

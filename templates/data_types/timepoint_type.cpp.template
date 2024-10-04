@@ -32,9 +32,9 @@ ${#END}
       /* .tm_sec  = */ ${#IF use_seconds}seconds${#ELSE}0${#END},
       /* .tm_min  = */ ${#IF use_minutes}minutes${#ELSE}0${#END},
       /* .tm_hour = */ ${#IF use_hour}hour${#ELSE}0${#END},
-      /* .tm_mday = */ ${#IF use_day}day${#ELSE}0${#END},
+      /* .tm_mday = */ ${#IF use_day}day${#ELSE}1${#END},
       /* .tm_mon  = */ ${#IF use_month}month - 1${#ELSE}0${#END},
-      /* .tm_year = */ ${#IF use_year}year - 1900${#ELSE}0${#END}
+      /* .tm_year = */ ${#IF use_year}year - 1900${#ELSE}80${#END}
     };
     tm.tm_isdst = -1; // Use DST value from local time zone
     return ${class_name}(std::chrono::system_clock::from_time_t(std::mktime(&tm))${#IF use_milliseconds} + std::chrono::milliseconds(milliseconds)${#END});

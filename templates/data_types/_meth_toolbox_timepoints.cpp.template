@@ -144,7 +144,7 @@ namespace MethToolbox
     {
       if (isdigit(*reader))
       {
-        result = 1 * result + (*reader++) - '0';
+        result = 10 * result + (*reader++) - '0';
       }
       else
       {

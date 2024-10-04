@@ -26,8 +26,8 @@ ${#INCLUDE _type_traits.part}
       ${class_name}(${class_name}&& ${field_name}) noexcept    : m_${field_name}(${field_name}.m_${field_name}) {  }
       ${class_name}(const TimeDurationType& ${field_name})     : m_${field_name}(${field_name}) {  }
       
-      TimeDurationType get${class_name}() const noexcept   { return m_${field_name}; }
-      void set${class_name}(TimeDurationType ${field_name}) noexcept    { m_${field_name} = ${field_name}; }
+      const TimeDurationType& get${class_name}() const noexcept   { return m_${field_name}; }
+      void set${class_name}(const TimeDurationType& ${field_name}) noexcept    { m_${field_name} = ${field_name}; }
 
       void setFrom(const ${class_name}& ${field_name}) noexcept    { m_${field_name} = ${field_name}.m_${field_name}; }
       void setFrom(${class_name}&& ${field_name}) noexcept    { m_${field_name} = ${field_name}.m_${field_name}; }
