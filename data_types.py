@@ -57,9 +57,10 @@ class data_types_generator:
         self.namespace = general_name(namespace)
         self.generator.define("namespace",self.namespace.CamelCase())
 
-    def create_integer_type(self, name, *, base_type="int", default_value=0, min_value=None, max_value=None, compareable=False, ordered=False):
+    def create_integer_type(self, name, *, base_type="int", default_value=0, min_value=None, max_value=None, compareable=False, ordered=False, increment=False, decrement=False):
         self._set_name(name)
         self._set_base_type(base_type, default_value)
+        self._set_arithmetic_operators(increment, decrement)
         self._set_range(min_value, max_value)
         self._set_comparision(compareable, ordered)
         self._set_template("integer_type.h.template", ".h")
@@ -303,6 +304,8 @@ class data_types_generator:
     def _set_base_type(self, base_type, default_value):
         self.base_type = base_type
         self.generator.define("base_type", base_type)
+        need_promotion = (base_type == "uint8_t" or base_type == "int8_t")
+        self.generator.define("need_promotion", need_promotion)
         self.default_value = default_value
         self.generator.define("default_value", str(default_value))
 
@@ -375,6 +378,10 @@ class data_types_generator:
         self.generator.set_template(self.template_name.get_full_file_name())
         self.generator.generate(self.output_file_name.get_full_file_name())
         return self.output_file_name.get_full_file_name()
+
+    def _set_arithmetic_operators(self, increment, decrement):
+        self.generator.define("increment", increment)
+        self.generator.define("decrement", decrement)
     
 # class geerating code supporting c++ enums
 class cpp_enum:

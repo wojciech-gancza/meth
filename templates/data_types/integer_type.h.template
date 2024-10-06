@@ -37,13 +37,23 @@ ${#END}
 
       ${class_name}& operator=(const ${class_name}& ${field_name}) noexcept    { m_${field_name} = ${field_name}.m_${field_name}; return *this; }
       ${class_name}& operator=(${class_name}&& ${field_name}) noexcept    { m_${field_name} = ${field_name}.m_${field_name}; return *this; }
+${#IF increment}
+
+      ${class_name}& operator++() { ++m_${field_name}; ${#IF range_controll}checkValue(); ${#END}return *this; }
+      ${class_name} operator++(int) { ${class_name} ${field_name}(*this); ++(*this); return ${field_name}; }
+${#END}
+${#IF decrement}
+
+      ${class_name}& operator--() { --m_${field_name}; ${#IF range_controll}checkValue(); ${#END}return *this; }
+      ${class_name} operator--(int) { ${class_name} ${field_name}(*this); --(*this); return ${field_name}; }
+${#END}
 
       // -vvv YOU CAN PUT ADDITIONAL PUBLIC METHODS HERE
 
       // -^^^ YOU CAN PUT ADDITIONAL PUBLIC METHODS HERE
 
 ${#INCLUDE _int_ordering_relations.part}
-      friend std::ostream& operator<<(std::ostream& out, const ${class_name}& ${field_name})    { out << ${field_name}.m_${field_name}; return out; }
+      friend std::ostream& operator<<(std::ostream& out, const ${class_name}& ${field_name})    { out << ${#IF need_promotion}static_cast<int>(${field_name}.m_${field_name})${#ELSE}${field_name}.m_${field_name}${#END}; return out; }
 
       friend MethToolbox::SerializationInterface& operator<<(MethToolbox::SerializationInterface& serializer, const ${class_name}& ${field_name})    { serializer.serializeInteger(${field_name}.m_${field_name}); return serializer; }
       friend MethToolbox::DeserializationInterface& operator>>(MethToolbox::DeserializationInterface& deserializer, ${class_name}& ${field_name})    { deserializer.deserializeInteger(${field_name}.m_${field_name}); ${#IF range_controll}${field_name}.checkValue(); ${#END}return deserializer; }
@@ -53,7 +63,33 @@ ${#INCLUDE _int_ordering_relations.part}
       { 
         ${base_type} ${field_name};
         std::stringstream buffer(text);
+${#IF base_type == 'uint8_t'}
+        uint16_t temp = 0;
+        buffer >> temp;
+        if (temp > 255)
+        {
+          throw MethToolbox::ValueError();
+        }
+        else
+        {
+          ${field_name} = static_cast<${base_type}>(temp);
+        }
+${#ELSE}
+${#IF base_type == 'int8_t'}
+        int16_t temp = 0;
+        buffer >> temp;
+        if (temp > 127 || temp < -128)
+        {
+          throw MethToolbox::ValueError();
+        }
+        else
+        {
+          ${field_name} = static_cast<${base_type}>(temp);
+        }
+${#ELSE}
         buffer >> ${field_name};
+${#END}
+${#END}
         char c = 0;
         if (buffer.fail() || buffer.get(c))
         {
