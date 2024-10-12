@@ -3,6 +3,6 @@
 
 // File name: ${file_name}
 // Generator: ${generator_location}
-// Using:     ${meth_directory}/source/data_types.py
-//            ${meth_directory}/source/meth.py
+// Using:     ${meth_directory}/data_types.py
+//            ${meth_directory}/meth.py
 // Template:  ${template_location}
