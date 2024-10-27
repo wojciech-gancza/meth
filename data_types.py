@@ -16,9 +16,33 @@ from .meth import code_generator
 from .tools import general_name, file_name, code_block
 from inspect import currentframe, getmodule
 
+class data_types_registry:
+
+    # MEMO: Collections are not supported
+
+    def __init__(self):
+        self.namespaces = { }
+        self.registry = { }
+        pass
+
+    def add_simple_data_type(self, namespace, datatype_name):
+        self.namespaces[datatype_name] = namespace
+        self.registry[datatype_name] = [ { "namespace": namespace, "type_name": general_name(datatype_name) } ]
+
+    def add_complex_data_type(self, namespace, datatype_name, type_elements):
+        try:
+            subtypes = [ ]
+            for item_name in type_elements:
+                subtypes = subtypes + self.registry[item_name]
+            self.namespaces[datatype_name] = namespace
+            self.registry[datatype_name] = subtypes
+        except Exception as e:
+            pass
+
 class data_types_generator:
 
     def __init__(self, solution_root_folder, *, add_serialization_id = False):
+        self.registry = data_types_registry()
         self.serialization_identifiers = [ "NoObject" ]
         self.all_generated_object_ids_and_type_names = [ ]
         self.generated_type_headers = []
@@ -58,6 +82,7 @@ class data_types_generator:
         self.generator.define("namespace",self.namespace.CamelCase())
 
     def create_integer_type(self, name, *, base_type="int", default_value=0, min_value=None, max_value=None, compareable=False, ordered=False, increment=False, decrement=False):
+        self.registry.add_simple_data_type(self.namespace, name)
         self._set_name(name)
         self._set_base_type(base_type, default_value)
         self._set_arithmetic_operators(increment, decrement)
@@ -72,6 +97,7 @@ class data_types_generator:
         self.need_integer_toolbox = True
 
     def create_string_type(self, name, *, default_value = "", max_length=None, compareable=False, ordered=False, compare_strategy="Default"):
+        self.registry.add_simple_data_type(self.namespace, name)
         self._set_name(name)
         self._set_type_properties(max_length, default_value)
         self._set_comparision(compareable, ordered, compare_strategy)
@@ -84,6 +110,7 @@ class data_types_generator:
         self.need_string_toolbox = True
 
     def create_enum_type(self, name, values, *, default_value = None, compareable=False, ordered=False):
+        self.registry.add_simple_data_type(self.namespace, name)
         self._set_name(name)
         self._set_values(values, default_value)
         self._set_comparision(compareable, ordered)
@@ -100,6 +127,7 @@ class data_types_generator:
         self.need_enum_toolbox = True
 
     def create_record_type(self, name, fields, *, compareable=False, ordered=False):
+        self.registry.add_complex_data_type(self.namespace, name, fields)
         self._set_name(name)
         self._set_fields(fields)
         self._set_comparision(compareable, ordered)
@@ -116,6 +144,7 @@ class data_types_generator:
         self.need_record_toolbox = True
 
     def create_timepoint_type(self, name, format_string, *, can_be_increaced_by = [], compareable=False, ordered=False):
+        self.registry.add_simple_data_type(self.namespace, name)
         self._set_name(name)
         self._set_comparision(compareable, ordered)
         self._set_template("timepoint_type.h.template", ".h")
@@ -133,6 +162,7 @@ class data_types_generator:
         self.need_timepoint_toolbox = True
 
     def create_duration_type(self, name, format_string, *, compareable=False, ordered=False):
+        self.registry.add_simple_data_type(self.namespace, name)
         self._set_name(name)
         self._set_comparision(compareable, ordered)
         self._set_template("duration_type.h.template", ".h")
