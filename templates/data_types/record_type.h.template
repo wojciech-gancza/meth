@@ -46,6 +46,10 @@ ${#FOR field : fields}
         {
           ${field.CamelCase()}::setFrom(other);
         }
+        else if constexpr(std::is_base_of_v<OTHER, ${field.CamelCase()}>)
+        {
+          ${field.CamelCase()}::setFrom(other);
+        }
 ${#END}
       }
 
@@ -53,7 +57,11 @@ ${#END}
       void setFrom(OTHER&& other)
       {
 ${#FOR field : fields}
-        if constexpr(std::is_base_of_v<${field.CamelCase()}, typename std::remove_reference<OTHER>::type>)
+        if constexpr(std::is_base_of_v<typename std::remove_reference<OTHER>::type, ${field.CamelCase()}>)
+        {
+          ${field.CamelCase()}::setFrom(other);
+        }
+        else if constexpr(std::is_base_of_v<${field.CamelCase()}, typename std::remove_reference<OTHER>::type>)
         {
           ${field.CamelCase()}::setFrom(other);
         }
