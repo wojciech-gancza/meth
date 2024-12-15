@@ -19,6 +19,7 @@ namespace ${namespace}
   {
     public:
 ${#INCLUDE _type_traits.part}
+      static constexpr uint8_t size_in_bytes = sizeof(${base_type});
 ${#IF ${range_controll}}
       static constexpr ${base_type} min_value { ${min_value} };
       static constexpr ${base_type} max_value { ${max_value} };
