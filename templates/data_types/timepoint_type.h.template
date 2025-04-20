@@ -23,6 +23,8 @@ ${#INCLUDE _type_traits.part}
       typedef std::chrono::system_clock ClockType;
       typedef std::chrono::time_point<ClockType> TimePointType;
 
+      ${class_name}(const TimePointType& ${field_name}) noexcept    : m_${field_name}( ${field_name} ) {  }
+      ${class_name}(TimePointType&& ${field_name}) noexcept    : m_${field_name}( ${field_name} ) {  }
       ${class_name}() noexcept    : m_${field_name}( ClockType::now() ) {  }
       ${class_name}(const ${class_name}& ${field_name}) noexcept    : m_${field_name}(${field_name}.m_${field_name}) {  }
       ${class_name}(${class_name}&& ${field_name}) noexcept    : m_${field_name}(${field_name}.m_${field_name}) {  }
@@ -55,10 +57,6 @@ ${#INCLUDE _int_ordering_relations.part}
 
       std::string toString() const    { std::stringstream buffer; buffer << *this; return buffer.str(); }
       static ${#IF export_specifier}${export_specifier} ${#END}${class_name} fromString(const std::string& text);
-
-    protected:
-      ${class_name}(const TimePointType& ${field_name}) noexcept    : m_${field_name}( ${field_name} ) {  }
-      ${class_name}(TimePointType&& ${field_name}) noexcept    : m_${field_name}( ${field_name} ) {  }
 
     private:
       TimePointType m_${field_name};
