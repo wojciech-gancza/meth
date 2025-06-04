@@ -1,0 +1,36 @@
+  
+  class ${class_name}
+  {
+  public:
+    explicit ${class_name}(${base_type} ${variable_name}) noexcept;
+    ${class_name}() noexcept;
+    ${class_name}(const ${class_name}& ${variable_name}) noexcept;
+
+    ${base_type} get${class_name}AsInteger() const noexcept;
+    void set${class_name}(${base_type} ${variable_name}) noexcept;
+
+    ${class_name}& operator=(const ${class_name}& ${variable_name}) noexcept;
+
+    bool operator==(const ${class_name}& other) const noexcept;
+    bool operator!=(const ${class_name}& other) const noexcept;
+    bool operator<(const ${class_name}& other) const noexcept;
+    bool operator>(const ${class_name}& other) const noexcept;
+    bool operator<=(const ${class_name}& other) const noexcept;
+    bool operator>=(const ${class_name}& other) const noexcept;
+
+    friend std::ostream& operator<<(std::ostream& out, 
+                                    const ${class_name}& ${variable_name});
+
+    friend SerializationInterface& operator<<(SerializationInterface& serializer, 
+                                              const ${class_name}& ${variable_name});
+    friend DeserializationInterface& operator>>(DeserializationInterface& deserializer, 
+                                              ${class_name}& ${variable_name});
+
+    std::string toString() const;
+    static ${class_name} fromString(const std::string& text);
+
+  private:
+    ${base_type} m_${variable_name};
+  };
+
+

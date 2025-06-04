@@ -1,0 +1,4 @@
+${#if namespaces != []}namespace ${namespaces[0]}
+{
+  ${#include "namespace.pattern" "namespaces": namespaces[1:]}
+} // end ${namespaces[0]}${#else}${#include code_body_pattern}${#end}

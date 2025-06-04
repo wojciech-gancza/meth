@@ -1,0 +1,5 @@
+${#include "header.pattern"}
+
+#pragma once
+
+${#include "namespace.pattern"}

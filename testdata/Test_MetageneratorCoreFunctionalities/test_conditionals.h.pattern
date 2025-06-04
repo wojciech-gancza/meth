@@ -1,0 +1,97 @@
+=========================
+
+before${#if f} sommething${#end} after
+
+before
+${#if f}
+sommething
+${#end}
+after
+
+before${#if f}
+sommething${#end}
+after
+
+before
+${#if f}sommething${#end}
+after
+
+before
+${#if f}sommething
+${#end}after
+
+=========================
+
+before${#if t} sommething${#end} after
+
+before
+${#if t}
+sommething
+${#end}
+after
+
+before${#if t}
+sommething${#end}
+after
+
+before
+${#if t}sommething${#end}
+after
+
+before
+${#if t}sommething
+${#end}after
+
+=========================
+
+before${#if f} sommething${#else} exact thing${#end} after
+
+before
+${#if f}
+sommething
+${#else}
+exact thing
+${#end}
+after
+
+before${#if f}
+sommething${#else}
+exact thing${#end}
+after
+
+before
+${#if f}sommething${#else}exact thing${#end}
+after
+
+before
+${#if f}sommething
+${#else}exact thing
+${#end}after
+
+=========================
+
+before${#if t} sommething${#else} exact thing${#end} after
+
+before
+${#if t}
+sommething
+${#else}
+exact thing 
+${#end}
+after
+
+before${#if t}
+sommething${#else}
+exact thing${#end}
+after
+
+before
+${#if t}sommething${#else}exact thing${#end}
+after
+
+before
+${#if t}sommething
+${#else}exact thing
+${#end}after
+
+=========================

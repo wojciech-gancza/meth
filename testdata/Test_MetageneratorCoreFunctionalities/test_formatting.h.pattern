@@ -1,0 +1,7 @@
+list_of_items { ${format.comma_separated(variable0)} } #comment
+
+list_of_items { ${format.comma_separated(variableN)} } #comment
+
+list_of_items ${format.inheritance_list(variableN)}
+
+multiline := ${format.multicolumn_list(variableN, max_width=70)} # multiline
