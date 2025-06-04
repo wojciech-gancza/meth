@@ -10,7 +10,7 @@ import os
 # tools classes and objects
 # some nice to use tools which could be usefull when generating the code
 
-from meth import code_block
+from .meth import code_block
 
 # class transforming string to identifier with variours notations
 class general_name:
@@ -111,8 +111,7 @@ class cpp_enum:
                 return [prefix + "if( " + selector + " == " + str(condition_value) + " )"] + \
                     self._generate_result(prefix + "    ", first) + \
                     [ prefix + "else"] + \
-                    self._generate_result(prefix + "    ", second) + \
-                    [ prefix + "};" ]
+                    self._generate_result(prefix + "    ", second)
             else:
                 return [prefix + "switch( " + selector + " )", "{"] + \
                     self._generate_case(prefix, case_map) + \

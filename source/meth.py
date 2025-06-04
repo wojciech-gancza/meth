@@ -93,6 +93,7 @@ class list_walker:
     # replace last read line by the given list. It also back line pointer
     # to point to first line of added array
     def push_back(self, lines):
+        lines = [line.rstrip() for line in lines]
         if self.replace_from is None:
             self.lines_array = self.lines_array[:self.current_line-1] + lines + self.lines_array[self.current_line:]
             self.current_line = self.current_line - 1
@@ -353,23 +354,6 @@ class code_generator:
             else:
                 raise Exception("expecting pair of identifiers to iterate dictionary (Found '" + identifiers + "')")
     
-    def _process_meta_INCLUDE(self, before, command):
-        pos = command.strip().find(" ")
-        if pos < 0:
-            include_file_name = command
-            variables = None
-        else:
-            include_file_name = command[0:pos]
-            variables = command[pos:].strip()
-        if variables:
-            values = eval("{" + variables + "}")
-            for key, value in values.items():
-                self.define(key, value)
-        sniplet_file_name = os.path.dirname(self.template_file_name) + "/" + include_file_name
-        code_lines = file_lines(sniplet_file_name)
-        code_lines = [before + line for line in code_lines]
-        return code_lines
-
     def _process_meta_FOR(self, variable, collection_expression, before, after, source_reader):
         collection = self._calculate_result(collection_expression)   
         source_reader.set_mark_range_to_delete()
