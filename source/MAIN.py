@@ -94,13 +94,22 @@ builder.generate(generated_result)
 #builder.create_enum_type("type", ["Task", "Index", "Sprint"], True)
 #builder.create_composite("task", ["story points", "comment", "type"])
 
-source = ["aaa${#FOR i : [1, 2, 3, 4]}${i}${#END}XX" ]
+#source = ["aaa${#FOR i : [1, 2, 3, 4]}${i}${#END}XX" ]
+source = [ \
+    "${#FOR field : fields }",
+    "${#IF len(field) == 4 and field[2] == 'string' }",
+    "CRadioMessage_object.${field[1]}(SCL::CString(telegram.${field[0]}()));",
+    "${#ELSE}",
+    "CRadioMessage_object.${field[1]}(telegram.${field[0]}());",
+    "${#END}",
+    "${#END}" ]
 generator = code_generator(globals())
+generator.define("fields", [ ['A', 'a', 'integer', ''], ['B', 'b', 'string', ''], ['C', 'c', 'object', ''] ])
 target = generator._transform(source)
 print("---Result---------------------------------------------------------")
 print(target)
-print("---Expected-------------------------------------------------------")
-print(["aaa1234XX"])
+#print("---Expected-------------------------------------------------------")
+#print(["aaa1234XX"])
 print("---End000---------------------------------------------------------")  
 
 # ----------------------------------------------------------
