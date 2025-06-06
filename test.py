@@ -27,8 +27,8 @@ class TestEnvironment:
     def __init__(self, subdirectory):
         self.script_path = generatortools.AbsolutePath( __file__).parent()
         self.patterns_path = self.script_path.create_changed_by("patterns")
-        self.output_path = self.script_path.create_changed_by("testdata/outputs")
-        self.sample_files_path = self.script_path.create_changed_by("testdata/" + subdirectory)
+        self.output_path = self.script_path.create_changed_by("development/testdata/outputs")
+        self.sample_files_path = self.script_path.create_changed_by("development/testdata/" + subdirectory)
 
     def check_output_file(self, file_name):
         file_to_check = methtools.FileContent(self.output_path.get_as_directory() + file_name)
@@ -53,7 +53,7 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(Test_SimpleTypesGenerator, self).__init__(*args, **kwargs)
         self.environment = TestEnvironment("Test_SimpleTypesGenerator")
-        self.generator = generator.PlainOldDataTypes(self.environment.output_path.parent().parent())
+        self.generator = generator.PlainOldDataTypes(self.environment.output_path.parent().parent().parent())
         self.generator.set_output_path(self.environment.output_path)
         
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

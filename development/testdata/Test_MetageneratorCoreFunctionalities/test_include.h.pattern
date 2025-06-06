@@ -1,0 +1,7 @@
+class X // collection
+{
+  public:
+    ${#include "test_included.pattern" "type": "ConstIterator"}
+    ${#include "test_included.pattern" "type": "ReverseIterator"} // Is it needed?
+    ${#include "test_included.pattern" "type": "JustAnIterator"}
+};

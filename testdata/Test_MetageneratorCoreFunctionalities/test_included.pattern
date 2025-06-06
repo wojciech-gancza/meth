@@ -1,3 +1,0 @@
-// ${A} ${B}
-${type} get${type}Begin();
-${type} get${type}End();
