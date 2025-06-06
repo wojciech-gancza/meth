@@ -53,7 +53,8 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(Test_SimpleTypesGenerator, self).__init__(*args, **kwargs)
         self.environment = TestEnvironment("Test_SimpleTypesGenerator")
-        self.generator = generator.PlainOldDataTypes(self.environment.output_path.parent().parent(), self.environment.output_path)
+        self.generator = generator.PlainOldDataTypes(self.environment.output_path.parent().parent())
+        self.generator.set_output_path(self.environment.output_path)
         
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -61,7 +62,7 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
         variables = {"name": "common : network : port number",
                      "base_type": "uint16_t"}
         self.generator.generate_integer(variables)
-        self.assertTrue(self.environment.check_output_file("network_port_number.h"))
+        self.assertTrue(self.environment.check_output_file("common_network_port_number.h"))
 
 #--------------------------------------------------------------------------
 
@@ -70,7 +71,7 @@ class Test_MetageneratorCoreFunctionalities(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(Test_MetageneratorCoreFunctionalities, self).__init__(*args, **kwargs)
         self.environment = TestEnvironment("Test_MetageneratorCoreFunctionalities")
-        self.generator = meth.Metamorph(self.environment.sample_files_path, self.environment.output_path)
+        self.generator = meth.Metamorph(self.environment.sample_files_path)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -78,7 +79,7 @@ class Test_MetageneratorCoreFunctionalities(unittest.TestCase):
         variables = {"class_name": "ErrorCode", 
                      "variable_name": "error_code", 
                      "base_type": "uint16_t"}
-        self.generator.generate("test_integer.h.pattern", "error_code.h", variables)
+        self.generator.generate("test_integer.h.pattern", self.environment.output_path.get_as_directory() + "error_code.h", variables)
         self.assertTrue(self.environment.check_output_file("error_code.h"))
 
     def test_UseListOfValuesAsPlaceholderValue(self):
@@ -87,44 +88,55 @@ class Test_MetageneratorCoreFunctionalities(unittest.TestCase):
                      "variable2": ["car", "cdr"],
                      "variable3": ["first_value", "second_value", "third_value"],
                      "variable4": ["first_value", "second_value", "third_value", "and_finally_the_last"] }
-        self.generator.generate("test_values_instantiation.h.pattern", "multiline_placeholders.h", variables)
+        self.generator.generate("test_values_instantiation.h.pattern", self.environment.output_path.get_as_directory() + "multiline_placeholders.h", variables)
         self.assertTrue(self.environment.check_output_file("multiline_placeholders.h"))
-
-    def test_UseOfFormattedListsAsPlaceholderValue(self):
-        variables = {"variable0": [],
-                     "variableN": ["first_value", "second_value", "third_value", "subsequent", "and_subsequent", "and_finally_the_last"] }
-        self.generator.generate("test_formatting.h.pattern", "multiline_formatted.h", variables)
-        self.assertTrue(self.environment.check_output_file("multiline_formatted.h"))
 
     def test_PreserveExistingCodeBlocksChanged(self):
         self.environment.prepare_old_output_file("test_code_blocks_1.h")
-        self.generator.generate("test_code_blocks.h.pattern", "test_code_blocks_1.h", {} )
-        self.assertTrue(self.environment.check_output_file("test_code_blocks_1.h"))
+        self.generator.generate("test_code_blocks.h.pattern", self.environment.output_path.get_as_directory() + "test_code_blocks_1.h", {} )
         self.assertFalse(self.environment.is_output_file_old("test_code_blocks_1.h"))
 
     def test_PreserveExistingCodeBlocksNotChanged(self):
         self.environment.prepare_old_output_file("test_code_blocks_2.h")
-        self.generator.generate("test_code_blocks.h.pattern", "test_code_blocks_2.h", {} )
+        self.generator.generate("test_code_blocks.h.pattern", self.environment.output_path.get_as_directory() + "test_code_blocks_2.h", {} )
         self.assertTrue(self.environment.check_output_file("test_code_blocks_2.h"))
         self.assertTrue(self.environment.is_output_file_old("test_code_blocks_2.h"))
 
     def test_IncludingWithParasmetrization(self):
         variables = {"A": "12345",
                      "B": "XYZ" }
-        self.generator.generate("test_include.h.pattern", "test_include.h", variables)
+        self.generator.generate("test_include.h.pattern", self.environment.output_path.get_as_directory() + "test_include.h", variables)
         self.assertTrue(self.environment.check_output_file("test_include.h"))
 
     def test_TestOfConditionals(self):
         variables = {"t": True,
                      "f": False }
-        self.generator.generate("test_conditionals.h.pattern", "test_conditionals.h", variables)
+        self.generator.generate("test_conditionals.h.pattern", self.environment.output_path.get_as_directory() + "test_conditionals.h", variables)
         self.assertTrue(self.environment.check_output_file("test_conditionals.h"))
 
     def test_TestOfLoops(self):
         variables = {"list0": [],
                      "listN": ["abc", "ABC", "Xyz"] }
-        self.generator.generate("test_loops.h.pattern", "test_loops.h", variables)
+        self.generator.generate("test_loops.h.pattern", self.environment.output_path.get_as_directory() + "test_loops.h", variables)
         self.assertTrue(self.environment.check_output_file("test_conditionals.h"))
+
+#--------------------------------------------------------------------------
+
+class Test_ListFormatting(unittest.TestCase):
+
+    def __init__(self, *args, **kwargs):
+        super(Test_ListFormatting, self).__init__(*args, **kwargs)
+        self.environment = TestEnvironment("Test_ListFormatting")
+        self.generator = meth.Metamorph(self.environment.sample_files_path)
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    def test_UseOfFormattedListsAsPlaceholderValue(self):
+        variables = {"format": generatortools.ListFormatter(),
+                     "variable0": [],
+                     "variableN": ["first_value", "second_value", "third_value", "subsequent", "and_subsequent", "and_finally_the_last"] }
+        self.generator.generate("test_formatting.h.pattern", self.environment.output_path.get_as_directory() + "multiline_formatted.h", variables)
+        self.assertTrue(self.environment.check_output_file("multiline_formatted.h"))
 
 #--------------------------------------------------------------------------
 
@@ -274,4 +286,3 @@ if __name__ == '__main__':
     unittest.main()
 
 #--------------------------------------------------------------------------
-7
