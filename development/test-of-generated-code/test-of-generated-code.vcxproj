@@ -34,9 +34,15 @@
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
     <ClCompile Include="test.cpp" />
+    <ClCompile Include="acoustic_outputs_flags.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="acoustic_outputs_flags.h" />
+    <ClInclude Include="binary_serialization.h" />
+    <ClInclude Include="common_conversion_error.h" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

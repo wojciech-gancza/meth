@@ -12,11 +12,11 @@ import time
 
 # backlog:
 # -- simple types generator
+#   -- bitflags type
 #   -- integer type
 #   -- string type
 #   -- enum type
 #   -- collection type
-#   -- bitflags type
 #   -- registry of all generated types
 #   -- adding tool files (when required)
 
