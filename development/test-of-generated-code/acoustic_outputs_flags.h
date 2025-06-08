@@ -13,11 +13,11 @@ namespace Acoustic
     public:
       // type traits
       static constexpr const char* class_name = { "Acoustinc::OutputsFlags" };
-      static constexpr bool is_compareable{ true };
-      static constexpr bool is_ordered{ false };
-      static constexpr bool size_in_bytes { 1 };
-      static constexpr uint8_t first_flag_value = 0x01;
-      static constexpr uint8_t last_flag_value = 0x40;
+      static constexpr bool is_compareable = { true };
+      static constexpr bool is_ordered = { false };
+      static constexpr bool size_in_bytes = { 1 };
+      static constexpr uint8_t first_flag_value = { 0x01 };
+      static constexpr uint8_t last_flag_value = { 0x40 } ;
 
       // flags values (internal)
       enum Output {

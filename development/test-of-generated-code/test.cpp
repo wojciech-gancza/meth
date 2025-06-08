@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 
 #include "acoustic_outputs_flags.h"
+#include "common_conversion_error.h"
 
 //--------------------------------------------------------------------------------------------
 
@@ -39,6 +40,11 @@ TEST(TestOfGeneratedBitflagsType, TestOfCreationFromString2)
 {
   Acoustic::OutputsFlags flags1 = Acoustic::OutputsFlags::fromString("NONE");
   ASSERT_EQ(flags1.toString(), "NONE");
+}
+
+TEST(TestOfGeneratedBitflagsType, TestOfCreationFromStringError)
+{
+  ASSERT_THROW(Acoustic::OutputsFlags::fromString("VEHICLE_ALL_SPEAKERS"), Common::ConversionError);
 }
 
 TEST(TestOfGeneratedBitflagsType, TestOfCreationFromString3)
