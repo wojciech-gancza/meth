@@ -1,0 +1,87 @@
+class ${class_name}
+{
+  public:
+    // type traits
+    static constexpr const char* class_name = { "${"::".join(name.UppercaseCamelsNamespaces())}::${class_name}" };
+    static constexpr bool is_compareable = { ${#if compareable}true${#else}false${#end} };
+    static constexpr bool is_ordered = { ${#if ordered}true${#else}false${#end} };
+    static constexpr bool size_in_bytes = { ${base_class_size} };
+    static constexpr uint8_t first_flag_value = { ${first_value} };
+    static constexpr uint8_t last_flag_value = { ${last_value} } ;
+
+    // flags values (internal)
+    enum E${class_name} {
+      ${format.bitmasks_enum(["E_" + value.UPPERCASE_NAME() for value in values])}
+    };
+
+    ${class_name}()
+      : m_${object_name}(0)
+    {  }
+
+    constexpr ${class_name}(${class_name}::E${class_name} e_${object_name}) noexcept
+      : m_${object_name}(e_${object_name})
+    {  }
+
+    ${#include "simple.assignment.pattern"}
+  
+    ${#include "simple.compare.pattern"}
+  
+    ${class_name} operator!() const noexcept
+    {
+      return ${class_name}(m_${object_name} ^ (2 * last_flag_value - 1));
+    }
+
+    ${class_name} operator|=(const ${class_name}& ${object_name}) noexcept
+    {
+      m_${object_name} |= ${object_name}.m_${object_name};
+      return *this;
+    }
+
+    ${class_name} operator|(const ${class_name}& ${object_name}) const noexcept
+    {
+      return ${class_name}(m_${object_name} | ${object_name}.m_${object_name});
+    }
+
+    ${class_name} operator&=(const ${class_name}& ${object_name}) noexcept
+    {
+      m_${object_name} &= ${object_name}.m_${object_name};
+      return *this;
+    }
+
+    ${class_name} operator&(const ${class_name}& ${object_name}) const noexcept
+    {
+      return ${class_name}(m_${object_name} & ${object_name}.m_${object_name});
+    }
+
+    bool isAnyOf(const ${class_name}& ${object_name}) const noexcept
+    {
+      return (${object_name}.m_${object_name} & m_${object_name});
+    }
+
+    bool hasAllOf(const ${class_name}& ${object_name}) const noexcept
+    {
+      return (${object_name}.m_${object_name} & m_${object_name}) == ${object_name}.m_${object_name};
+    }
+
+    void remove(const ${class_name}& ${object_name}) noexcept
+    {
+      m_${object_name} &= ~${object_name}.m_${object_name};
+    }
+
+    ${#include "dump.declaration.pattern"}
+
+    ${#include "integer.binary.serialization.pattern"}
+
+  private:
+    ${base_class} m_${object_name};
+
+    static const char* m_${object_name}_bits_names[];
+
+    ${class_name}(${base_class} ${object_name})
+      : m_${object_name}(${object_name})
+    {  }
+
+    static E${class_name} convertTextToSingleFlag(const std::string& text);
+};
+${#for value in values}
+constexpr ${class_name} ${value.UPPERCASE_NAME()} { ${class_name}(${class_name}::E_${value.UPPERCASE_NAME()}) };${#end}

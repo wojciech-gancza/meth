@@ -1,0 +1,11 @@
+${#include "header.pattern"}
+
+#pragma once
+
+#include <cstdint>
+#include <string>
+#include <iostream>
+
+#include "binary_serialization.h"
+
+${#include "namespace.wrapper.pattern" "code_body_pattern": "bitflags.h.body.pattern"}

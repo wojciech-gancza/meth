@@ -1,0 +1,62 @@
+std::string ${class_name}::toString() const
+{
+  std::ostringstream string_representation;
+  string_representation << *this;
+  return string_representation.str();
+}
+
+${class_name} ${class_name}::fromString(std::string text)
+{
+  ${class_name} ${object_name};
+  if (text == "" || text == "NONE")
+  {
+    return ${object_name};
+  }
+  else
+  {
+    for (size_t separator_position = text.find_first_of("|"); 
+         separator_position != std::string::npos; 
+         separator_position = text.find_first_of("|"))
+    {
+      ${object_name} |= ${class_name}::convertTextToSingleFlag(text.substr(0, separator_position));
+      text = text.substr(separator_position + 1);
+    }
+    ${object_name} |= ${class_name}::convertTextToSingleFlag(text);
+    return ${object_name};
+  }
+}
+
+std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name})
+{
+  if (${object_name}.m_${object_name})
+  {
+    const char* separator = "";
+    uint8_t string_index = 0;
+    for (uint8_t mask = ${class_name}::first_flag_value; mask <= ${class_name}::last_flag_value; mask *= 2, ++string_index)
+    {
+      if (mask & ${object_name}.m_${object_name})
+      {
+        output << separator << ${class_name}::m_${object_name}_bits_names[string_index];
+        separator = "|";
+      }
+    }
+  }
+  else
+  {
+    output << "NONE";
+  }
+  return output;
+}
+
+const char* ${class_name}::m_${object_name}_bits_names[] = {
+  ${format.comma_separated(['"'+value.UPPERCASE_NAME()+'"' for value in values])}
+};
+
+${class_name}::E${class_name} ${class_name}::convertTextToSingleFlag(const std::string& text)
+{${#for value in values}
+  if (text == "${value.UPPERCASE_NAME()}")
+  {
+    return E_${value.UPPERCASE_NAME()};
+  }${#end}
+  throw Common::ConversionError(text, "cannot be interpreted as ${"::".join(namespaces)}::${class_name}::E${class_name}");
+}

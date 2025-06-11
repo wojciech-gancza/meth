@@ -42,7 +42,7 @@ class Metamorph:
                             parameters = eval("{ " + command_text.tail + " }", variable_map)
                             variable_map_with_parameters = { **variable_map, **parameters }
                             self._morph(include_file_reader, buffered_output, variable_map_with_parameters)
-                            result_line = buffered_output.buffered_last_output + line.after_expression                    
+                            result_line = buffered_output.get_buffered_last_output() + line.after_expression                    
                         else:
                             result_line = line.before_expression + line.after_expression 
                     # conditionals placing a part of code conditionally: 

@@ -1,0 +1,4 @@
+std::string toString() const;
+static ${class_name} fromString(std::string text);
+
+friend std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name});

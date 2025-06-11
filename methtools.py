@@ -212,6 +212,12 @@ class OutputAllExceptLast:
             self.output.append(self.buffered_last_output)
             self.buffered_last_output = self.line_prefix + line_of_text
 
+    def get_buffered_last_output(self):
+        if self.buffered_last_output is None:
+            return ""
+        else:
+            return self.buffered_last_output
+
 #--------------------------------------------------------------------------
 
 class OutputFile:

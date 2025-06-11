@@ -28,6 +28,7 @@ class TestEnvironment:
         self.script_path = generatortools.AbsolutePath( __file__).parent()
         self.patterns_path = self.script_path.create_changed_by("patterns")
         self.output_path = self.script_path.create_changed_by("development/testdata/outputs")
+        self.cpp_output_path = self.script_path.create_changed_by("development/test-of-generated-code")
         self.sample_files_path = self.script_path.create_changed_by("development/testdata/" + subdirectory)
 
     def check_output_file(self, file_name):
@@ -54,15 +55,15 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
         super(Test_SimpleTypesGenerator, self).__init__(*args, **kwargs)
         self.environment = TestEnvironment("Test_SimpleTypesGenerator")
         self.generator = generator.PlainOldDataTypes(self.environment.output_path.parent().parent().parent())
-        self.generator.set_output_path(self.environment.output_path)
+        self.generator.set_output_path(self.environment.cpp_output_path)
         
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    def test_GeneratingIntegerType(self):
-        variables = {"name": "common : network : port number",
-                     "base_type": "uint16_t"}
-        self.generator.generate_integer(variables)
-        self.assertTrue(self.environment.check_output_file("common_network_port_number.h"))
+    def test_GeneratingBitsetType(self):
+        variables = {"name": "acoustic : selected output ids",
+                     "values": ["audio input l", "audio input r", "radio transmit", "driver handphone", 
+                                "driver speaker", "cabin inner speaker", "vehicle outher speaker"] }
+        self.generator.generate_bitflags(variables)
 
 #--------------------------------------------------------------------------
 
