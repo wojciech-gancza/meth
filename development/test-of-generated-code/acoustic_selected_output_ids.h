@@ -140,6 +140,8 @@ namespace Acoustic
       {  }
   
       static ESelectedOutputIds convertTextToSingleFlag(const std::string& text);
+      static ESelectedOutputIds convertTextToPossibleFlag(const std::string& text) noexcept;
+      static std::string convertSingleFlagToString(ESelectedOutputIds bit) noexcept;
   };
   
   constexpr SelectedOutputIds AUDIO_INPUT_L { SelectedOutputIds(SelectedOutputIds::E_AUDIO_INPUT_L) };

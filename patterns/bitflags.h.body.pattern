@@ -82,6 +82,8 @@ class ${class_name}
     {  }
 
     static E${class_name} convertTextToSingleFlag(const std::string& text);
+    static E${class_name} convertTextToPossibleFlag(const std::string& text) noexcept;
+    static std::string convertSingleFlagToString(E${class_name} bit) noexcept;
 };
 ${#for value in values}
 constexpr ${class_name} ${value.UPPERCASE_NAME()} { ${class_name}(${class_name}::E_${value.UPPERCASE_NAME()}) };${#end}

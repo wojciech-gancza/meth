@@ -78,34 +78,45 @@ namespace Acoustic
   
   SelectedOutputIds::ESelectedOutputIds SelectedOutputIds::convertTextToSingleFlag(const std::string& text)
   {
-    if (text == "AUDIO_INPUT_L")
+    ESelectedOutputIds possible_result = convertTextToPossibleFlag(text);
+    if (convertSingleFlagToString(possible_result) == text)
     {
-      return E_AUDIO_INPUT_L;
+      return possible_result;
     }
-    if (text == "AUDIO_INPUT_R")
+    else
     {
-      return E_AUDIO_INPUT_R;
+      throw Common::ConversionError(text, "cannot be interpreted as ::SelectedOutputIds::ESelectedOutputIds");
     }
-    if (text == "RADIO_TRANSMIT")
+  }
+  
+  SelectedOutputIds::ESelectedOutputIds SelectedOutputIds::convertTextToPossibleFlag(const std::string& text) noexcept
+  {
+    switch (text[12])
     {
-      return E_RADIO_TRANSMIT;
+      case 'E':
+          return E_VEHICLE_OUTHER_SPEAKER;
+      case 'H':
+          return E_DRIVER_HANDPHONE;
+      case 'I':
+          return E_RADIO_TRANSMIT;
+      case 'L':
+          return E_AUDIO_INPUT_L;
+      case 'R':
+          return E_AUDIO_INPUT_R;
+      default:
+          return E_CABIN_INNER_SPEAKER;
     }
-    if (text == "DRIVER_HANDPHONE")
+  }
+  
+  std::string SelectedOutputIds::convertSingleFlagToString(SelectedOutputIds::ESelectedOutputIds bit) noexcept
+  {
+    unsigned bit_number = 0;
+    uint8_t bit_value = static_cast<uint8_t>(bit);
+    while (bit_value != 0x01)
     {
-      return E_DRIVER_HANDPHONE;
+      bit_value >>= 1;
+      ++bit_number;
     }
-    if (text == "DRIVER_SPEAKER")
-    {
-      return E_DRIVER_SPEAKER;
-    }
-    if (text == "CABIN_INNER_SPEAKER")
-    {
-      return E_CABIN_INNER_SPEAKER;
-    }
-    if (text == "VEHICLE_OUTHER_SPEAKER")
-    {
-      return E_VEHICLE_OUTHER_SPEAKER;
-    }
-    throw Common::ConversionError(text, "cannot be interpreted as ::SelectedOutputIds::ESelectedOutputIds");
+    return m_selected_output_ids_bits_names[bit_number];
   }
 } // end Acoustic

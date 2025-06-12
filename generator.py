@@ -35,6 +35,7 @@ class PlainOldDataTypes:
         hex_format = "0x{:0" + str(math.ceil(len(properties["values"]) / 4)) + "x}"
         extended_properties["first_value"] = hex_format.format(1)
         extended_properties["last_value"] = hex_format.format(pow(2, len(extended_properties["values"]) - 1))
+        extended_properties["code_converting_from_string"] = generatortools.EnumCodeGenerator(extended_properties["values"]).generate_code()
         self._generate("bitflags.h.pattern", "header_file_name", extended_properties)
         self._generate("bitflags.cpp.pattern", "source_file_name", extended_properties)
 

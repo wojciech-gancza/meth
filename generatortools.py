@@ -162,3 +162,77 @@ class Name:
 
 #--------------------------------------------------------------------------
 
+class EnumCodeGenerator:
+
+    def __init__(self, names):
+        self.names_texts = [name.UPPERCASE_NAME() for name in names]
+
+    def generate_code(self):
+        return self._generate_code(self.names_texts)
+
+    def _generate_code(self, names_list):
+        if len(names_list) == 1:
+            return [ "return E_" + names_list[0] + ";" ]
+        switch_statement_data = self._check_best_way_to_distinguish(names_list)
+        switch_expression = switch_statement_data[0]
+        switch_cases = switch_statement_data[1]
+        switch_case_keys = list(switch_cases.keys())
+        switch_case_keys.sort()
+        if len(switch_cases) == 2:
+            first_key = switch_case_keys[0]
+            first_key_code = self._indent( self._generate_code(switch_cases[first_key]) ) 
+            second_key = switch_case_keys[1]
+            second_key_code = self._indent( self._generate_code(switch_cases[second_key]) ) 
+            return [ "if (" + switch_expression + " == " + first_key + ")", "{"] + \
+                   self._indent(first_key_code) + \
+                   [ "}", "else", "{" ] + \
+                   self._indent(second_key_code) + \
+                   [ "}" ] 
+        else:
+            result_code = [ "switch (" + switch_expression + ")", "{" ]
+            for key in switch_case_keys[:-1]:
+                key_code = self._indent( self._generate_code(switch_cases[key]) )
+                result_code = result_code + self._indent( ["case " + key + ":"] + self._indent(key_code))   
+            last_key = switch_case_keys[-1]
+            last_key_code = self._indent( self._generate_code(switch_cases[last_key]) ) 
+            return result_code + self._indent(["default:"] + self._indent(last_key_code)) + ["}"]
+
+    def _indent(self, code_block):
+        return [ "  " + code_line for code_line in code_block ]
+
+    def _check_best_way_to_distinguish(self, names_list):
+        select_by_length = self._group_by_length(names_list)
+        select_by_character_at_position = [ ]
+        consider_characters_count = min(select_by_length.keys())
+        for character_index in range(consider_characters_count):
+            select_by_character_at_position.append(self._gruop_by_character(character_index, names_list))
+        bigest_difference_by_character = max([len(seleced_by_character_at_position) for seleced_by_character_at_position in select_by_character_at_position])
+        difference_by_lenght = len(select_by_length)
+        if difference_by_lenght > bigest_difference_by_character:
+            return ("text.length()", select_by_length)
+        else:
+            for character_index in range(consider_characters_count):
+                if len(select_by_character_at_position[character_index]) == bigest_difference_by_character:
+                     return ("text[" + str(character_index) + "]", select_by_character_at_position[character_index])
+
+    def _gruop_by_character(self, character_index, names_list):
+        selector_map = { }
+        for name in names_list:
+            character = name[character_index]
+            if character in selector_map.keys():
+                selector_map[character].append(name)
+            else:
+                selector_map["'" + character + "'"] = [ name ]
+        return selector_map
+
+    def _group_by_length(self, names_list):
+        selector_map = { }
+        for name in names_list:
+            length = len(name)
+            if length in selector_map.keys():
+                selector_map[length].append(name)
+            else:
+                selector_map[length] = [name]
+        return selector_map
+
+#--------------------------------------------------------------------------
