@@ -34,6 +34,7 @@
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
     <ClCompile Include="acoustic_selected_output_ids.cpp" />
+    <ClCompile Include="common_severity.cpp" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -43,6 +44,7 @@
     <ClInclude Include="acoustic_selected_output_ids.h" />
     <ClInclude Include="binary_serialization.h" />
     <ClInclude Include="common_conversion_error.h" />
+    <ClInclude Include="common_severity.h" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

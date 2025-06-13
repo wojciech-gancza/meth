@@ -52,25 +52,25 @@ const char* ${class_name}::m_${object_name}_bits_names[] = {
   ${format.comma_separated(['"'+value.UPPERCASE_NAME()+'"' for value in values])}
 };
 
-${class_name}::E${class_name} ${class_name}::convertTextToSingleFlag(const std::string& text)
+${class_name}::e${class_name} ${class_name}::convertTextToSingleFlag(const std::string& text)
 {
-  E${class_name} possible_result = convertTextToPossibleFlag(text);
+  e${class_name} possible_result = convertTextToPossibleFlag(text);
   if (convertSingleFlagToString(possible_result) == text)
   {
     return possible_result;
   }
   else
   {
-    throw Common::ConversionError(text, "cannot be interpreted as ${"::".join(namespaces)}::${class_name}::E${class_name}");
+    throw Common::ConversionError(text, "cannot be interpreted as ${"::".join(namespaces)}::${class_name}::e${class_name}");
   }
 }
 
-${class_name}::E${class_name} ${class_name}::convertTextToPossibleFlag(const std::string& text) noexcept
+${class_name}::e${class_name} ${class_name}::convertTextToPossibleFlag(const std::string& text) noexcept
 {
   ${code_converting_from_string}
 }
 
-std::string ${class_name}::convertSingleFlagToString(${class_name}::E${class_name} bit) noexcept
+std::string ${class_name}::convertSingleFlagToString(${class_name}::e${class_name} bit) noexcept
 {
   unsigned bit_number = 0;
   ${base_class} bit_value = static_cast<${base_class}>(bit);

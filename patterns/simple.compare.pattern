@@ -10,7 +10,7 @@ bool operator!=(const ${class_name}& ${object_name}) const noexcept
 
 ${#if ordered}bool operator<(const ${class_name}& ${object_name}) const noexcept
 {
-  return (m_${object_name} < ${object_name}.m_outputs_flags);
+  return (m_${object_name} < ${object_name}.m_${object_name});
 }
 
 bool operator<=(const ${class_name}& ${object_name}) const noexcept
@@ -20,7 +20,7 @@ bool operator<=(const ${class_name}& ${object_name}) const noexcept
 
 bool operator>=(const ${class_name}& ${object_name}) const noexcept
 {
-  return (m_${object_name} >= ${object_name}.m_outputs_flags);
+  return (m_${object_name} >= ${object_name}.m_${object_name});
 }
 
 bool operator>(const ${class_name}& ${object_name}) const noexcept

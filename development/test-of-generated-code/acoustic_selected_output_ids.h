@@ -31,7 +31,7 @@ namespace Acoustic
       static constexpr uint8_t last_flag_value = { 0x40 } ;
   
       // flags values (internal)
-      enum ESelectedOutputIds {
+      enum eSelectedOutputIds {
         E_AUDIO_INPUT_L          = 0x01,
         E_AUDIO_INPUT_R          = 0x02,
         E_RADIO_TRANSMIT         = 0x04,
@@ -43,7 +43,7 @@ namespace Acoustic
   
       SelectedOutputIds() = default;
   
-      constexpr SelectedOutputIds(SelectedOutputIds::ESelectedOutputIds e_selected_output_ids) noexcept
+      constexpr SelectedOutputIds(SelectedOutputIds::eSelectedOutputIds e_selected_output_ids) noexcept
         : m_selected_output_ids(e_selected_output_ids)
       {  }
   
@@ -130,9 +130,9 @@ namespace Acoustic
         : m_selected_output_ids(selected_output_ids)
       {  }
   
-      static ESelectedOutputIds convertTextToSingleFlag(const std::string& text);
-      static ESelectedOutputIds convertTextToPossibleFlag(const std::string& text) noexcept;
-      static std::string convertSingleFlagToString(ESelectedOutputIds bit) noexcept;
+      static eSelectedOutputIds convertTextToSingleFlag(const std::string& text);
+      static eSelectedOutputIds convertTextToPossibleFlag(const std::string& text) noexcept;
+      static std::string convertSingleFlagToString(eSelectedOutputIds bit) noexcept;
   };
   
   constexpr SelectedOutputIds AUDIO_INPUT_L { SelectedOutputIds(SelectedOutputIds::E_AUDIO_INPUT_L) };

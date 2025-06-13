@@ -66,6 +66,13 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                                 "driver speaker", "cabin inner speaker", "vehicle outher speaker"] }
         self.generator.generate_bitflags(variables)
 
+    def test_GeneratingEnumType(self):
+        variables = {"name": "common : severity",
+                     "values": [ "data", "memo", "notice", "info", "trace", "debug", "log", "warning", \
+                                 "problem", "error", "fatal", "disaster", "armagedon"],
+                     "ordered": True }
+        self.generator.generate_enum(variables)
+
 #--------------------------------------------------------------------------
 
 class Test_MetageneratorCoreFunctionalities(unittest.TestCase):

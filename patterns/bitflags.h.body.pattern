@@ -10,13 +10,13 @@ class ${class_name}
     static constexpr uint8_t last_flag_value = { ${last_value} } ;
 
     // flags values (internal)
-    enum E${class_name} {
+    enum e${class_name} {
       ${format.bitmasks_enum(["E_" + value.UPPERCASE_NAME() for value in values])}
     };
 
     ${class_name}() = default;
 
-    constexpr ${class_name}(${class_name}::E${class_name} e_${object_name}) noexcept
+    constexpr ${class_name}(${class_name}::e${class_name} e_${object_name}) noexcept
       : m_${object_name}(e_${object_name})
     {  }
 
@@ -79,9 +79,9 @@ class ${class_name}
       : m_${object_name}(${object_name})
     {  }
 
-    static E${class_name} convertTextToSingleFlag(const std::string& text);
-    static E${class_name} convertTextToPossibleFlag(const std::string& text) noexcept;
-    static std::string convertSingleFlagToString(E${class_name} bit) noexcept;
+    static e${class_name} convertTextToSingleFlag(const std::string& text);
+    static e${class_name} convertTextToPossibleFlag(const std::string& text) noexcept;
+    static std::string convertSingleFlagToString(e${class_name} bit) noexcept;
 };
 ${#for value in values}
 constexpr ${class_name} ${value.UPPERCASE_NAME()} { ${class_name}(${class_name}::E_${value.UPPERCASE_NAME()}) };${#end}

@@ -76,20 +76,20 @@ namespace Acoustic
     "VEHICLE_OUTHER_SPEAKER"
   };
   
-  SelectedOutputIds::ESelectedOutputIds SelectedOutputIds::convertTextToSingleFlag(const std::string& text)
+  SelectedOutputIds::eSelectedOutputIds SelectedOutputIds::convertTextToSingleFlag(const std::string& text)
   {
-    ESelectedOutputIds possible_result = convertTextToPossibleFlag(text);
+    eSelectedOutputIds possible_result = convertTextToPossibleFlag(text);
     if (convertSingleFlagToString(possible_result) == text)
     {
       return possible_result;
     }
     else
     {
-      throw Common::ConversionError(text, "cannot be interpreted as ::SelectedOutputIds::ESelectedOutputIds");
+      throw Common::ConversionError(text, "cannot be interpreted as ::SelectedOutputIds::eSelectedOutputIds");
     }
   }
   
-  SelectedOutputIds::ESelectedOutputIds SelectedOutputIds::convertTextToPossibleFlag(const std::string& text) noexcept
+  SelectedOutputIds::eSelectedOutputIds SelectedOutputIds::convertTextToPossibleFlag(const std::string& text) noexcept
   {
     switch (text[12])
     {
@@ -108,7 +108,7 @@ namespace Acoustic
     }
   }
   
-  std::string SelectedOutputIds::convertSingleFlagToString(SelectedOutputIds::ESelectedOutputIds bit) noexcept
+  std::string SelectedOutputIds::convertSingleFlagToString(SelectedOutputIds::eSelectedOutputIds bit) noexcept
   {
     unsigned bit_number = 0;
     uint8_t bit_value = static_cast<uint8_t>(bit);

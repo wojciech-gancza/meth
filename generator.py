@@ -3,7 +3,6 @@
 import meth
 import math
 import generatortools
-#from inspect import currentframe, getmodule
 import inspect
 
 #--------------------------------------------------------------------------
@@ -21,7 +20,6 @@ class PlainOldDataTypes:
 
     def generate_bitflags(self, properties):
         extended_properties = self._extend_property_list(properties)
-        self._set_default_value(extended_properties, "compareable", True)
         extended_properties["ordered"] = False
         if len(extended_properties["values"]) <= 8:
             extended_properties["base_class"] = "uint8_t"
@@ -38,6 +36,23 @@ class PlainOldDataTypes:
         extended_properties["code_converting_from_string"] = generatortools.EnumCodeGenerator(extended_properties["values"]).generate_code()
         self._generate("bitflags.h.pattern", "header_file_name", extended_properties)
         self._generate("bitflags.cpp.pattern", "source_file_name", extended_properties)
+
+    def generate_enum(self, properties):
+        extended_properties = self._extend_property_list(properties)
+        if len(extended_properties["values"]) <= 255:
+            extended_properties["base_class"] = "uint8_t"
+            extended_properties["base_class_size"] = 1
+        elif len(extended_properties["values"]) <= 65535:
+            extended_properties["base_class"] = "uint16_t"
+            extended_properties["base_class_size"] = 2
+        else:
+            extended_properties["base_class"] = "uint32_t"
+            extended_properties["base_class_size"] = 4
+        extended_properties["first_value"] = extended_properties["values"][0].UPPERCASE_NAME()
+        extended_properties["last_value"] = extended_properties["values"][-1].UPPERCASE_NAME()
+        extended_properties["code_converting_from_string"] = generatortools.EnumCodeGenerator(extended_properties["values"]).generate_code()
+        self._generate("enum.h.pattern", "header_file_name", extended_properties)
+        self._generate("enum.cpp.pattern", "source_file_name", extended_properties)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -70,6 +85,10 @@ class PlainOldDataTypes:
                  "solution_path": self.soluton_path }
         if "values" in extended_properties.keys():
             extended_properties["values"] = [generatortools.Name(value) for value in extended_properties["values"] ]
+        self._set_default_value(extended_properties, "compareable", True)
+        self._set_default_value(extended_properties, "ordered", False)
+        if extended_properties["ordered"]:
+            extended_properties["compareable"] = True
         return extended_properties
 
 #--------------------------------------------------------------------------
