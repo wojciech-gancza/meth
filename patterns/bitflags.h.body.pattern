@@ -6,11 +6,12 @@ class ${class_name}
     static constexpr bool is_compareable = { ${#if compareable}true${#else}false${#end} };
     static constexpr bool is_ordered = { ${#if ordered}true${#else}false${#end} };
     static constexpr bool size_in_bytes = { ${base_class_size} };
-    static constexpr uint8_t first_flag_value = { ${first_value} };
-    static constexpr uint8_t last_flag_value = { ${last_value} } ;
+    static constexpr ${base_class} first_flag_value = { ${first_value} };
+    static constexpr ${base_class} last_flag_value = { ${last_value} } ;
 
     // flags values (internal)
-    enum e${class_name} {
+    enum e${class_name} : ${base_class}
+    {
       ${format.bitmasks_enum(["E_" + value.UPPERCASE_NAME() for value in values])}
     };
 

@@ -31,7 +31,8 @@ namespace Acoustic
       static constexpr uint8_t last_flag_value = { 0x40 } ;
   
       // flags values (internal)
-      enum eSelectedOutputIds {
+      enum eSelectedOutputIds : uint8_t
+      {
         E_AUDIO_INPUT_L          = 0x01,
         E_AUDIO_INPUT_R          = 0x02,
         E_RADIO_TRANSMIT         = 0x04,

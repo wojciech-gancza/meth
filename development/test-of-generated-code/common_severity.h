@@ -110,4 +110,19 @@ namespace Common
   
       static eSeverity convertTextToPossibleEnum(const std::string& text) noexcept;
   };
+  
+  constexpr Severity DATA { Severity(Severity::E_DATA) };
+  constexpr Severity MEMO { Severity(Severity::E_MEMO) };
+  constexpr Severity NOTICE { Severity(Severity::E_NOTICE) };
+  constexpr Severity INFO { Severity(Severity::E_INFO) };
+  constexpr Severity TRACE { Severity(Severity::E_TRACE) };
+  constexpr Severity DEBUG { Severity(Severity::E_DEBUG) };
+  constexpr Severity LOG { Severity(Severity::E_LOG) };
+  constexpr Severity WARNING { Severity(Severity::E_WARNING) };
+  constexpr Severity PROBLEM { Severity(Severity::E_PROBLEM) };
+  constexpr Severity ERROR { Severity(Severity::E_ERROR) };
+  constexpr Severity FATAL { Severity(Severity::E_FATAL) };
+  constexpr Severity DISASTER { Severity(Severity::E_DISASTER) };
+  constexpr Severity ARMAGEDON { Severity(Severity::E_ARMAGEDON) };
+
 } // end Common

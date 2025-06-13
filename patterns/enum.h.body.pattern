@@ -35,3 +35,5 @@ class ${class_name}
 
     static e${class_name} convertTextToPossibleEnum(const std::string& text) noexcept;
 };
+${#for value in values}
+constexpr ${class_name} ${value.UPPERCASE_NAME()} { ${class_name}(${class_name}::E_${value.UPPERCASE_NAME()}) };${#end}
