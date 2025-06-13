@@ -14,9 +14,7 @@ class ${class_name}
       ${format.bitmasks_enum(["E_" + value.UPPERCASE_NAME() for value in values])}
     };
 
-    ${class_name}()
-      : m_${object_name}(0)
-    {  }
+    ${class_name}() = default;
 
     constexpr ${class_name}(${class_name}::E${class_name} e_${object_name}) noexcept
       : m_${object_name}(e_${object_name})
@@ -73,7 +71,7 @@ class ${class_name}
     ${#include "integer.binary.serialization.pattern"}
 
   private:
-    ${base_class} m_${object_name};
+    ${base_class} m_${object_name} = { 0 };
 
     static const char* m_${object_name}_bits_names[];
 

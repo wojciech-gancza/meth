@@ -1,9 +1,2 @@
-${class_name}(const ${class_name}& ${object_name}) noexcept
-  : m_${object_name}(${object_name}.m_${object_name})
-{  }
-
-${class_name}& operator=(const ${class_name}& ${object_name}) noexcept
-{
-  m_${object_name} = ${object_name}.m_${object_name};
-  return *this;
-}
+${class_name}(const ${class_name}& ${object_name}) noexcept = default;
+${class_name}& operator=(const ${class_name}& ${object_name}) noexcept = default;
