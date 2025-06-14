@@ -9,18 +9,22 @@ import os
 import time
 
 #--------------------------------------------------------------------------
-
 # backlog:
+#--------------------------------------------------------------------------
+# ++ fixing problems
+#   ++ converting string->enum - check length of the string first. Problem with too bix index
 # -! simple types generator
+#   -- record type
 #   -- integer type
 #   -- string type
-#   -- enum type
 #   -- collection type
-#   -- float type (based on double)
+#   -- float type (based on float/double)
 #   -- registry of all generated types
 #   -- adding tool files (when required)
 #   ++ bitflags type 
-
+#   ++ enum type
+# ++ main part of metagenerator
+#   ++ functionality as previos version +...
 #--------------------------------------------------------------------------
 
 class TestEnvironment:
@@ -55,7 +59,7 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(Test_SimpleTypesGenerator, self).__init__(*args, **kwargs)
         self.environment = TestEnvironment("Test_SimpleTypesGenerator")
-        self.generator = generator.PlainOldDataTypes(self.environment.output_path.parent().parent().parent())
+        self.generator = generator.PlainOldDataTypes(self.environment.output_path.parent().parent().parent(), self.environment.cpp_output_path)
         self.generator.set_output_path(self.environment.cpp_output_path)
         
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -70,7 +74,8 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
         variables = {"name": "common : severity",
                      "values": [ "data", "memo", "notice", "info", "trace", "debug", "log", "warning", \
                                  "problem", "error", "fatal", "disaster", "armagedon"],
-                     "ordered": True }
+                     "ordered": True,
+                     "default": "info"}
         self.generator.generate_enum(variables)
 
 #--------------------------------------------------------------------------

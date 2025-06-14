@@ -9,10 +9,13 @@ import inspect
 
 class PlainOldDataTypes:
 
-    def __init__(self, soluton_path):
+    def __init__(self, soluton_path, tools_target_path = None):
+        if not tools_target_path:
+            tools_target_path = soluton_path
         self.environment = generatortools.Environment()
         self.soluton_path = generatortools.AbsolutePath(soluton_path)
         self.output_path = soluton_path
+        self.tools_output_path = generatortools.AbsolutePath(tools_target_path)
         self.generator = meth.Metamorph(self.environment.patterns_path.get_as_directory())
 
     def set_output_path(self, output_path):
@@ -34,7 +37,9 @@ class PlainOldDataTypes:
         extended_properties["first_value"] = hex_format.format(1)
         extended_properties["last_value"] = hex_format.format(pow(2, len(extended_properties["values"]) - 1))
         extended_properties["code_converting_from_string"] = generatortools.EnumCodeGenerator(extended_properties["values"]).generate_code()
+        extended_properties["includes"] = [ self.tools_output_path.create_changed_by("serialization_binary_serialization.h") ]
         self._generate("bitflags.h.pattern", "header_file_name", extended_properties)
+        extended_properties["includes"] = [ self.tools_output_path.create_changed_by("common_conversion_error.h") ]
         self._generate("bitflags.cpp.pattern", "source_file_name", extended_properties)
 
     def generate_enum(self, properties):
@@ -51,7 +56,12 @@ class PlainOldDataTypes:
         extended_properties["first_value"] = extended_properties["values"][0].UPPERCASE_NAME()
         extended_properties["last_value"] = extended_properties["values"][-1].UPPERCASE_NAME()
         extended_properties["code_converting_from_string"] = generatortools.EnumCodeGenerator(extended_properties["values"]).generate_code()
+        extended_properties["includes"] = [ self.tools_output_path.create_changed_by("serialization_binary_serialization.h") ]
+        self._set_default_value(extended_properties, "default", None)
+        if extended_properties["default"]:
+            extended_properties["default"] = generatortools.Name(properties["default"])
         self._generate("enum.h.pattern", "header_file_name", extended_properties)
+        extended_properties["includes"] = [ self.tools_output_path.create_changed_by("common_conversion_error.h") ]
         self._generate("enum.cpp.pattern", "source_file_name", extended_properties)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

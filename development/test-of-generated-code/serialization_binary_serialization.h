@@ -8,7 +8,7 @@ namespace Serialization
   class BinarySerializer
   {
     public:
-      const std::vector<uint8_t>& getSerialziedData() const
+      const std::vector<uint8_t>& getSerializedData() const
       {
         return m_serialized_data;
       }

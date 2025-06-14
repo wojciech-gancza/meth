@@ -6,6 +6,10 @@ ${#include "header.pattern"}
 #include <string>
 #include <iostream>
 
-#include "binary_serialization.h"
+${#for include from includes}#include "${include.get_relative_to(header_file_name.parent())}"
+${#end}
+// -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
+
+// -^^^ END OF USER DEFINED INCLUDES
 
 ${#include "namespace.wrapper.pattern" "code_body_pattern": "bitflags.h.body.pattern"}

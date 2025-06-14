@@ -23,6 +23,11 @@ class ${class_name}
 
     ${#include "simple.assignment.pattern"}
   
+    const ${class_name}& get${class_name}() const noexcept { return *this; }
+    ${base_class} get${class_name}AsInt() const noexcept { return m_${object_name}; }
+
+    void set${class_name}(const ${class_name}& ${object_name}) { *this = ${object_name}; }
+
     ${#include "simple.compare.pattern"}
   
     ${class_name} operator!() const noexcept
@@ -52,17 +57,17 @@ class ${class_name}
       return ${class_name}(m_${object_name} & ${object_name}.m_${object_name});
     }
 
-    bool isAnyOf(const ${class_name}& ${object_name}) const noexcept
+    bool isAnyOf${class_name}(const ${class_name}& ${object_name}) const noexcept
     {
       return (${object_name}.m_${object_name} & m_${object_name});
     }
 
-    bool hasAllOf(const ${class_name}& ${object_name}) const noexcept
+    bool hasAllOf${class_name}(const ${class_name}& ${object_name}) const noexcept
     {
       return (${object_name}.m_${object_name} & m_${object_name}) == ${object_name}.m_${object_name};
     }
 
-    void remove(const ${class_name}& ${object_name}) noexcept
+    void remove${class_name}(const ${class_name}& ${object_name}) noexcept
     {
       m_${object_name} &= ~${object_name}.m_${object_name};
     }
@@ -83,6 +88,14 @@ class ${class_name}
     static e${class_name} convertTextToSingleFlag(const std::string& text);
     static e${class_name} convertTextToPossibleFlag(const std::string& text) noexcept;
     static std::string convertSingleFlagToString(e${class_name} bit) noexcept;
+
+    // -vvv YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
+
+    // -^^^ END OF USER DEFINED CLASS ELEMENTS
 };
 ${#for value in values}
 constexpr ${class_name} ${value.UPPERCASE_NAME()} { ${class_name}(${class_name}::E_${value.UPPERCASE_NAME()}) };${#end}
+
+// -vvv YOU CAN PUT ADDITIONAL DEFINITIONS BELOW
+
+// -^^^ END OF USER DEFINED DEFINITIONS

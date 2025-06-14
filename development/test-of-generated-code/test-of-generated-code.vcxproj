@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="acoustic_selected_output_ids.h" />
-    <ClInclude Include="binary_serialization.h" />
+    <ClInclude Include="serialization_binary_serialization.h" />
     <ClInclude Include="common_conversion_error.h" />
     <ClInclude Include="common_severity.h" />
   </ItemGroup>
