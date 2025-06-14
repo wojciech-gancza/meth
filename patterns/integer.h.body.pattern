@@ -1,0 +1,49 @@
+class ${class_name}
+{
+  public:
+    // type traits
+    static constexpr const char* class_name = { "${"::".join(name.UppercaseCamelsNamespaces())}::${class_name}" };
+    static constexpr bool is_compareable = { ${#if compareable}true${#else}false${#end} };
+    static constexpr bool is_ordered = { ${#if ordered}true${#else}false${#end} };
+    static constexpr bool size_in_bytes = { ${base_class_size} };
+
+    // internal value type
+    enum e${class_name} : ${base_class} 
+    {
+      ${format.comma_separated(["E_" + value.UPPERCASE_NAME() for value in values])}
+    };
+
+    static constexpr e${class_name} first_value = { E_${first_value} };
+    static constexpr e${class_name} last_value = { E_${last_value} } ;
+
+    constexpr ${class_name}(${class_name}::e${class_name} e_${object_name} = ${#if default}${class_name}::${"E_" + default.UPPERCASE_NAME()}${#else}${class_name}::first_value${#end}) noexcept
+      : m_${object_name}(e_${object_name})
+    {  }
+
+    ${#include "simple.assignment.pattern"}
+  
+    const ${class_name}& get${class_name}() const noexcept { return *this; }
+    e${class_name} get${class_name}AsEnum() const noexcept { return m_${object_name}; }
+    ${base_class} get${class_name}AsInt() const noexcept { return m_${object_name}; }
+
+    void set${class_name}(const ${class_name}& ${object_name}) { *this = ${object_name}; }
+
+    ${#include "simple.compare.pattern"}
+  
+    ${#include "dump.declaration.pattern"}
+
+    ${#include "integer.binary.serialization.pattern"}
+
+  private:
+    e${class_name} m_${object_name};
+
+    static const char* m_${object_name}_names[];
+
+    static e${class_name} convertTextToPossibleEnum(const std::string& text) noexcept;
+
+    // -vvv YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
+
+    // -^^^ END OF USER DEFINED CLASS ELEMENTS
+};
+${#for value in values}
+constexpr ${class_name} ${value.UPPERCASE_NAME()} { ${class_name}(${class_name}::E_${value.UPPERCASE_NAME()}) };${#end}

@@ -78,6 +78,12 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                      "default": "info"}
         self.generator.generate_enum(variables)
 
+    def test_GeneratingIntegerType(self):
+        variables = {"name": "common : network : port number",
+                     "base_type": "uint16_t",
+                     "ordered": True}
+        self.generator.generate_integer(variables)
+
 #--------------------------------------------------------------------------
 
 class Test_MetageneratorCoreFunctionalities(unittest.TestCase):
