@@ -23,6 +23,13 @@ class PlainOldDataTypes:
 
     def generate_integer(self, properties):
         extended_properties = self._extend_property_list(properties)
+        if properties["base_class"] in ["int8_t", "uint8_t"]:
+            extended_properties["base_class_size"] = 1
+        elif properties["base_class"] in ["int16_t", "uint16_t"]:
+            extended_properties["base_class_size"] = 2
+        elif properties["base_class"] in ["int32_t", "uint32_t"]:
+            extended_properties["base_class_size"] = 4
+        self._set_default_value(extended_properties, "default", 0)
         #
         #
         #

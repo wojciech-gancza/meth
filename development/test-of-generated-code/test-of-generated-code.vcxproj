@@ -34,6 +34,7 @@
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
     <ClCompile Include="acoustic_selected_output_ids.cpp" />
+    <ClCompile Include="common_network_port_number.cpp" />
     <ClCompile Include="common_severity.cpp" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
@@ -42,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="acoustic_selected_output_ids.h" />
+    <ClInclude Include="common_network_port_number.h" />
     <ClInclude Include="serialization_binary_serialization.h" />
     <ClInclude Include="common_conversion_error.h" />
     <ClInclude Include="common_severity.h" />

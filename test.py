@@ -80,7 +80,7 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
 
     def test_GeneratingIntegerType(self):
         variables = {"name": "common : network : port number",
-                     "base_type": "uint16_t",
+                     "base_class": "uint16_t",
                      "ordered": True}
         self.generator.generate_integer(variables)
 

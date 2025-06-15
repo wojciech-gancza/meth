@@ -3,6 +3,59 @@
 #include "acoustic_selected_output_ids.h"
 #include "common_severity.h"
 #include "common_conversion_error.h"
+#include "common_network_port_number.h"
+
+//--------------------------------------------------------------------------------------------
+
+TEST(TestOfGeneratedIntegerType, TestOfSettingValue)
+{
+  Common::Network::PortNumber port;
+  ASSERT_EQ(port, 0);
+  port = Common::Network::PortNumber(8080);
+  ASSERT_EQ(port, 8080);
+}
+
+TEST(TestOfGeneratedIntegerType, TestOfDumpingToString)
+{
+  Common::Network::PortNumber port(8080);
+  ASSERT_EQ(port.toString(), "8080");
+}
+
+TEST(TestOfGeneratedIntegerType, TestOfCreationFromString)
+{
+  Common::Network::PortNumber severity = Common::Network::PortNumber::fromString("8089");
+  ASSERT_EQ(severity.toString(), "8089");
+}
+
+TEST(TestOfGeneratedIntegerType, TestOfCreationFromStringError1)
+{
+  ASSERT_THROW(Common::Network::PortNumber::fromString("NOONE"), Common::ConversionError);
+}
+
+TEST(TestOfGeneratedIntegerType, TestOfCreationFromStringError2)
+{
+  ASSERT_THROW(Common::Network::PortNumber::fromString("990A"), Common::ConversionError);
+}
+
+TEST(TestOfGeneratedIntegerType, TestOfSerialization)
+{
+  Serialization::BinarySerializer serializer;
+  Common::Network::PortNumber port(8080);
+  serializer << port;
+  const std::vector<uint8_t>& serialized_data = serializer.getSerializedData();
+  ASSERT_EQ(serialized_data.size(), 2);
+  ASSERT_EQ(serialized_data[0], 0x1f);
+  ASSERT_EQ(serialized_data[1], 0x90);
+}
+
+TEST(TestOfGeneratedIntegerType, TestOfDeserialization)
+{
+  std::vector<uint8_t> serialized_data = { 0x1f, 0x99 };
+  Serialization::BinaryDeserializer deserializer(serialized_data);
+  Common::Network::PortNumber port;
+  deserializer >> port;
+  ASSERT_EQ(port.getPortNumberAsInt(), 8089);
+}
 
 //--------------------------------------------------------------------------------------------
 

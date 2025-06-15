@@ -1,2 +1,4 @@
 ${class_name}(const ${class_name}& ${object_name}) noexcept = default;
+${class_name}(${class_name}&& ${object_name}) noexcept = default;
 ${class_name}& operator=(const ${class_name}& ${object_name}) noexcept = default;
+${class_name}& operator=(${class_name}&& ${object_name}) noexcept = default;

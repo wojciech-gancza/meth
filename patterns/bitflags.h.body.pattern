@@ -27,6 +27,8 @@ class ${class_name}
     ${base_class} get${class_name}AsInt() const noexcept { return m_${object_name}; }
 
     void set${class_name}(const ${class_name}& ${object_name}) { *this = ${object_name}; }
+    void setFrom(const ${class_name}& ${object_name}) { *this = ${object_name}; }
+    void setFrom(${class_name}&& ${object_name}) { *this = ${object_name}; }
 
     ${#include "simple.compare.pattern"}
   

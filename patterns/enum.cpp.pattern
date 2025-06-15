@@ -10,4 +10,4 @@ ${#end}
 
 // -^^^ END OF USER DEFINED INCLUDES
 
-${#include "namespace.wrapper.pattern" "code_body_pattern": "enum.cpp.body.pattern"}
+${#include "namespace.wrapper.pattern" "namespaces_list": namespaces, "code_body_pattern": "enum.cpp.body.pattern"}

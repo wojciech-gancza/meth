@@ -14,7 +14,7 @@ ${class_name} ${class_name}::fromString(std::string text)
   }
   else
   {
-    throw Common::ConversionError(text, "cannot be interpreted as ${"::".join(namespaces)}::${class_name}::e${class_name}");
+    throw Common::ConversionError(text, "cannot be interpreted as ${"::".join(namespaces)}::${class_name}");
   }
 }
 

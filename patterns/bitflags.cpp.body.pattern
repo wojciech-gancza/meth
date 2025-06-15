@@ -61,7 +61,7 @@ ${class_name}::e${class_name} ${class_name}::convertTextToSingleFlag(const std::
   }
   else
   {
-    throw Common::ConversionError(text, "cannot be interpreted as ${"::".join(namespaces)}::${class_name}::e${class_name}");
+    throw Common::ConversionError(text, "cannot be interpreted as ${"::".join(namespaces)}::${class_name}");
   }
 }
 

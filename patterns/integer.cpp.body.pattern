@@ -7,30 +7,20 @@ std::string ${class_name}::toString() const
 
 ${class_name} ${class_name}::fromString(std::string text)
 {
-  e${class_name} possible_result = convertTextToPossibleEnum(text);
-  if (m_${object_name}_names[possible_result] == text)
+  std::istringstream string_representation(text);
+  uint16_t ${object_name} = 0;
+  string_representation >> ${object_name};
+  if (!string_representation.eof())
   {
-    return ${class_name}(possible_result);
+    throw Common::ConversionError(text, "cannot be interpreted as ${"::".join(namespaces)}::${class_name}");
   }
-  else
-  {
-    throw Common::ConversionError(text, "cannot be interpreted as ${"::".join(namespaces)}::${class_name}::e${class_name}");
-  }
+  return PortNumber(${object_name});
 }
 
 std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name})
 {
-  output << ${class_name}::m_${object_name}_names[${object_name}.m_${object_name}];
+  output << ${object_name}.m_${object_name};
   return output;
-}
-
-const char* ${class_name}::m_${object_name}_names[] = {
-  ${format.comma_separated(['"'+value.UPPERCASE_NAME()+'"' for value in values])}
-};
-
-${class_name}::e${class_name} ${class_name}::convertTextToPossibleEnum(const std::string& text) noexcept
-{
-  ${code_converting_from_string}
 }
 
 // -vvv YOU CAN PUT ADDITIONAL CODE BELOW

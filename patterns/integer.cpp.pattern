@@ -5,9 +5,8 @@ ${#include "header.pattern"}
 #include "${header_file_name.get_relative_to(source_file_name.parent())}"
 ${#for include from includes}#include "${include.get_relative_to(source_file_name.parent())}"
 ${#end}
-
 // -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
 
 // -^^^ END OF USER DEFINED INCLUDES
 
-${#include "namespace.wrapper.pattern" "code_body_pattern": "integer.cpp.body.pattern"}
+${#include "namespace.wrapper.pattern" "namespaces_list": namespaces, "code_body_pattern": "integer.cpp.body.pattern"}
