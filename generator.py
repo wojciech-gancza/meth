@@ -23,69 +23,45 @@ class PlainOldDataTypes:
 
     def generate_integer(self, properties):
         extended_properties = self._extend_property_list(properties)
-        if properties["base_class"] in ["int8_t", "uint8_t"]:
-            extended_properties["base_class_size"] = 1
-        elif properties["base_class"] in ["int16_t", "uint16_t"]:
-            extended_properties["base_class_size"] = 2
-        elif properties["base_class"] in ["int32_t", "uint32_t"]:
-            extended_properties["base_class_size"] = 4
+        self._set_base_class_size(extended_properties)
         self._set_default_value(extended_properties, "default", 0)
-        #
-        #
-        #
-        extended_properties["includes"] = [ self.tools_output_path.create_changed_by("serialization_binary_serialization.h") ]
-        self._generate("integer.h.pattern", "header_file_name", extended_properties)
-        extended_properties["includes"] = [ self.tools_output_path.create_changed_by("common_conversion_error.h") ]
-        self._generate("integer.cpp.pattern", "source_file_name", extended_properties)
+        self._generate_files("integer.h.body.pattern", "integer.cpp.body.pattern", extended_properties)
 
     def generate_enum(self, properties):
         extended_properties = self._extend_property_list(properties)
-        if len(extended_properties["values"]) <= 255:
-            extended_properties["base_class"] = "uint8_t"
-            extended_properties["base_class_size"] = 1
-        elif len(extended_properties["values"]) <= 65535:
-            extended_properties["base_class"] = "uint16_t"
-            extended_properties["base_class_size"] = 2
-        else:
-            extended_properties["base_class"] = "uint32_t"
-            extended_properties["base_class_size"] = 4
+        self._set_base_type_by_count_of_values(extended_properties, len(extended_properties["values"]))
         extended_properties["first_value"] = extended_properties["values"][0].UPPERCASE_NAME()
         extended_properties["last_value"] = extended_properties["values"][-1].UPPERCASE_NAME()
         extended_properties["code_converting_from_string"] = generatortools.EnumCodeGenerator(extended_properties["values"]).generate_code()
         self._set_default_value(extended_properties, "default", None)
         if extended_properties["default"]:
             extended_properties["default"] = generatortools.Name(properties["default"])
-        extended_properties["includes"] = [ self.tools_output_path.create_changed_by("serialization_binary_serialization.h") ]
-        self._generate("enum.h.pattern", "header_file_name", extended_properties)
-        extended_properties["includes"] = [ self.tools_output_path.create_changed_by("common_conversion_error.h") ]
-        self._generate("enum.cpp.pattern", "source_file_name", extended_properties)
+        self._generate_files("enum.h.body.pattern", "enum.cpp.body.pattern", extended_properties)
 
     def generate_bitflags(self, properties):
         extended_properties = self._extend_property_list(properties)
         extended_properties["ordered"] = False
-        if len(extended_properties["values"]) <= 8:
-            extended_properties["base_class"] = "uint8_t"
-            extended_properties["base_class_size"] = 1
-        elif len(extended_properties["values"]) <= 16:
-            extended_properties["base_class"] = "uint16_t"
-            extended_properties["base_class_size"] = 2
-        elif len(extended_properties["values"]) <= 32:
-            extended_properties["base_class"] = "uint32_t"
-            extended_properties["base_class_size"] = 4
+        self._set_base_type_by_count_of_bits(extended_properties, len(extended_properties["values"]))
         hex_format = "0x{:0" + str(math.ceil(len(properties["values"]) / 4)) + "x}"
         extended_properties["first_value"] = hex_format.format(1)
         extended_properties["last_value"] = hex_format.format(pow(2, len(extended_properties["values"]) - 1))
         extended_properties["code_converting_from_string"] = generatortools.EnumCodeGenerator(extended_properties["values"]).generate_code()
-        extended_properties["includes"] = [ self.tools_output_path.create_changed_by("serialization_binary_serialization.h") ]
-        self._generate("bitflags.h.pattern", "header_file_name", extended_properties)
-        extended_properties["includes"] = [ self.tools_output_path.create_changed_by("common_conversion_error.h") ]
-        self._generate("bitflags.cpp.pattern", "source_file_name", extended_properties)
+        self._generate_files("bitflags.h.body.pattern", "bitflags.cpp.body.pattern", extended_properties)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+    def _generate_files(self, header_pattern, cpp_pattern, properties):
+        properties["includes"] = [ self.tools_output_path.create_changed_by("serialization_binary_serialization.h") ]
+        properties["code_body_pattern"] = header_pattern
+        self._generate("source.h.pattern", "header_file_name", properties)
+        properties["includes"] = [ self.tools_output_path.create_changed_by("common_conversion_error.h") ]
+        properties["code_body_pattern"] = cpp_pattern
+        self._generate("source.cpp.pattern", "source_file_name", properties)
+
     def _generate(self, pattern_file_name, output_type, properties):
         pattern_file_path = self.environment.patterns_path.create_changed_by(pattern_file_name)
-        properties["pattern_file_path"] = pattern_file_path
+        properties["pattern_file_path"] = self.environment.patterns_path.create_changed_by(properties["code_body_pattern"])
+        properties["pattern_wrapper_file_path"] = pattern_file_path
         output_file_name = properties[output_type]
         properties["output_file_name"] = output_file_name
         self.generator.generate(pattern_file_name, str(output_file_name), properties)
@@ -117,6 +93,36 @@ class PlainOldDataTypes:
         if extended_properties["ordered"]:
             extended_properties["compareable"] = True
         return extended_properties
+
+    def _set_base_class_size(self, properties):
+        if properties["base_class"] in ["int8_t", "uint8_t"]:
+            properties["base_class_size"] = 1
+        elif properties["base_class"] in ["int16_t", "uint16_t"]:
+            properties["base_class_size"] = 2
+        elif properties["base_class"] in ["int32_t", "uint32_t"]:
+            properties["base_class_size"] = 4
+
+    def _set_base_type_by_count_of_values(self, properties, cout_values):
+        if cout_values <= 255:
+            properties["base_class"] = "uint8_t"
+            properties["base_class_size"] = 1
+        elif cout_values <= 65535:
+            properties["base_class"] = "uint16_t"
+            properties["base_class_size"] = 2
+        else:
+            properties["base_class"] = "uint32_t"
+            properties["base_class_size"] = 4
+
+    def _set_base_type_by_count_of_bits(self, properties, count_of_bits):
+        if count_of_bits <= 8:
+            properties["base_class"] = "uint8_t"
+            properties["base_class_size"] = 1
+        elif count_of_bits <= 16:
+            properties["base_class"] = "uint16_t"
+            properties["base_class_size"] = 2
+        elif count_of_bits <= 32:
+            properties["base_class"] = "uint32_t"
+            properties["base_class_size"] = 4
 
 #--------------------------------------------------------------------------
 

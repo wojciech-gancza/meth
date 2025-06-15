@@ -1,12 +1,15 @@
 ${#include "header.pattern"}
 
-#include <sstream>
+#pragma once
 
-#include "${header_file_name.get_relative_to(source_file_name.parent())}"
+#include <cstdint>
+#include <string>
+#include <iostream>
+
 ${#for include from includes}#include "${include.get_relative_to(header_file_name.parent())}"
 ${#end}
 // -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
 
 // -^^^ END OF USER DEFINED INCLUDES
 
-${#include "namespace.wrapper.pattern" "namespaces_list": namespaces, "code_body_pattern": "enum.cpp.body.pattern"}
+${#include "namespace.wrapper.pattern" "namespaces_list": namespaces}
