@@ -1,0 +1,63 @@
+class ${class_name} 
+  ${format.inheritance_list(["public " + value.FullyDecoratedClassName() for value in values])}
+{
+  public:
+    // type traits
+    static constexpr const char* class_name = { "${name.FullyDecoratedClassName()}" };
+    static constexpr bool is_compareable = { ${#if compareable}true${#else}false${#end} };
+    static constexpr bool is_ordered = { ${#if ordered}true${#else}false${#end} };
+
+    typedef std::unique_ptr<${class_name}> Owner;
+
+    ${class_name}() = default;
+
+    ${class_name}(const ${class_name}& ${object_name}) noexcept
+    ${format.inheritance_list([value.FullyDecoratedClassName() + "(" + object_name + ")" for value in values])}
+    {  }
+
+    ${class_name}(${class_name}&& ${object_name}) noexcept
+    ${format.inheritance_list([value.FullyDecoratedClassName() + "(" + object_name + ")" for value in values])}
+    {  }
+
+    ${class_name}(${format.comma_separated(["const " + value.FullyDecoratedClassName() + "& " + value.lowercase_namespace_and_name() for value in values])}) noexcept
+    ${format.inheritance_list([value.FullyDecoratedClassName() + "(" + value.lowercase_namespace_and_name() + ")" for value in values])}
+    {  }
+
+    ${class_name}(${format.comma_separated([value.FullyDecoratedClassName() + "&& " + value.lowercase_namespace_and_name() for value in values])}) noexcept
+    ${format.inheritance_list([value.FullyDecoratedClassName() + "(" + value.lowercase_namespace_and_name() + ")" for value in values])}
+    {  }
+
+    template <class OTHER>
+    void setFrom(const OTHER& other)
+    {${#for value : values}
+      if constexpr(std::is_base_of_v<${value.FullyDecoratedClassName()}, OTHER>)
+      {
+        ${value.FullyDecoratedClassName()}::setFrom(other);
+      }
+      else if constexpr(std::is_base_of_v<OTHER, ${value.FullyDecoratedClassName()}>)
+      {
+        ${value.FullyDecoratedClassName()}::setFrom(other);
+      }${#end}
+    }
+
+    template <class OTHER>
+    void setFrom(OTHER&& other)
+    {${#for value in values}
+      if constexpr(std::is_base_of_v<typename std::remove_reference<OTHER>::type, ${value.FullyDecoratedClassName()}>)
+      {
+        ${value.FullyDecoratedClassName()}::setFrom(other);
+      }
+      else if constexpr(std::is_base_of_v<${value.FullyDecoratedClassName()}, typename std::remove_reference<OTHER>::type>)
+      {
+        ${value.FullyDecoratedClassName()}::setFrom(other);
+      }${#end}
+    }
+
+    ${#include "compare.declaration.pattern"}
+
+    ${#include "serialization.declaration.pattern"}
+
+    // -vvv YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
+
+    // -^^^ END OF USER DEFINED CLASS ELEMENTS
+};

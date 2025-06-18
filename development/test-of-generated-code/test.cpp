@@ -4,6 +4,156 @@
 #include "common_severity.h"
 #include "common_conversion_error.h"
 #include "common_network_port_number.h"
+#include "test_just_a_record.h"
+#include "test_another_record.h"
+
+//--------------------------------------------------------------------------------------------
+
+TEST(TestOfGeneratedRecordType, TestOfDefaultValue)
+{
+  ::Test::JustARecord record;
+  ASSERT_EQ(record.getSeverityAsEnum(), Common::Severity::E_INFO);
+  ASSERT_EQ(record.getSelectedOutputIdsAsInt(), 0);
+  ASSERT_EQ(record.getPortNumberAsInt(), 0);
+}
+
+TEST(TestOfGeneratedRecordType, TestOfConstructingValue)
+{
+  ::Test::JustARecord record(Common::ARMAGEDON, Acoustic::AUDIO_INPUT_L | Acoustic::AUDIO_INPUT_R, Common::Network::PortNumber(8099));
+  ASSERT_EQ(record.getSeverityAsEnum(), Common::Severity::E_ARMAGEDON);
+  ASSERT_EQ(record.getSelectedOutputIdsAsInt(), 3);
+  ASSERT_EQ(record.getPortNumberAsInt(), 8099);
+}
+
+TEST(TestOfGeneratedRecordType, TestConvertingToString)
+{
+  ::Test::JustARecord record1(Common::ARMAGEDON, Acoustic::AUDIO_INPUT_L | Acoustic::AUDIO_INPUT_R, Common::Network::PortNumber(8099));
+  ASSERT_EQ(record1.toString(), "{ common_severity: ARMAGEDON, acoustic_selected_output_ids: AUDIO_INPUT_L|AUDIO_INPUT_R, common_network_port_number: 8099 }");
+  ::Test::JustARecord record2;
+  ASSERT_EQ(record2.toString(), "{ common_severity: INFO, acoustic_selected_output_ids: NONE, common_network_port_number: 0 }");
+}
+
+TEST(TestOfGeneratedRecordType, TestSettingFieldsValues)
+{
+  ::Test::JustARecord record(Common::ARMAGEDON, Acoustic::AUDIO_INPUT_L | Acoustic::AUDIO_INPUT_R, Common::Network::PortNumber(8099));
+
+  record.setPortNumber(997);
+  record |= Acoustic::DRIVER_SPEAKER;
+
+  ASSERT_EQ(record.toString(), "{ common_severity: ARMAGEDON, acoustic_selected_output_ids: AUDIO_INPUT_L|AUDIO_INPUT_R|DRIVER_SPEAKER, common_network_port_number: 997 }");
+}
+
+TEST(TestOfGeneratedRecordType, TestSettingFromSimpleValues)
+{
+  ::Test::JustARecord record(Common::ARMAGEDON, Acoustic::AUDIO_INPUT_L | Acoustic::AUDIO_INPUT_R, Common::Network::PortNumber(8099));
+
+  record.setFrom(Acoustic::DRIVER_HANDPHONE | Acoustic::CABIN_INNER_SPEAKER);
+  record.setFrom(Common::Network::PortNumber(1025));
+
+  ASSERT_EQ(record.toString(), "{ common_severity: ARMAGEDON, acoustic_selected_output_ids: DRIVER_HANDPHONE|CABIN_INNER_SPEAKER, common_network_port_number: 1025 }");
+}
+
+TEST(TestOfGeneratedRecordType, TestSettingFromRecord1)
+{
+  ::Test::JustARecord record1(Common::ARMAGEDON, Acoustic::AUDIO_INPUT_L | Acoustic::AUDIO_INPUT_R, Common::Network::PortNumber(8099));
+  ::Test::AnotherRecord record2(Common::ERROR, Common::Network::PortNumber(555));
+
+  record1.setFrom(record2);
+
+  ASSERT_EQ(record1.toString(), "{ common_severity: ERROR, acoustic_selected_output_ids: AUDIO_INPUT_L|AUDIO_INPUT_R, common_network_port_number: 555 }");
+}
+
+TEST(TestOfGeneratedRecordType, TestSettingFromRecord2)
+{
+  ::Test::JustARecord record1(Common::ARMAGEDON, Acoustic::AUDIO_INPUT_L | Acoustic::AUDIO_INPUT_R, Common::Network::PortNumber(8099));
+  ::Test::AnotherRecord record2(Common::ERROR, Common::Network::PortNumber(555));
+
+  record2.setFrom(record1);
+
+  ASSERT_EQ(record2.toString(), "{ common_severity: ARMAGEDON, common_network_port_number: 8099 }");
+}
+
+TEST(TestOfGeneratedRecordType, TestOfComparision1)
+{
+  ::Test::JustARecord record1(Common::ARMAGEDON, Acoustic::AUDIO_INPUT_L | Acoustic::AUDIO_INPUT_R, Common::Network::PortNumber(8099));
+  ::Test::JustARecord record2(Common::ARMAGEDON, Acoustic::AUDIO_INPUT_L | Acoustic::AUDIO_INPUT_R, Common::Network::PortNumber(8099));
+  ASSERT_TRUE(record1 == record2);
+  ASSERT_FALSE(record1 != record2);
+  ASSERT_TRUE(record1 >= record2);
+  ASSERT_FALSE(record1 > record2);
+  ASSERT_TRUE(record1 <= record2);
+  ASSERT_FALSE(record1 < record2);
+}
+
+TEST(TestOfGeneratedRecordType, TestOfComparision2)
+{
+  ::Test::JustARecord record1(Common::ARMAGEDON, Acoustic::AUDIO_INPUT_L | Acoustic::AUDIO_INPUT_R, Common::Network::PortNumber(8099));
+  ::Test::JustARecord record2(Common::ARMAGEDON, Acoustic::AUDIO_INPUT_L | Acoustic::AUDIO_INPUT_R, Common::Network::PortNumber(9088));
+  ASSERT_FALSE(record1 == record2);
+  ASSERT_TRUE(record1 != record2);
+  ASSERT_FALSE(record1 >= record2);
+  ASSERT_FALSE(record1 > record2);
+  ASSERT_TRUE(record1 <= record2);
+  ASSERT_TRUE(record1 < record2);
+}
+
+TEST(TestOfGeneratedRecordType, TestOfComparision3)
+{
+  ::Test::JustARecord record1(Common::ARMAGEDON, Acoustic::AUDIO_INPUT_L | Acoustic::AUDIO_INPUT_R, Common::Network::PortNumber(8099));
+  ::Test::JustARecord record2(Common::LOG, Acoustic::AUDIO_INPUT_L | Acoustic::AUDIO_INPUT_R, Common::Network::PortNumber(9088));
+  ASSERT_FALSE(record1 == record2);
+  ASSERT_TRUE(record1 != record2);
+  ASSERT_TRUE(record1 >= record2);
+  ASSERT_TRUE(record1 > record2);
+  ASSERT_FALSE(record1 <= record2);
+  ASSERT_FALSE(record1 < record2);
+}
+
+TEST(TestOfGeneratedRecordType, TestOfComparision4)
+{
+  ::Test::JustARecord record1(Common::ARMAGEDON, Acoustic::AUDIO_INPUT_L | Acoustic::AUDIO_INPUT_R, Common::Network::PortNumber(8099));
+  ::Test::JustARecord record2(Common::ARMAGEDON, Acoustic::AUDIO_INPUT_L, Common::Network::PortNumber(8099));
+  ASSERT_FALSE(record1 == record2);
+  ASSERT_TRUE(record1 != record2);
+  ASSERT_TRUE(record1 >= record2);
+  ASSERT_FALSE(record1 > record2);
+  ASSERT_TRUE(record1 <= record2);
+  ASSERT_FALSE(record1 < record2);
+}
+
+TEST(TestOfGeneratedRecordType, TestOfComparision5)
+{
+  ::Test::JustARecord record1(Common::ARMAGEDON, Acoustic::AUDIO_INPUT_L | Acoustic::AUDIO_INPUT_R, Common::Network::PortNumber(8099));
+  ::Test::JustARecord record2(Common::ARMAGEDON, Acoustic::AUDIO_INPUT_L, Common::Network::PortNumber(9099));
+  ASSERT_FALSE(record1 == record2);
+  ASSERT_TRUE(record1 != record2);
+  ASSERT_FALSE(record1 >= record2);
+  ASSERT_FALSE(record1 > record2);
+  ASSERT_TRUE(record1 <= record2);
+  ASSERT_TRUE(record1 < record2);
+}
+
+TEST(TestOfGeneratedRecordType, TestOfSerialization)
+{
+  ::Test::JustARecord record(Common::ARMAGEDON, Acoustic::AUDIO_INPUT_L | Acoustic::AUDIO_INPUT_R, Common::Network::PortNumber(8099));
+  Serialization::BinarySerializer serializer;
+  serializer << record;
+  const std::vector<uint8_t>& serialized_data = serializer.getSerializedData();
+  ASSERT_EQ(serialized_data.size(), 4);
+  ASSERT_EQ(serialized_data[0], 0x0c);
+  ASSERT_EQ(serialized_data[1], 0x03);
+  ASSERT_EQ(serialized_data[2], 0x1f);
+  ASSERT_EQ(serialized_data[3], 0xa3);
+}
+
+TEST(TestOfGeneratedRecordType, TestOfDeserialization)
+{
+  ::Test::JustARecord record;
+  std::vector<uint8_t> serialized_data = { 0x0c, 0x03, 0x1f, 0xa3 };
+  Serialization::BinaryDeserializer deserializer(serialized_data);
+  deserializer >> record;
+  ASSERT_EQ(record.toString(), "{ common_severity: ARMAGEDON, acoustic_selected_output_ids: AUDIO_INPUT_L|AUDIO_INPUT_R, common_network_port_number: 8099 }");
+}
 
 //--------------------------------------------------------------------------------------------
 

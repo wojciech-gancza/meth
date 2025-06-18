@@ -93,7 +93,7 @@ class Metamorph:
                                 input_to_evaluate = methtools.FirstReadThis(before_iteration + line.after_expression, pattern_lines_source.copy())
                                 evaluating_block_result = self._morph(input_to_evaluate, output, enchaced_variable_map, should_evalueate_expressions)
                                 before_iteration = evaluating_block_result.before_expression
-                            pattern_lines_source = input_to_evaluate.decorated_reader
+                            pattern_lines_source.set_position_to_read( input_to_evaluate.get_position_to_read() )
                             result_line = before_iteration + evaluating_block_result.after_expression
 
                     # just return controll to recursive caller indicationg end of block

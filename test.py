@@ -11,11 +11,7 @@ import time
 #--------------------------------------------------------------------------
 # backlog:
 #--------------------------------------------------------------------------
-# ++ fixing problems
-#   ++ converting string->enum - check length of the string first. Problem with too bix index
 # -! simple types generator
-#   -- record type
-#   -- integer type
 #   -- string type
 #   -- collection type
 #   -- float type (based on float/double)
@@ -23,6 +19,10 @@ import time
 #   -- adding tool files (when required)
 #   ++ bitflags type 
 #   ++ enum type
+#   ++ integer type
+#   ++ record type
+# ++ fixing problems
+#   ++ converting string->enum - check length of the string first. Problem with too bix index
 # ++ main part of metagenerator
 #   ++ functionality as previos version +...
 #--------------------------------------------------------------------------
@@ -64,6 +64,10 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
         
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+    # Tests here just generates example target files. Real test of generator is 
+    # as should be - test of generated files. Such test is in separate C++ project
+    # which need to be compiled and run to perform tests of generated files.
+
     def test_GeneratingBitsetType(self):
         variables = {"name": "acoustic : selected output ids",
                      "values": ["audio input l", "audio input r", "radio transmit", "driver handphone", 
@@ -83,6 +87,19 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                      "base_class": "uint16_t",
                      "ordered": True}
         self.generator.generate_integer(variables)
+
+    def test_GeneratingRecordType(self):
+        variables = {"name": "test : just a record",
+                     "values": ["common : severity", \
+                                "acoustic : selected output ids", \
+                                "common : network : port number"],
+                     "ordered": True}
+        self.generator.generate_record(variables)
+        variables = {"name": "test : another record",
+                     "values": ["common : severity", \
+                                "common : network : port number"],
+                     "compareable": False}
+        self.generator.generate_record(variables)
 
 #--------------------------------------------------------------------------
 

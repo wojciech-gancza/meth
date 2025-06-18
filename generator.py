@@ -48,13 +48,22 @@ class PlainOldDataTypes:
         extended_properties["code_converting_from_string"] = generatortools.EnumCodeGenerator(extended_properties["values"]).generate_code()
         self._generate_files("bitflags.h.body.pattern", "bitflags.cpp.body.pattern", extended_properties)
 
+    def generate_record(self, properties):
+        extended_properties = self._extend_property_list(properties)
+        extended_properties["values"] = [ generatortools.Name(value) for value in properties["values"] ]
+        extended_properties["includes"] = [ self.output_path.create_changed_by(name.lowercase_namespace_and_name() + ".h") for name in extended_properties["values"] ]
+        extended_properties["cpp_includes"] =  [ self.tools_output_path.create_changed_by("common_record_fields_comparision.h") ]
+        self._generate_files("record.h.body.pattern", "record.cpp.body.pattern", extended_properties)
+
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     def _generate_files(self, header_pattern, cpp_pattern, properties):
-        properties["includes"] = [ self.tools_output_path.create_changed_by("serialization_binary_serialization.h") ]
+        self._set_default_value(properties, "includes", [] )
+        properties["includes"] = properties["includes"] + [ self.tools_output_path.create_changed_by("serialization_binary_serialization.h") ]
         properties["code_body_pattern"] = header_pattern
         self._generate("source.h.pattern", "header_file_name", properties)
         properties["includes"] = [ self.tools_output_path.create_changed_by("common_conversion_error.h") ]
+        properties["includes"] = properties["includes"] + properties["cpp_includes"]
         properties["code_body_pattern"] = cpp_pattern
         self._generate("source.cpp.pattern", "source_file_name", properties)
 
@@ -85,7 +94,8 @@ class PlainOldDataTypes:
                  "namespaces": name.UppercaseCamelsNamespaces(),
                  "generator_path": generator_code_file,
                  "generator_line_number": generator_code_line,
-                 "solution_path": self.soluton_path }
+                 "solution_path": self.soluton_path,
+                 "cpp_includes": []}
         if "values" in extended_properties.keys():
             extended_properties["values"] = [generatortools.Name(value) for value in extended_properties["values"] ]
         self._set_default_value(extended_properties, "compareable", True)

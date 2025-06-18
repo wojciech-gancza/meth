@@ -38,6 +38,12 @@ class LineByLineReader:
             self.position_to_read = self.position_to_read + 1
             return line
 
+    def get_position_to_read(self):
+        return self.position_to_read
+
+    def set_position_to_read(self, position):
+        self.position_to_read = position
+
     def copy(self):
         return LineByLineReader(self.array_of_text_lines, self.position_to_read)
 
@@ -59,6 +65,21 @@ class FirstReadThis:
             result = self.line_to_read
             self.line_to_read = None
             return result
+
+    def deepest_decorated_reader(self):
+        reader = self.decorated_reader
+        while type(reader) is FirstReadThis:
+            reader = reader.decorated_reader
+        return reader
+
+    def get_position_to_read(self):
+        return self.decorated_reader.get_position_to_read()
+
+    def set_position_to_read(self, position):
+        self.decorated_reader.set_position_to_read(position)
+
+    def copy(self):
+        return FirstReadThis(self.line_to_read, self.decorated_reader.copy())
 
 #--------------------------------------------------------------------------
 

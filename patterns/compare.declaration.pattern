@@ -1,0 +1,6 @@
+${#if compareable}bool operator==(const ${class_name}& ${object_name}) const noexcept;
+bool operator!=(const ${class_name}& ${object_name}) const noexcept;${#else}// No compare operators${#end}
+${#if ordered}bool operator<(const ${class_name}& ${object_name}) const noexcept;
+bool operator<=(const ${class_name}& ${object_name}) const noexcept;
+bool operator>=(const ${class_name}& ${object_name}) const noexcept;
+bool operator>(const ${class_name}& ${object_name}) const noexcept;${#else}// No ordering operators${#end}

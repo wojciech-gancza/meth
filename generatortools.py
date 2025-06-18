@@ -139,6 +139,9 @@ class Name:
     def UppercaseCamelsNamespaces(self): # list of namespaces
         return [self._convert_to_camelcase_text(element) for element in self.namespace]
 
+    def FullyDecoratedClassName(self):
+        return "::".join(self.UppercaseCamelsNamespaces() + [self.UppercaseCamelName()])
+    
     def lowercase_namespace_and_name(self, default_namespace = None): # file names
         if self.namespace:
             elements = [self._convert_to_lowercase_text(namespace) for namespace in self.namespace]
@@ -196,7 +199,7 @@ class EnumCodeGenerator:
             result_code = result_code + [ "switch (" + switch_expression + ")", "{" ]
             for key in switch_case_keys[:-1]:
                 key_code = self._indent( self._generate_code(switch_cases[key]) )
-                result_code = result_code + self._indent( ["case " + key + ":", "{"] + key_code + ["}"])   
+                result_code = result_code + self._indent( ["case " + str(key) + ":"] + key_code)   
             last_key = switch_case_keys[-1]
             last_key_code = self._indent( self._generate_code(switch_cases[last_key]) ) 
             return result_code + self._indent(["default:", "{"] + last_key_code + ["}"]) + ["}"]

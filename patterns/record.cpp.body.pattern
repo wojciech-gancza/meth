@@ -1,0 +1,85 @@
+${#if compareable}bool ${class_name}::operator==(const ${class_name}& ${object_name}) const noexcept
+{
+  ${#for value in values}if (!Common::is_record_field_equal(static_cast<const ${value.FullyDecoratedClassName()}&>(*this), static_cast<const ${value.FullyDecoratedClassName()}&>(${object_name})))
+  {
+    return false;
+  }
+  ${#end}return true;
+}
+
+bool ${class_name}::operator!=(const ${class_name}& ${object_name}) const noexcept
+{
+  ${#for value in values}if (Common::is_record_field_not_equal(static_cast<const ${value.FullyDecoratedClassName()}&>(*this), static_cast<const ${value.FullyDecoratedClassName()}&>(${object_name})))
+  {
+    return true;
+  }
+  ${#end}return false;
+}${#else}// No compare operators${#end}
+
+${#if ordered}bool ${class_name}::operator<(const ${class_name}& ${object_name}) const noexcept
+{
+  ${#for value in values}if (Common::is_ordered_record_field_not_equal(static_cast<const ${value.FullyDecoratedClassName()}&>(*this), static_cast<const ${value.FullyDecoratedClassName()}&>(${object_name})))
+  {
+    return (Common::is_record_field_less(static_cast<const ${value.FullyDecoratedClassName()}&>(*this), static_cast<const ${value.FullyDecoratedClassName()}&>(${object_name})));
+  }
+  ${#end}return false;
+}
+
+bool ${class_name}::operator<=(const ${class_name}& ${object_name}) const noexcept
+{
+  ${#for value in values}if (Common::is_ordered_record_field_not_equal(static_cast<const ${value.FullyDecoratedClassName()}&>(*this), static_cast<const ${value.FullyDecoratedClassName()}&>(${object_name})))
+  {
+    return (Common::is_record_field_less(static_cast<const ${value.FullyDecoratedClassName()}&>(*this), static_cast<const ${value.FullyDecoratedClassName()}&>(${object_name})));
+  }
+  ${#end}return true;
+}
+
+bool ${class_name}::operator>=(const ${class_name}& ${object_name}) const noexcept
+{
+  ${#for value in values}if (Common::is_ordered_record_field_not_equal(static_cast<const ${value.FullyDecoratedClassName()}&>(*this), static_cast<const ${value.FullyDecoratedClassName()}&>(${object_name})))
+  {
+    return (Common::is_record_field_greater(static_cast<const ${value.FullyDecoratedClassName()}&>(*this), static_cast<const ${value.FullyDecoratedClassName()}&>(${object_name})));
+  }
+  ${#end}return true;
+}
+
+bool ${class_name}::operator>(const ${class_name}& ${object_name}) const noexcept
+{
+  ${#for value in values}if (Common::is_ordered_record_field_not_equal(static_cast<const ${value.FullyDecoratedClassName()}&>(*this), static_cast<const ${value.FullyDecoratedClassName()}&>(${object_name})))
+  {
+    return (Common::is_record_field_greater(static_cast<const ${value.FullyDecoratedClassName()}&>(*this), static_cast<const ${value.FullyDecoratedClassName()}&>(${object_name})));
+  }
+  ${#end}return false;
+}${#else}// No ordering operators${#end}
+
+std::string ${class_name}::toString() const
+{
+  std::ostringstream string_representation;
+  string_representation << *this;
+  return string_representation.str();
+}
+
+std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name})
+{
+  output << "{ " 
+${#for value in values[:-1]}         << "${value.lowercase_namespace_and_name()}: " << static_cast<const ${value.FullyDecoratedClassName()}&>(${object_name}) << ", "
+${#end}         << "${values[-1].lowercase_namespace_and_name()}: " << static_cast<const ${values[-1].FullyDecoratedClassName()}&>(${object_name})
+         << " }";
+  return output;
+}
+
+Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& serializer, const ${class_name}& ${object_name})
+{
+${#for value in values}  serializer << static_cast<const ${value.FullyDecoratedClassName()}&>(${object_name});
+${#end}  return serializer;
+}
+
+Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer& deserializer, ${class_name}& ${object_name})
+{
+${#for value in values}  deserializer >> static_cast<${value.FullyDecoratedClassName()}&>(${object_name});
+${#end}  return deserializer;
+}
+
+// -vvv YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
+
+// -^^^ END OF USER DEFINED CLASS ELEMENTS

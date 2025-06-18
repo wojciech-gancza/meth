@@ -1,0 +1,6 @@
+std::string toString() const;
+
+friend std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name});
+
+friend Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& serializer, const ${class_name}& ${object_name});
+friend Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer& deserializer, ${class_name}& ${object_name});
