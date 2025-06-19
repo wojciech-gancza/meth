@@ -5,10 +5,10 @@ class ${class_name}
     static constexpr const char* class_name = { "${"::".join(name.UppercaseCamelsNamespaces())}::${class_name}" };
     static constexpr bool is_compareable = { ${#if compareable}true${#else}false${#end} };
     static constexpr bool is_ordered = { ${#if ordered}true${#else}false${#end} };
-    static constexpr bool size_in_bytes = { ${base_class_size} };
+    static constexpr bool size_in_bytes = { ${int_class_size} };
 
     // internal value type
-    enum e${class_name} : ${base_class} 
+    enum e${class_name} : ${int_class} 
     {
       ${format.comma_separated(["E_" + value.UPPERCASE_NAME() for value in values])}
     };
@@ -24,7 +24,7 @@ class ${class_name}
   
     const ${class_name}& get${class_name}() const noexcept { return *this; }
     e${class_name} get${class_name}AsEnum() const noexcept { return m_${object_name}; }
-    ${base_class} get${class_name}AsInt() const noexcept { return m_${object_name}; }
+    ${int_class} get${class_name}AsInt() const noexcept { return m_${object_name}; }
 
     void set${class_name}(const ${class_name}& ${object_name}) { *this = ${object_name}; }
     void setFrom(const ${class_name}& ${object_name}) { *this = ${object_name}; }

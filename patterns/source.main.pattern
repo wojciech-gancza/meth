@@ -1,11 +1,9 @@
 ${#include "header.pattern"}
 
-#pragma once
+${#if once}#pragma once
 
-#include <cstdint>
-#include <string>
-#include <iostream>
-
+${#end}${#for std_include in std_includes}#include <${std_include}>
+${#end}
 ${#for include from includes}#include "${include.get_relative_to(header_file_name.parent())}"
 ${#end}
 // -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW

@@ -86,7 +86,7 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
 
     def test_GeneratingIntegerType(self):
         variables = {"name": "common : network : port number",
-                     "base_class": "uint16_t",
+                     "int_class": "uint16_t",
                      "ordered": True}
         self.generator.generate_integer(variables)
 
@@ -102,6 +102,21 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                                 "common : network : port number"],
                      "compareable": False}
         self.generator.generate_record(variables)
+
+    def test_GeneratingStringType(self):
+        variables = {"name": "common : text mesage",
+                     "default": "No comments.",
+                     "max_size": 4000,
+                     "ordered": True}
+        self.generator.generate_string(variables)
+
+    def test_GeneratingFloatingPointType(self):
+        variables = {"name": "money : netto",
+                     "ordered": True,
+                     "float_class": "float",
+                     "accuracy": 0.005,
+                     "format": ".2"}
+        self.generator.generate_floating_point(variables)
 
 #--------------------------------------------------------------------------
 

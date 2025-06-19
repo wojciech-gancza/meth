@@ -1,0 +1,32 @@
+class ${class_name}
+{
+  public:
+    // type traits
+    static constexpr const char* class_name = { "${"::".join(name.UppercaseCamelsNamespaces())}::${class_name}" };
+    static constexpr bool is_compareable = { ${#if compareable}true${#else}false${#end} };
+    static constexpr bool is_ordered = { ${#if ordered}true${#else}false${#end} };
+    static constexpr ${float_class} accuracy = { ${accuracy} };
+
+    constexpr ${class_name}() noexcept
+      : m_${object_name}(${default})
+    {  }
+
+    constexpr explicit ${class_name}( ${float_class} ${object_name} ) noexcept
+      : m_${object_name}(${object_name})
+    {  }
+
+    ${#include "simple.assignment.pattern"}
+
+
+
+
+
+
+
+  private:
+    ${float_class} m_${object_name};
+
+    // -vvv YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
+
+    // -^^^ END OF USER DEFINED CLASS ELEMENTS
+};

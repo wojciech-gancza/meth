@@ -73,7 +73,7 @@ ${class_name}::e${class_name} ${class_name}::convertTextToPossibleFlag(const std
 std::string ${class_name}::convertSingleFlagToString(${class_name}::e${class_name} bit) noexcept
 {
   unsigned bit_number = 0;
-  ${base_class} bit_value = static_cast<${base_class}>(bit);
+  ${int_class} bit_value = static_cast<${int_class}>(bit);
   while (bit_value != 0x01)
   {
     bit_value >>= 1;

@@ -24,13 +24,13 @@ class PlainOldDataTypes:
     def generate_integer(self, properties):
         # required properties:
         # - name - fully qualified type name defined as single string where words are name elements ( example: "common : severity"),
-        # - base_type - name of type used to store the value internally (example: "uint16_t")
+        # - int_class - name of type used to store the value internally (example: "uint16_t")
         # optional properties:
         # - compareable - adds "==", "=!" , ... operators. When not defined True is assumed
         # - ordered - adds "<", ">" , ... operators. When set to true also sets compareable. When not defined False is assumed
         # - default - default value. When not defined - 0 is assumed
         extended_properties = self._extend_property_list(properties)
-        self._set_base_class_size(extended_properties)
+        self._set_int_class_size(extended_properties)
         self._set_default_value(extended_properties, "default", 0)
         self._generate_files("integer.h.body.pattern", "integer.cpp.body.pattern", extended_properties)
 
@@ -43,19 +43,27 @@ class PlainOldDataTypes:
         # - ordered - adds "<", ">" , ... operators. When set to true also sets compareable. When not defined False is assumed
         # - default - default value. When not defined - empty string us used as default
         # - compare_type - how the strings are compared. Default is "strcmp"
-        pass
+        extended_properties = self._extend_property_list(properties)
+        self._set_int_type_by_count_of_values(extended_properties, extended_properties["max_size"])
+        self._set_default_value(extended_properties, "default", "")
+        self._set_default_value(extended_properties, "compare_type", "strcmp")
+        self._generate_files("string.h.body.pattern", "string.cpp.body.pattern", extended_properties)
 
     def generate_floating_point(self, properties):
         # required properties:
         # - name - fully qualified type name defined as single string where words are name elements ( example: "common : severity"),
-        # - base_type - name of type used to store the value internally (example: "uint16_t")
+        # - float_class - name of type used to store the value internally (example: "uint16_t")
         # optional properties:
         # - compareable - adds "==", "=!" , ... operators. When not defined True is assumed
         # - ordered - adds "<", ">" , ... operators. When set to true also sets compareable. When not defined False is assumed
         # - default - default value. When not defined - 0.0
-        # - accuracy - value used to compare - when difference is less the accuracy assume equal
+        # - accuracy - value used to compare - when difference is less the accuracy assume equal. Default = 0.0001
         # - format - format of string the value is converted to
-        pass
+        extended_properties = self._extend_property_list(properties)
+        self._set_default_value(extended_properties, "default", "0.0")
+        self._set_default_value(extended_properties, "accuracy", "0.0001")
+        self._set_default_value(extended_properties, "format", ".4f")
+        self._generate_files("float.h.body.pattern", "float.cpp.body.pattern", extended_properties)
 
     def generate_enum(self, properties):
         # required properties:
@@ -66,7 +74,7 @@ class PlainOldDataTypes:
         # - compareable - adds "==", "=!" , ... operators. When not defined True is assumed
         # - ordered - adds "<", ">" , ... operators. When set to true also sets compareable. When not defined False is assumed
         extended_properties = self._extend_property_list(properties)
-        self._set_base_type_by_count_of_values(extended_properties, len(extended_properties["values"]))
+        self._set_int_type_by_count_of_values(extended_properties, len(extended_properties["values"]))
         extended_properties["first_value"] = extended_properties["values"][0].UPPERCASE_NAME()
         extended_properties["last_value"] = extended_properties["values"][-1].UPPERCASE_NAME()
         extended_properties["code_converting_from_string"] = generatortools.EnumCodeGenerator(extended_properties["values"]).generate_code()
@@ -84,7 +92,7 @@ class PlainOldDataTypes:
         # remarks: In this version the default is always no bit set. Bitsets cannot be ordered
         extended_properties = self._extend_property_list(properties)
         extended_properties["ordered"] = False
-        self._set_base_type_by_count_of_bits(extended_properties, len(extended_properties["values"]))
+        self._set_int_type_by_count_of_bits(extended_properties, len(extended_properties["values"]))
         hex_format = "0x{:0" + str(math.ceil(len(properties["values"]) / 4)) + "x}"
         extended_properties["first_value"] = hex_format.format(1)
         extended_properties["last_value"] = hex_format.format(pow(2, len(extended_properties["values"]) - 1))
@@ -110,11 +118,16 @@ class PlainOldDataTypes:
         self._set_default_value(properties, "includes", [] )
         properties["includes"] = properties["includes"] + [ self.tools_output_path.create_changed_by("serialization_binary_serialization.h") ]
         properties["code_body_pattern"] = header_pattern
-        self._generate("source.h.pattern", "header_file_name", properties)
-        properties["includes"] = [ self.tools_output_path.create_changed_by("common_conversion_error.h") ]
-        properties["includes"] = properties["includes"] + properties["cpp_includes"]
+        properties["std_includes"] = ["cstdint", "string", "iostream"]
+        properties["once"] = True
+        self._generate("source.main.pattern", "header_file_name", properties)
+        properties["includes"] = [ self.output_path.create_changed_by( properties["name"].lowercase_namespace_and_name() + ".h" ), \
+                                   self.tools_output_path.create_changed_by("common_conversion_error.h") \
+                                  ] + properties["cpp_includes"]
         properties["code_body_pattern"] = cpp_pattern
-        self._generate("source.cpp.pattern", "source_file_name", properties)
+        properties["std_includes"] = ["sstream"]
+        properties["once"] = False
+        self._generate("source.main.pattern", "source_file_name", properties)
 
     def _generate(self, pattern_file_name, output_type, properties):
         pattern_file_path = self.environment.patterns_path.create_changed_by(pattern_file_name)
@@ -144,7 +157,8 @@ class PlainOldDataTypes:
                  "generator_path": generator_code_file,
                  "generator_line_number": generator_code_line,
                  "solution_path": self.soluton_path,
-                 "cpp_includes": []}
+                 "cpp_includes": [],
+                 "std_includes": [] }
         if "values" in extended_properties.keys():
             extended_properties["values"] = [generatortools.Name(value) for value in extended_properties["values"] ]
         self._set_default_value(extended_properties, "compareable", True)
@@ -153,35 +167,35 @@ class PlainOldDataTypes:
             extended_properties["compareable"] = True
         return extended_properties
 
-    def _set_base_class_size(self, properties):
-        if properties["base_class"] in ["int8_t", "uint8_t"]:
-            properties["base_class_size"] = 1
-        elif properties["base_class"] in ["int16_t", "uint16_t"]:
-            properties["base_class_size"] = 2
-        elif properties["base_class"] in ["int32_t", "uint32_t"]:
-            properties["base_class_size"] = 4
+    def _set_int_class_size(self, properties):
+        if properties["int_class"] in ["int8_t", "uint8_t"]:
+            properties["int_class_size"] = 1
+        elif properties["int_class"] in ["int16_t", "uint16_t"]:
+            properties["int_class_size"] = 2
+        elif properties["int_class"] in ["int32_t", "uint32_t"]:
+            properties["int_class_size"] = 4
 
-    def _set_base_type_by_count_of_values(self, properties, cout_values):
+    def _set_int_type_by_count_of_values(self, properties, cout_values):
         if cout_values <= 255:
-            properties["base_class"] = "uint8_t"
-            properties["base_class_size"] = 1
+            properties["int_class"] = "uint8_t"
+            properties["int_class_size"] = 1
         elif cout_values <= 65535:
-            properties["base_class"] = "uint16_t"
-            properties["base_class_size"] = 2
+            properties["int_class"] = "uint16_t"
+            properties["int_class_size"] = 2
         else:
-            properties["base_class"] = "uint32_t"
-            properties["base_class_size"] = 4
+            properties["int_class"] = "uint32_t"
+            properties["int_class_size"] = 4
 
-    def _set_base_type_by_count_of_bits(self, properties, count_of_bits):
+    def _set_int_type_by_count_of_bits(self, properties, count_of_bits):
         if count_of_bits <= 8:
-            properties["base_class"] = "uint8_t"
-            properties["base_class_size"] = 1
+            properties["int_class"] = "uint8_t"
+            properties["int_class_size"] = 1
         elif count_of_bits <= 16:
-            properties["base_class"] = "uint16_t"
-            properties["base_class_size"] = 2
+            properties["int_class"] = "uint16_t"
+            properties["int_class_size"] = 2
         elif count_of_bits <= 32:
-            properties["base_class"] = "uint32_t"
-            properties["base_class_size"] = 4
+            properties["int_class"] = "uint32_t"
+            properties["int_class_size"] = 4
 
 #--------------------------------------------------------------------------
 
