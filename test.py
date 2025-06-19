@@ -12,9 +12,11 @@ import time
 # backlog:
 #--------------------------------------------------------------------------
 # -! simple types generator
-#   -- string type
+#   -! string type
+#   -! float type (based on float/double)
 #   -- collection type
-#   -- float type (based on float/double)
+#   -- timepoint type
+#   -- time duration type
 #   -- registry of all generated types
 #   -- adding tool files (when required)
 #   ++ bitflags type 

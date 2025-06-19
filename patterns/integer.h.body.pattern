@@ -7,7 +7,11 @@ class ${class_name}
     static constexpr bool is_ordered = { ${#if ordered}true${#else}false${#end} };
     static constexpr uint8_t size_in_bytes = { ${base_class_size} };
 
-    constexpr ${class_name}( ${base_class} ${object_name} = ${default} ) noexcept
+    constexpr ${class_name}() noexcept
+      : m_${object_name}(${default})
+    {  }
+
+    constexpr explicit ${class_name}( ${base_class} ${object_name} ) noexcept
       : m_${object_name}(${object_name})
     {  }
 
@@ -16,9 +20,10 @@ class ${class_name}
     const ${class_name}& get${class_name}() const noexcept { return *this; }
     ${base_class} get${class_name}AsInt() const noexcept { return m_${object_name}; }
 
-    void set${class_name}(const ${class_name}& ${object_name}) { *this = ${object_name}; }
-    void setFrom(const ${class_name}& ${object_name}) { *this = ${object_name}; }
-    void setFrom(${class_name}&& ${object_name}) { *this = ${object_name}; }
+    void set${class_name}(${base_class} ${object_name}) noexcept { m_${object_name} = ${object_name}; }
+    void set${class_name}(const ${class_name}& ${object_name}) noexcept{ *this = ${object_name}; }
+    void setFrom(const ${class_name}& ${object_name}) noexcept { *this = ${object_name}; }
+    void setFrom(${class_name}&& ${object_name}) noexcept { *this = ${object_name}; }
 
     ${#include "simple.compare.pattern"}
   

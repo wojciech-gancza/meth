@@ -22,12 +22,49 @@ class PlainOldDataTypes:
         self.output_path = generatortools.AbsolutePath(output_path)
 
     def generate_integer(self, properties):
+        # required properties:
+        # - name - fully qualified type name defined as single string where words are name elements ( example: "common : severity"),
+        # - base_type - name of type used to store the value internally (example: "uint16_t")
+        # optional properties:
+        # - compareable - adds "==", "=!" , ... operators. When not defined True is assumed
+        # - ordered - adds "<", ">" , ... operators. When set to true also sets compareable. When not defined False is assumed
+        # - default - default value. When not defined - 0 is assumed
         extended_properties = self._extend_property_list(properties)
         self._set_base_class_size(extended_properties)
         self._set_default_value(extended_properties, "default", 0)
         self._generate_files("integer.h.body.pattern", "integer.cpp.body.pattern", extended_properties)
 
+    def generate_string(self, properties):
+        # required properties:
+        # - name - fully qualified type name defined as single string where words are name elements ( example: "common : severity"),
+        # - max_size - maximum size of string. Used to deduct size type used also in serialization
+        # optional properties:
+        # - compareable - adds "==", "=!" , ... operators. When not defined True is assumed
+        # - ordered - adds "<", ">" , ... operators. When set to true also sets compareable. When not defined False is assumed
+        # - default - default value. When not defined - empty string us used as default
+        # - compare_type - how the strings are compared. Default is "strcmp"
+        pass
+
+    def generate_floating_point(self, properties):
+        # required properties:
+        # - name - fully qualified type name defined as single string where words are name elements ( example: "common : severity"),
+        # - base_type - name of type used to store the value internally (example: "uint16_t")
+        # optional properties:
+        # - compareable - adds "==", "=!" , ... operators. When not defined True is assumed
+        # - ordered - adds "<", ">" , ... operators. When set to true also sets compareable. When not defined False is assumed
+        # - default - default value. When not defined - 0.0
+        # - accuracy - value used to compare - when difference is less the accuracy assume equal
+        # - format - format of string the value is converted to
+        pass
+
     def generate_enum(self, properties):
+        # required properties:
+        # - name - fully qualified type name defined as single string where words are name elements ( example: "common : severity"),
+        # - values - list of values (example: [ "data", "memo", "notice", "info", "trace", "debug"])
+        # optional properties:
+        # - default - default value. When not defined - first value is default
+        # - compareable - adds "==", "=!" , ... operators. When not defined True is assumed
+        # - ordered - adds "<", ">" , ... operators. When set to true also sets compareable. When not defined False is assumed
         extended_properties = self._extend_property_list(properties)
         self._set_base_type_by_count_of_values(extended_properties, len(extended_properties["values"]))
         extended_properties["first_value"] = extended_properties["values"][0].UPPERCASE_NAME()
@@ -39,6 +76,12 @@ class PlainOldDataTypes:
         self._generate_files("enum.h.body.pattern", "enum.cpp.body.pattern", extended_properties)
 
     def generate_bitflags(self, properties):
+        # required properties:
+        # - name - fully qualified type name defined as single string where words are name elements ( example: "common : severity"),
+        # - values - list of values (example: ["audio input l", "audio input r", "radio transmit", "driver handphone" ])
+        # optional properties:
+        # - compareable - adds "==", "=!" , ... operators. When not defined True is assumed
+        # remarks: In this version the default is always no bit set. Bitsets cannot be ordered
         extended_properties = self._extend_property_list(properties)
         extended_properties["ordered"] = False
         self._set_base_type_by_count_of_bits(extended_properties, len(extended_properties["values"]))
@@ -49,6 +92,12 @@ class PlainOldDataTypes:
         self._generate_files("bitflags.h.body.pattern", "bitflags.cpp.body.pattern", extended_properties)
 
     def generate_record(self, properties):
+        # required properties:
+        # - name - fully qualified type name defined as single string where words are name elements ( example: "common : severity"),
+        # - values - list of types of record elements ["common : severity", "acoustic : selected output ids", "common : network : port number"]
+        # optional properties:
+        # - compareable - adds "==", "=!" , ... operators. When not defined True is assumed
+        # - ordered - adds "<", ">" , ... operators. When set to true also sets compareable. When not defined False is assumed
         extended_properties = self._extend_property_list(properties)
         extended_properties["values"] = [ generatortools.Name(value) for value in properties["values"] ]
         extended_properties["includes"] = [ self.output_path.create_changed_by(name.lowercase_namespace_and_name() + ".h") for name in extended_properties["values"] ]

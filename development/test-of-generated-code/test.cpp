@@ -160,9 +160,9 @@ TEST(TestOfGeneratedRecordType, TestOfDeserialization)
 TEST(TestOfGeneratedIntegerType, TestOfSettingValue)
 {
   Common::Network::PortNumber port;
-  ASSERT_EQ(port, 0);
+  ASSERT_EQ(port.getPortNumberAsInt(), 0);
   port = Common::Network::PortNumber(8080);
-  ASSERT_EQ(port, 8080);
+  ASSERT_EQ(port.getPortNumberAsInt(), 8080);
 }
 
 TEST(TestOfGeneratedIntegerType, TestOfDumpingToString)
