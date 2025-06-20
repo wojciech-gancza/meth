@@ -6,6 +6,76 @@
 #include "common_network_port_number.h"
 #include "test_just_a_record.h"
 #include "test_another_record.h"
+#include "money_netto.h"
+
+//--------------------------------------------------------------------------------------------
+
+TEST(TestOfGeneratedFloatType, TestOfDefaultValue)
+{
+  Money::Netto salary;
+  ASSERT_EQ(salary.toString(), "0.00");
+}
+
+TEST(TestOfGeneratedFloatType, TestOfConstructingValue)
+{
+  Money::Netto salary(7.977f);
+  ASSERT_EQ(salary.toString(), "7.98");
+}
+
+TEST(TestOfGeneratedFloatType, TestSettingFieldsValues)
+{
+  Money::Netto salary;
+  salary.setNetto(9.999f);
+  ASSERT_EQ(salary.toString(), "10.00");
+}
+
+TEST(TestOfGeneratedFloatType, TestOfComparision1)
+{
+  Money::Netto salary1(9.8874f);
+  Money::Netto salary2(9.8872f);
+
+  ASSERT_TRUE(salary1 == salary2);
+  ASSERT_FALSE(salary1 != salary2);
+  ASSERT_TRUE(salary1 >= salary2);
+  ASSERT_FALSE(salary1 > salary2);
+  ASSERT_TRUE(salary1 <= salary2);
+  ASSERT_FALSE(salary1 < salary2);
+}
+
+TEST(TestOfGeneratedFloatType, TestOfComparision2)
+{
+  Money::Netto salary1(9.8874f);
+  Money::Netto salary2(9.2872f);
+
+  ASSERT_FALSE(salary1 == salary2);
+  ASSERT_TRUE(salary1 != salary2);
+  ASSERT_TRUE(salary1 >= salary2);
+  ASSERT_TRUE(salary1 > salary2);
+  ASSERT_FALSE(salary1 <= salary2);
+  ASSERT_FALSE(salary1 < salary2);
+}
+
+TEST(TestOfGeneratedFloatType, TestOfSerialization)
+{
+  Money::Netto salary(9.8874f);
+  Serialization::BinarySerializer serializer;
+  serializer << salary;
+  const std::vector<uint8_t>& serialized_data = serializer.getSerializedData();
+  ASSERT_EQ(serialized_data.size(), 4);
+  ASSERT_EQ(serialized_data[0], 0x41);
+  ASSERT_EQ(serialized_data[1], 0x1e);
+  ASSERT_EQ(serialized_data[2], 0x32);
+  ASSERT_EQ(serialized_data[3], 0xca);
+}
+
+TEST(TestOfGeneratedFloatType, TestOfDeserialization)
+{
+  Money::Netto salary;
+  std::vector<uint8_t> serialized_data = { 0x41, 0x1e, 0x32, 0xca };
+  Serialization::BinaryDeserializer deserializer(serialized_data);
+  deserializer >> salary;
+  ASSERT_EQ(salary.toString(), "9.89");
+}
 
 //--------------------------------------------------------------------------------------------
 

@@ -8,13 +8,13 @@ std::string ${class_name}::toString() const
 ${class_name} ${class_name}::fromString(std::string text)
 {
   std::istringstream string_representation(text);
-  uint16_t ${object_name} = 0;
+  ${int_class} ${object_name} = 0;
   string_representation >> ${object_name};
   if (!string_representation.eof())
   {
     throw Common::ConversionError(text, "cannot be interpreted as ${"::".join(namespaces)}::${class_name}");
   }
-  return PortNumber(${object_name});
+  return ${class_name}(${object_name});
 }
 
 std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name})

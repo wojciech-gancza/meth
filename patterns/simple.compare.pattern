@@ -1,29 +1,6 @@
-${#if compareable}bool operator==(const ${class_name}& ${object_name}) const noexcept
-{
-  return (m_${object_name} == ${object_name}.m_${object_name});
-}
-
-bool operator!=(const ${class_name}& ${object_name}) const noexcept
-{
-  return (m_${object_name} != ${object_name}.m_${object_name});
-}${#else}// No compare operators${#end}
-
-${#if ordered}bool operator<(const ${class_name}& ${object_name}) const noexcept
-{
-  return (m_${object_name} < ${object_name}.m_${object_name});
-}
-
-bool operator<=(const ${class_name}& ${object_name}) const noexcept
-{
-  return (m_${object_name} <= ${object_name}.m_${object_name});
-}
-
-bool operator>=(const ${class_name}& ${object_name}) const noexcept
-{
-  return (m_${object_name} >= ${object_name}.m_${object_name});
-}
-
-bool operator>(const ${class_name}& ${object_name}) const noexcept
-{
-  return (m_${object_name} > ${object_name}.m_${object_name});
-}${#else}// No ordering operators${#end}
+${#if compareable}bool operator==(const ${class_name}& ${object_name}) const noexcept { return (m_${object_name} == ${object_name}.m_${object_name}); }
+bool operator!=(const ${class_name}& ${object_name}) const noexcept { return (m_${object_name} != ${object_name}.m_${object_name});}${#else}// No compare operators${#end}
+${#if ordered}bool operator<(const ${class_name}& ${object_name}) const noexcept { return (m_${object_name} < ${object_name}.m_${object_name}); }
+bool operator<=(const ${class_name}& ${object_name}) const noexcept { return (m_${object_name} <= ${object_name}.m_${object_name}); }
+bool operator>=(const ${class_name}& ${object_name}) const noexcept { return (m_${object_name} >= ${object_name}.m_${object_name}); }
+bool operator>(const ${class_name}& ${object_name}) const noexcept { return (m_${object_name} > ${object_name}.m_${object_name}); }${#else}// No ordering operators${#end}

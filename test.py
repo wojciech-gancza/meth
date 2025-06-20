@@ -13,7 +13,6 @@ import time
 #--------------------------------------------------------------------------
 # -! simple types generator
 #   -! string type
-#   -! float type (based on float/double)
 #   -- collection type
 #   -- timepoint type
 #   -- time duration type
@@ -23,6 +22,10 @@ import time
 #   ++ enum type
 #   ++ integer type
 #   ++ record type
+#   ++ float type (based on float/double)
+# -- configuration
+#   -- configuration types: key, value, node, nodes
+#   -- add reading objects from cofiguration (all types)
 # ++ fixing problems
 #   ++ converting string->enum - check length of the string first. Problem with too bix index
 # ++ main part of metagenerator
@@ -114,8 +117,8 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
         variables = {"name": "money : netto",
                      "ordered": True,
                      "float_class": "float",
-                     "accuracy": 0.005,
-                     "format": ".2"}
+                     "accuracy": "0.005f",
+                     "string_format": ".2"}
         self.generator.generate_floating_point(variables)
 
 #--------------------------------------------------------------------------

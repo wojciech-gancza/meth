@@ -71,35 +71,12 @@ namespace Common
       void setFrom(const Severity& severity) { *this = severity; }
       void setFrom(Severity&& severity) { *this = severity; }
   
-      bool operator==(const Severity& severity) const noexcept
-      {
-        return (m_severity == severity.m_severity);
-      }
-      
-      bool operator!=(const Severity& severity) const noexcept
-      {
-        return (m_severity != severity.m_severity);
-      }
-      
-      bool operator<(const Severity& severity) const noexcept
-      {
-        return (m_severity < severity.m_severity);
-      }
-      
-      bool operator<=(const Severity& severity) const noexcept
-      {
-        return (m_severity <= severity.m_severity);
-      }
-      
-      bool operator>=(const Severity& severity) const noexcept
-      {
-        return (m_severity >= severity.m_severity);
-      }
-      
-      bool operator>(const Severity& severity) const noexcept
-      {
-        return (m_severity > severity.m_severity);
-      }
+      bool operator==(const Severity& severity) const noexcept { return (m_severity == severity.m_severity); }
+      bool operator!=(const Severity& severity) const noexcept { return (m_severity != severity.m_severity);}
+      bool operator<(const Severity& severity) const noexcept { return (m_severity < severity.m_severity); }
+      bool operator<=(const Severity& severity) const noexcept { return (m_severity <= severity.m_severity); }
+      bool operator>=(const Severity& severity) const noexcept { return (m_severity >= severity.m_severity); }
+      bool operator>(const Severity& severity) const noexcept { return (m_severity > severity.m_severity); }
     
       std::string toString() const;
       static Severity fromString(std::string text);
@@ -108,13 +85,13 @@ namespace Common
   
       friend Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& output, const Severity& severity)
       {
-        output.storeInteger(severity.m_severity);
+        output.storeValue(severity.m_severity);
         return output;
       }
       
       friend Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer& input, Severity& severity)
       {
-        input.readInteger(severity.m_severity);
+        input.readValue(severity.m_severity);
         return input;
       }
   

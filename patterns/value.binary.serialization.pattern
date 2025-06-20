@@ -1,11 +1,11 @@
 friend Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& output, const ${class_name}& ${object_name})
 {
-  output.storeInteger(${object_name}.m_${object_name});
+  output.storeValue(${object_name}.m_${object_name});
   return output;
 }
 
 friend Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer& input, ${class_name}& ${object_name})
 {
-  input.readInteger(${object_name}.m_${object_name});
+  input.readValue(${object_name}.m_${object_name});
   return input;
 }

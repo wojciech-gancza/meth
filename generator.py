@@ -32,6 +32,7 @@ class PlainOldDataTypes:
         extended_properties = self._extend_property_list(properties)
         self._set_int_class_size(extended_properties)
         self._set_default_value(extended_properties, "default", 0)
+        extended_properties["std_includes"] = ["cstdint"]
         self._generate_files("integer.h.body.pattern", "integer.cpp.body.pattern", extended_properties)
 
     def generate_string(self, properties):
@@ -47,6 +48,7 @@ class PlainOldDataTypes:
         self._set_int_type_by_count_of_values(extended_properties, extended_properties["max_size"])
         self._set_default_value(extended_properties, "default", "")
         self._set_default_value(extended_properties, "compare_type", "strcmp")
+        extended_properties["std_includes"] = ["cstdint"]
         self._generate_files("string.h.body.pattern", "string.cpp.body.pattern", extended_properties)
 
     def generate_floating_point(self, properties):
@@ -63,6 +65,7 @@ class PlainOldDataTypes:
         self._set_default_value(extended_properties, "default", "0.0")
         self._set_default_value(extended_properties, "accuracy", "0.0001")
         self._set_default_value(extended_properties, "format", ".4f")
+        extended_properties["std_includes"] = ["format"]
         self._generate_files("float.h.body.pattern", "float.cpp.body.pattern", extended_properties)
 
     def generate_enum(self, properties):
@@ -81,6 +84,7 @@ class PlainOldDataTypes:
         self._set_default_value(extended_properties, "default", None)
         if extended_properties["default"]:
             extended_properties["default"] = generatortools.Name(properties["default"])
+        extended_properties["std_includes"] = ["cstdint"]
         self._generate_files("enum.h.body.pattern", "enum.cpp.body.pattern", extended_properties)
 
     def generate_bitflags(self, properties):
@@ -97,6 +101,7 @@ class PlainOldDataTypes:
         extended_properties["first_value"] = hex_format.format(1)
         extended_properties["last_value"] = hex_format.format(pow(2, len(extended_properties["values"]) - 1))
         extended_properties["code_converting_from_string"] = generatortools.EnumCodeGenerator(extended_properties["values"]).generate_code()
+        extended_properties["std_includes"] = ["cstdint"]
         self._generate_files("bitflags.h.body.pattern", "bitflags.cpp.body.pattern", extended_properties)
 
     def generate_record(self, properties):
@@ -118,7 +123,7 @@ class PlainOldDataTypes:
         self._set_default_value(properties, "includes", [] )
         properties["includes"] = properties["includes"] + [ self.tools_output_path.create_changed_by("serialization_binary_serialization.h") ]
         properties["code_body_pattern"] = header_pattern
-        properties["std_includes"] = ["cstdint", "string", "iostream"]
+        properties["std_includes"] = properties["std_includes"] + ["string", "iostream"]
         properties["once"] = True
         self._generate("source.main.pattern", "header_file_name", properties)
         properties["includes"] = [ self.output_path.create_changed_by( properties["name"].lowercase_namespace_and_name() + ".h" ), \
@@ -174,6 +179,8 @@ class PlainOldDataTypes:
             properties["int_class_size"] = 2
         elif properties["int_class"] in ["int32_t", "uint32_t"]:
             properties["int_class_size"] = 4
+        elif properties["int_class"] in ["int64_t", "uint64_t"]:
+            properties["int_class_size"] = 8
 
     def _set_int_type_by_count_of_values(self, properties, cout_values):
         if cout_values <= 255:
@@ -195,6 +202,9 @@ class PlainOldDataTypes:
             properties["int_class_size"] = 2
         elif count_of_bits <= 32:
             properties["int_class"] = "uint32_t"
+            properties["int_class_size"] = 4
+        elif count_of_bits <= 64:
+            properties["int_class"] = "uint64_t"
             properties["int_class_size"] = 4
 
 #--------------------------------------------------------------------------

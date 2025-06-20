@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <cstdint>
+#include <format>
 #include <string>
 #include <iostream>
 
@@ -24,6 +24,9 @@
 
 namespace Money
 {
+  static_assert(sizeof(float) == 4);
+  static_assert(sizeof(double) == 8);
+  
   class Netto
   {
     public:
@@ -31,7 +34,7 @@ namespace Money
       static constexpr const char* class_name = { "Money::Netto" };
       static constexpr bool is_compareable = { true };
       static constexpr bool is_ordered = { true };
-      static constexpr float accuracy = { 0.005 };
+      static constexpr float compare_accuracy = { /* +/- */ 0.005f };
   
       constexpr Netto() noexcept
         : m_netto(0.0)
@@ -46,11 +49,38 @@ namespace Money
       Netto& operator=(const Netto& netto) noexcept = default;
       Netto& operator=(Netto&& netto) noexcept = default;
   
+      const Netto& getNetto() const noexcept { return *this; }
+      float getNettoAsFloat() const noexcept { return m_netto; }
   
+      void setNetto(float netto) noexcept { m_netto = netto; }
+      void setNetto(const Netto& netto) noexcept{ *this = netto; }
+      void setFrom(const Netto& netto) noexcept { *this = netto; }
+      void setFrom(Netto&& netto) noexcept { *this = netto; }
   
+      bool operator==(const Netto& other) const noexcept { return abs(m_netto - other.m_netto) <= compare_accuracy; }
+      bool operator!=(const Netto& other) const noexcept { return !operator==(other); }
+      bool operator<(const Netto& other) const noexcept { return (m_netto < other.m_netto) && operator!=(other); }
+      bool operator<=(const Netto& other) const noexcept { return (m_netto < other.m_netto) || operator==(other); }
+      bool operator>=(const Netto& other) const noexcept { return (m_netto > other.m_netto) || operator==(other); }
+      bool operator>(const Netto& other) const noexcept { return (m_netto > other.m_netto) && operator!=(other); }
   
+      std::string toString() const { return std::format("{:.2f}", m_netto); }
   
-  
+      static Netto fromString(const std::string& text);
+          
+      friend std::ostream& operator<<(std::ostream& output, const Netto& netto) { output << netto.toString(); return output; }
+      
+      friend Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& output, const Netto& netto)
+      {
+        output.storeValue(netto.m_netto);
+        return output;
+      }
+      
+      friend Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer& input, Netto& netto)
+      {
+        input.readValue(netto.m_netto);
+        return input;
+      }
   
     private:
       float m_netto;

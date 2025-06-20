@@ -18,9 +18,9 @@ namespace Serialization
         m_serialized_data.push_back(byte);
       }
 
-      template <class INTEGER> void storeInteger(const INTEGER& value)
+      template <class NUMBER> void storeValue(const NUMBER& value)
       {
-        unsigned len = sizeof(INTEGER);
+        unsigned len = sizeof(NUMBER);
         if constexpr (std::endian::native == std::endian::big)
         {
           // Big-endian system
@@ -66,14 +66,14 @@ namespace Serialization
         }  
       }
 
-      template <class INTEGER> void readInteger(INTEGER& value)
+      template <class NUMBER> void readValue(NUMBER& value)
       {
-        unsigned len = sizeof(INTEGER);
+        unsigned len = sizeof(NUMBER);
         if constexpr (std::endian::native == std::endian::big)
         {
           // Big-endian system
           uint8_t* bytes = reinterpret_cast<uint8_t*>(&value);
-          for (unsigned i = 0; i < sizeof(INTEGER); ++i)
+          for (unsigned i = 0; i < sizeof(NUMBER); ++i)
           {
             readByte(*bytes++);
           }

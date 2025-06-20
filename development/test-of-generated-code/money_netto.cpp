@@ -21,6 +21,17 @@
 
 namespace Money
 {
+  Netto Netto::fromString(const std::string& text)
+  {
+    std::istringstream string_representation(text);
+    float netto = 0;
+    string_representation >> netto;
+    if (!string_representation.eof())
+    {
+      throw Common::ConversionError(text, "cannot be interpreted as Money::Netto");
+    }
+    return Netto(netto);
+  }
   
   // -vvv YOU CAN PUT ADDITIONAL DEFINITIONS BELOW
   

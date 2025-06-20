@@ -1,3 +1,6 @@
+static_assert(sizeof(float) == 4);
+static_assert(sizeof(double) == 8);
+
 class ${class_name}
 {
   public:
@@ -5,7 +8,7 @@ class ${class_name}
     static constexpr const char* class_name = { "${"::".join(name.UppercaseCamelsNamespaces())}::${class_name}" };
     static constexpr bool is_compareable = { ${#if compareable}true${#else}false${#end} };
     static constexpr bool is_ordered = { ${#if ordered}true${#else}false${#end} };
-    static constexpr ${float_class} accuracy = { ${accuracy} };
+    static constexpr ${float_class} compare_accuracy = { /* +/- */ ${accuracy} };
 
     constexpr ${class_name}() noexcept
       : m_${object_name}(${default})
@@ -17,11 +20,28 @@ class ${class_name}
 
     ${#include "simple.assignment.pattern"}
 
+    const ${class_name}& get${class_name}() const noexcept { return *this; }
+    ${float_class} get${class_name}AsFloat() const noexcept { return m_${object_name}; }
 
+    void set${class_name}(${float_class} ${object_name}) noexcept { m_${object_name} = ${object_name}; }
+    void set${class_name}(const ${class_name}& ${object_name}) noexcept{ *this = ${object_name}; }
+    void setFrom(const ${class_name}& ${object_name}) noexcept { *this = ${object_name}; }
+    void setFrom(${class_name}&& ${object_name}) noexcept { *this = ${object_name}; }
 
+${#if compareable}    bool operator==(const ${class_name}& other) const noexcept { return abs(m_${object_name} - other.m_${object_name}) <= compare_accuracy; }
+    bool operator!=(const ${class_name}& other) const noexcept { return !operator==(other); }${#else}    // No compare operators${#end}
+${#if ordered}    bool operator<(const ${class_name}& other) const noexcept { return (m_${object_name} < other.m_${object_name}) && operator!=(other); }
+    bool operator<=(const ${class_name}& other) const noexcept { return (m_${object_name} < other.m_${object_name}) || operator==(other); }
+    bool operator>=(const ${class_name}& other) const noexcept { return (m_${object_name} > other.m_${object_name}) || operator==(other); }
+    bool operator>(const ${class_name}& other) const noexcept { return (m_${object_name} > other.m_${object_name}) && operator!=(other); }${#else}    // No ordering operators${#end}
 
+    std::string toString() const { return std::format("{:${string_format}f}", m_${object_name}); }
 
-
+    static ${class_name} fromString(const std::string& text);
+        
+    friend std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name}) { output << ${object_name}.toString(); return output; }
+    
+    ${#include "value.binary.serialization.pattern"}
 
   private:
     ${float_class} m_${object_name};

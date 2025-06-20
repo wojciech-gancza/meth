@@ -76,7 +76,7 @@ class ${class_name}
 
     ${#include "dump.declaration.pattern"}
 
-    ${#include "integer.binary.serialization.pattern"}
+    ${#include "value.binary.serialization.pattern"}
 
   private:
     ${int_class} m_${object_name} = { 0 };

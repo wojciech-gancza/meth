@@ -56,35 +56,12 @@ namespace Common
         void setFrom(const PortNumber& port_number) noexcept { *this = port_number; }
         void setFrom(PortNumber&& port_number) noexcept { *this = port_number; }
     
-        bool operator==(const PortNumber& port_number) const noexcept
-        {
-          return (m_port_number == port_number.m_port_number);
-        }
-        
-        bool operator!=(const PortNumber& port_number) const noexcept
-        {
-          return (m_port_number != port_number.m_port_number);
-        }
-        
-        bool operator<(const PortNumber& port_number) const noexcept
-        {
-          return (m_port_number < port_number.m_port_number);
-        }
-        
-        bool operator<=(const PortNumber& port_number) const noexcept
-        {
-          return (m_port_number <= port_number.m_port_number);
-        }
-        
-        bool operator>=(const PortNumber& port_number) const noexcept
-        {
-          return (m_port_number >= port_number.m_port_number);
-        }
-        
-        bool operator>(const PortNumber& port_number) const noexcept
-        {
-          return (m_port_number > port_number.m_port_number);
-        }
+        bool operator==(const PortNumber& port_number) const noexcept { return (m_port_number == port_number.m_port_number); }
+        bool operator!=(const PortNumber& port_number) const noexcept { return (m_port_number != port_number.m_port_number);}
+        bool operator<(const PortNumber& port_number) const noexcept { return (m_port_number < port_number.m_port_number); }
+        bool operator<=(const PortNumber& port_number) const noexcept { return (m_port_number <= port_number.m_port_number); }
+        bool operator>=(const PortNumber& port_number) const noexcept { return (m_port_number >= port_number.m_port_number); }
+        bool operator>(const PortNumber& port_number) const noexcept { return (m_port_number > port_number.m_port_number); }
       
         std::string toString() const;
         static PortNumber fromString(std::string text);
@@ -93,13 +70,13 @@ namespace Common
     
         friend Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& output, const PortNumber& port_number)
         {
-          output.storeInteger(port_number.m_port_number);
+          output.storeValue(port_number.m_port_number);
           return output;
         }
         
         friend Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer& input, PortNumber& port_number)
         {
-          input.readInteger(port_number.m_port_number);
+          input.readValue(port_number.m_port_number);
           return input;
         }
     

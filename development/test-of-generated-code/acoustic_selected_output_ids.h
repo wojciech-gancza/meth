@@ -65,16 +65,8 @@ namespace Acoustic
       void setFrom(const SelectedOutputIds& selected_output_ids) { *this = selected_output_ids; }
       void setFrom(SelectedOutputIds&& selected_output_ids) { *this = selected_output_ids; }
   
-      bool operator==(const SelectedOutputIds& selected_output_ids) const noexcept
-      {
-        return (m_selected_output_ids == selected_output_ids.m_selected_output_ids);
-      }
-      
-      bool operator!=(const SelectedOutputIds& selected_output_ids) const noexcept
-      {
-        return (m_selected_output_ids != selected_output_ids.m_selected_output_ids);
-      }
-      
+      bool operator==(const SelectedOutputIds& selected_output_ids) const noexcept { return (m_selected_output_ids == selected_output_ids.m_selected_output_ids); }
+      bool operator!=(const SelectedOutputIds& selected_output_ids) const noexcept { return (m_selected_output_ids != selected_output_ids.m_selected_output_ids);}
       // No ordering operators
     
       SelectedOutputIds operator!() const noexcept
@@ -126,13 +118,13 @@ namespace Acoustic
   
       friend Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& output, const SelectedOutputIds& selected_output_ids)
       {
-        output.storeInteger(selected_output_ids.m_selected_output_ids);
+        output.storeValue(selected_output_ids.m_selected_output_ids);
         return output;
       }
       
       friend Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer& input, SelectedOutputIds& selected_output_ids)
       {
-        input.readInteger(selected_output_ids.m_selected_output_ids);
+        input.readValue(selected_output_ids.m_selected_output_ids);
         return input;
       }
   

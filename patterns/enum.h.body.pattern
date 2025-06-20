@@ -34,7 +34,7 @@ class ${class_name}
   
     ${#include "dump.declaration.pattern"}
 
-    ${#include "integer.binary.serialization.pattern"}
+    ${#include "value.binary.serialization.pattern"}
 
   private:
     e${class_name} m_${object_name};
