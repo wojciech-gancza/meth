@@ -2,7 +2,7 @@ class ${class_name}
 {
   public:
     // type traits
-    static constexpr const char* class_name = { "${"::".join(name.UppercaseCamelsNamespaces())}::${class_name}" };
+    static constexpr const char* class_name = { "${name.FullyDecoratedClassName()}" };
     static constexpr bool is_compareable = { ${#if compareable}true${#else}false${#end} };
     static constexpr bool is_ordered = { ${#if ordered}true${#else}false${#end} };
     static constexpr ${int_class} max_length = { ${max_size} };
@@ -11,19 +11,35 @@ class ${class_name}
       : m_${object_name}("${default}")
     {  }
 
-    constexpr explicit ${class_name}( const std::string& ${object_name} ) noexcept
+    explicit ${class_name}( const std::string& ${object_name} )
       : m_${object_name}(${object_name})
-    {  }
+    { checkSize(); }
 
     ${#include "simple.assignment.pattern"}
 
+    ${#include "simple.getter.setter.pattern" "simple_type_name": "String", "simple_type": "std::string", "extra_check_code": "checkSize(); "}
 
+    ${int_class} get${class_name}Length() const { return static_cast<${int_class}>(m_${object_name}.length()); }
 
+${#if compareable}    bool operator==(const ${class_name}& other) const noexcept { return ${compare_class.FullyDecoratedClassName()}::isEqual(this->m_${object_name}, other.m_${object_name}); }
+    bool operator!=(const ${class_name}& other) const noexcept { return ${compare_class.FullyDecoratedClassName()}::isNotEqual(this->m_${object_name}, other.m_${object_name}); }${#else}    // No compare operators${#end}
+${#if ordered}    bool operator<(const ${class_name}& other) const noexcept { return ${compare_class.FullyDecoratedClassName()}::isLower(this->m_${object_name}, other.m_${object_name}); }
+    bool operator<=(const ${class_name}& other) const noexcept { return ${compare_class.FullyDecoratedClassName()}::isLowerOrEqual(this->m_${object_name}, other.m_${object_name}); }
+    bool operator>=(const ${class_name}& other) const noexcept { return ${compare_class.FullyDecoratedClassName()}::isAboveOrEqual(this->m_${object_name}, other.m_${object_name}); }
+    bool operator>(const ${class_name}& other) const noexcept { return ${compare_class.FullyDecoratedClassName()}::isAbove(this->m_${object_name}, other.m_${object_name}); }${#else}    // No ordering operators${#end}
 
-
+    ${#include "serialization.declaration.pattern"}
 
   private:
     std::string m_${object_name};
+
+    void checkSize()
+    {
+      if (get${class_name}Length() > max_length)
+      {
+        throw Common::ConversionError(m_${object_name}, "too long string to initiate ${name.FullyDecoratedClassName()}");
+      }
+    }
 
     // -vvv YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
 

@@ -2,7 +2,7 @@ class ${class_name}
 {
   public:
     // type traits
-    static constexpr const char* class_name = { "${"::".join(name.UppercaseCamelsNamespaces())}::${class_name}" };
+    static constexpr const char* class_name = { "${name.FullyDecoratedClassName()}" };
     static constexpr bool is_compareable = { ${#if compareable}true${#else}false${#end} };
     static constexpr bool is_ordered = { ${#if ordered}true${#else}false${#end} };
     static constexpr uint8_t size_in_bytes = { ${int_class_size} };
@@ -17,13 +17,7 @@ class ${class_name}
 
     ${#include "simple.assignment.pattern"}
 
-    const ${class_name}& get${class_name}() const noexcept { return *this; }
-    ${int_class} get${class_name}AsInt() const noexcept { return m_${object_name}; }
-
-    void set${class_name}(${int_class} ${object_name}) noexcept { m_${object_name} = ${object_name}; }
-    void set${class_name}(const ${class_name}& ${object_name}) noexcept{ *this = ${object_name}; }
-    void setFrom(const ${class_name}& ${object_name}) noexcept { *this = ${object_name}; }
-    void setFrom(${class_name}&& ${object_name}) noexcept { *this = ${object_name}; }
+    ${#include "simple.getter.setter.pattern" "simple_type_name": "Int", "simple_type": int_class, "extra_check_code": ""}
 
     ${#include "simple.compare.pattern"}
   

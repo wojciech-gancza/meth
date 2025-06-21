@@ -36,7 +36,7 @@
     <ClCompile Include="acoustic_selected_output_ids.cpp" />
     <ClCompile Include="common_network_port_number.cpp" />
     <ClCompile Include="common_severity.cpp" />
-    <ClCompile Include="common_text_mesage.cpp" />
+    <ClCompile Include="common_text_message.cpp" />
     <ClCompile Include="money_netto.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="test_another_record.cpp" />
@@ -49,7 +49,8 @@
     <ClInclude Include="acoustic_selected_output_ids.h" />
     <ClInclude Include="common_network_port_number.h" />
     <ClInclude Include="common_record_fields_comparision.h" />
-    <ClInclude Include="common_text_mesage.h" />
+    <ClInclude Include="common_strcmp_compare.h" />
+    <ClInclude Include="common_text_message.h" />
     <ClInclude Include="money_netto.h" />
     <ClInclude Include="serialization_binary_serialization.h" />
     <ClInclude Include="common_conversion_error.h" />

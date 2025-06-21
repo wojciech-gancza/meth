@@ -47,8 +47,12 @@ class PlainOldDataTypes:
         extended_properties = self._extend_property_list(properties)
         self._set_int_type_by_count_of_values(extended_properties, extended_properties["max_size"])
         self._set_default_value(extended_properties, "default", "")
-        self._set_default_value(extended_properties, "compare_type", "strcmp")
+        self._set_default_value(extended_properties, "compare_class", "common : strcmp compare")
+        extended_properties["compare_class"] = generatortools.Name(extended_properties["compare_class"])
+        extended_properties["includes"] = [ self.tools_output_path.create_changed_by(extended_properties["compare_class"].lowercase_namespace_and_name() + ".h"), \
+                                            self.tools_output_path.create_changed_by("common_conversion_error.h") ]
         extended_properties["std_includes"] = ["cstdint"]
+        extended_properties["std_cpp_includes"] = ["sstream"]
         self._generate_files("string.h.body.pattern", "string.cpp.body.pattern", extended_properties)
 
     def generate_floating_point(self, properties):
@@ -130,7 +134,7 @@ class PlainOldDataTypes:
                                    self.tools_output_path.create_changed_by("common_conversion_error.h") \
                                   ] + properties["cpp_includes"]
         properties["code_body_pattern"] = cpp_pattern
-        properties["std_includes"] = ["sstream"]
+        properties["std_includes"] = properties["std_cpp_includes"] + ["sstream"]
         properties["once"] = False
         self._generate("source.main.pattern", "source_file_name", properties)
 
@@ -163,7 +167,8 @@ class PlainOldDataTypes:
                  "generator_line_number": generator_code_line,
                  "solution_path": self.soluton_path,
                  "cpp_includes": [],
-                 "std_includes": [] }
+                 "std_includes": [],
+                 "std_cpp_includes": []}
         if "values" in extended_properties.keys():
             extended_properties["values"] = [generatortools.Name(value) for value in extended_properties["values"] ]
         self._set_default_value(extended_properties, "compareable", True)

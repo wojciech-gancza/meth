@@ -1,0 +1,7 @@
+void set${class_name}(${simple_type} ${object_name}) noexcept { m_${object_name} = ${object_name}; ${extra_check_code}}
+void set${class_name}(const ${class_name}& ${object_name}) noexcept{ *this = ${object_name}; }
+void setFrom(const ${class_name}& ${object_name}) noexcept { *this = ${object_name}; }
+void setFrom(${class_name}&& ${object_name}) noexcept { *this = ${object_name}; }
+
+const ${class_name}& get${class_name}() const noexcept { return *this; }
+${simple_type} get${class_name}As${simple_type_name}() const noexcept { return m_${object_name}; }

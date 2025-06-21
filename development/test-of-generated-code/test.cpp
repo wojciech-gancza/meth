@@ -7,6 +7,80 @@
 #include "test_just_a_record.h"
 #include "test_another_record.h"
 #include "money_netto.h"
+#include "common_text_message.h"
+
+//--------------------------------------------------------------------------------------------
+
+TEST(TestOfGeneratedStringType, TestOfDefaultValue)
+{
+  Common::TextMessage message;
+  ASSERT_EQ(message.toString(), "\"No comments.\"");
+}
+
+TEST(TestOfGeneratedStringType, TestOfConstructingValue)
+{
+  Common::TextMessage message("I'm \\ here");
+  ASSERT_EQ(message.toString(), "\"I\\\'m \\\\ here\"");
+}
+
+TEST(TestOfGeneratedStringType, TestSettingFieldsValues)
+{
+  Common::TextMessage message;
+  message.setTextMessage("hello");
+  ASSERT_EQ(message.toString(), "\"hello\"");
+}
+
+TEST(TestOfGeneratedStringType, TestOfComparision1)
+{
+  Common::TextMessage message1("Abcdef");
+  Common::TextMessage message2("Abcdef");
+
+  ASSERT_TRUE(message1 == message2);
+  ASSERT_FALSE(message1 != message2);
+  ASSERT_TRUE(message1 >= message2);
+  ASSERT_FALSE(message1 > message2);
+  ASSERT_TRUE(message1 <= message2);
+  ASSERT_FALSE(message1 < message2);
+}
+
+TEST(TestOfGeneratedStringType, TestOfComparision2)
+{
+  Common::TextMessage message1("Abcdxf");
+  Common::TextMessage message2("Abcdef");
+
+  ASSERT_FALSE(message1 == message2);
+  ASSERT_TRUE(message1 != message2);
+  ASSERT_TRUE(message1 >= message2);
+  ASSERT_TRUE(message1 > message2);
+  ASSERT_FALSE(message1 <= message2);
+  ASSERT_FALSE(message1 < message2);
+}
+
+TEST(TestOfGeneratedStringType, TestOfSerialization)
+{
+  Common::TextMessage message("Abcdxf");
+  Serialization::BinarySerializer serializer;
+  serializer << message;
+  const std::vector<uint8_t>& serialized_data = serializer.getSerializedData();
+  ASSERT_EQ(serialized_data.size(), 8);
+  ASSERT_EQ(serialized_data[0], 0x00);
+  ASSERT_EQ(serialized_data[1], 0x06);
+  ASSERT_EQ(serialized_data[2], 0x41);
+  ASSERT_EQ(serialized_data[3], 0x62);
+  ASSERT_EQ(serialized_data[4], 0x63);
+  ASSERT_EQ(serialized_data[5], 0x64);
+  ASSERT_EQ(serialized_data[6], 0x78);
+  ASSERT_EQ(serialized_data[7], 0x66);
+}
+
+TEST(TestOfGeneratedStringType, TestOfDeserialization)
+{
+  Common::TextMessage message;
+  std::vector<uint8_t> serialized_data = { 0x00, 0x06, 0x41, 0x62, 0x63, 0x64, 0x78, 0x66 };
+  Serialization::BinaryDeserializer deserializer(serialized_data);
+  deserializer >> message;
+  ASSERT_EQ(message.toString(), "\"Abcdxf\"");
+}
 
 //--------------------------------------------------------------------------------------------
 

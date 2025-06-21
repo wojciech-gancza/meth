@@ -12,7 +12,6 @@ import time
 # backlog:
 #--------------------------------------------------------------------------
 # -! simple types generator
-#   -! string type
 #   -- collection type
 #   -- timepoint type
 #   -- time duration type
@@ -23,6 +22,7 @@ import time
 #   ++ integer type
 #   ++ record type
 #   ++ float type (based on float/double)
+#   ++ string type
 # -- configuration
 #   -- configuration types: key, value, node, nodes
 #   -- add reading objects from cofiguration (all types)
@@ -107,7 +107,7 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
         self.generator.generate_record(variables)
 
     def test_GeneratingStringType(self):
-        variables = {"name": "common : text mesage",
+        variables = {"name": "common : text message",
                      "default": "No comments.",
                      "max_size": 4000,
                      "ordered": True}
