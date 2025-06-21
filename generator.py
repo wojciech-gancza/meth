@@ -108,6 +108,21 @@ class PlainOldDataTypes:
         extended_properties["std_includes"] = ["cstdint"]
         self._generate_files("bitflags.h.body.pattern", "bitflags.cpp.body.pattern", extended_properties)
 
+    def generate_timepoint(self, properties):
+        # required properties:
+        # - name - fully qualified type name defined as single string where words are name elements ( example: "common : severity"),
+        # - text_output_format - format used to convert to string and from string
+        # optional properties:
+        # - compareable - adds "==", "=!" , ... operators. When not defined True is assumed
+        # - ordered - adds "<", ">" , ... operators. When set to true also sets compareable. When not defined False is assumed
+        extended_properties = self._extend_property_list(properties)
+        extended_properties["std_includes"] =  [ "chrono" ]
+        extended_properties["cpp_includes"] =  [ self.tools_output_path.create_changed_by("common_text_converter.h") ]
+        time_format_code_generator = generatortools.TimeFormatCodeGenerator(extended_properties["text_output_format"], extended_properties)
+        extended_properties["decompose_string_code"] = time_format_code_generator.generate_decompose_string_code()
+        extended_properties["compose_output_code"] = time_format_code_generator.generate_compose_output_code()
+        self._generate_files("time.point.h.body.pattern", "time.point.cpp.body.pattern", extended_properties)
+
     def generate_record(self, properties):
         # required properties:
         # - name - fully qualified type name defined as single string where words are name elements ( example: "common : severity"),

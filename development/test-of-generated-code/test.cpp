@@ -8,6 +8,67 @@
 #include "test_another_record.h"
 #include "money_netto.h"
 #include "common_text_message.h"
+#include "common_event_time.h"
+
+//--------------------------------------------------------------------------------------------
+
+TEST(TestOfGeneratedTimePointType, TestOfCreatingValue)
+{
+  Common::EventTime timestamp = Common::EventTime::fromString("2025-06-10 12:34:56.789");
+  ASSERT_EQ(timestamp.toString(), "2025-06-10 12:34:56.789");
+}
+
+TEST(TestOfGeneratedTimePointType, TestOfComparision1)
+{
+  Common::EventTime timestamp1 = Common::EventTime::fromString("2025-06-10 12:34:56.789");
+  Common::EventTime timestamp2 = Common::EventTime::fromString("2025-06-10 12:34:56.789");
+
+  ASSERT_TRUE(timestamp1 == timestamp2);
+  ASSERT_FALSE(timestamp1 != timestamp2);
+  ASSERT_TRUE(timestamp1 >= timestamp2);
+  ASSERT_FALSE(timestamp1 > timestamp2);
+  ASSERT_TRUE(timestamp1 <= timestamp2);
+  ASSERT_FALSE(timestamp1 < timestamp2);
+}
+
+TEST(TestOfGeneratedTimePointType, TestOfComparision2)
+{
+  Common::EventTime timestamp1 = Common::EventTime::fromString("2025-06-10 12:34:56.789");
+  Common::EventTime timestamp2 = Common::EventTime::fromString("2025-06-10 12:24:56.789");
+
+  ASSERT_FALSE(timestamp1 == timestamp2);
+  ASSERT_TRUE(timestamp1 != timestamp2);
+  ASSERT_TRUE(timestamp1 >= timestamp2);
+  ASSERT_TRUE(timestamp1 > timestamp2);
+  ASSERT_FALSE(timestamp1 <= timestamp2);
+  ASSERT_FALSE(timestamp1 < timestamp2);
+}
+
+TEST(TestOfGeneratedTimePointType, TestOfSerialization)
+{
+  Common::EventTime timestamp = Common::EventTime::fromString("2025-06-10 12:34:56.789");
+  Serialization::BinarySerializer serializer;
+  serializer << timestamp;
+  const std::vector<uint8_t>& serialized_data = serializer.getSerializedData();
+  ASSERT_EQ(serialized_data.size(), 8);
+  ASSERT_EQ(serialized_data[0], 0x00);
+  ASSERT_EQ(serialized_data[1], 0x06);
+  ASSERT_EQ(serialized_data[2], 0x37);
+  ASSERT_EQ(serialized_data[3], 0x35);
+  ASSERT_EQ(serialized_data[4], 0x3f);
+  ASSERT_EQ(serialized_data[5], 0x67);
+  ASSERT_EQ(serialized_data[6], 0x3e);
+  ASSERT_EQ(serialized_data[7], 0x08);
+}
+
+TEST(TestOfGeneratedTimePointType, TestOfDeserialization)
+{
+  Common::EventTime timestamp;
+  std::vector<uint8_t> serialized_data = { 0x00, 0x06, 0x37, 0x35, 0x3f, 0x67, 0x3e, 0x08 };
+  Serialization::BinaryDeserializer deserializer(serialized_data);
+  deserializer >> timestamp;
+  ASSERT_EQ(timestamp.toString(), "2025-06-10 12:34:56.789");
+}
 
 //--------------------------------------------------------------------------------------------
 

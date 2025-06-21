@@ -1,0 +1,52 @@
+class ${class_name}
+{
+  public:
+    // type traits
+    static constexpr const char* class_name = { "${name.FullyDecoratedClassName()}" };
+    static constexpr bool is_compareable = { ${#if compareable}true${#else}false${#end} };
+    static constexpr bool is_ordered = { ${#if ordered}true${#else}false${#end} };
+    typedef std::chrono::system_clock ClockType;
+    typedef std::chrono::time_point<ClockType> TimePointType;
+
+    ${class_name}() noexcept
+      : m_${object_name}( ClockType::now() )
+    {  }
+
+    explicit ${class_name}(const TimePointType& ${object_name}) noexcept 
+      : m_${object_name}( ${object_name} ) 
+    {  }
+
+    ${class_name}(TimePointType&& ${object_name}) noexcept 
+      : m_${object_name}( ${object_name} )
+    {  }
+
+    ${#include "simple.assignment.pattern"}
+
+    ${#include "simple.getter.setter.pattern" "simple_type_name": "TimePoint", "simple_type": "TimePointType", "extra_check_code": ""}
+
+    ${#include "simple.compare.pattern"}
+
+    ${#include "dump.declaration.pattern"}
+
+    friend Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& serializer, const ${class_name}& ${object_name}) 
+    {
+      uint64_t time = std::chrono::duration_cast<std::chrono::microseconds>(${object_name}.m_${object_name}.time_since_epoch()).count(); 
+      serializer.storeValue(time); 
+      return serializer; 
+    }
+
+    friend Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer& deserializer, ${class_name}& ${object_name})
+    { 
+      uint64_t time; 
+      deserializer.readValue(time); 
+      ${object_name}.m_${object_name} = TimePointType(std::chrono::microseconds(time)); 
+      return deserializer; 
+    }
+
+  private:
+    TimePointType m_${object_name};
+
+    // -vvv YOU CAN PUT ADDITIONAL PRIVATE METHODS AND FIELDS HERE
+
+    // -^^^ YOU CAN PUT ADDITIONAL PRIVATE METHODS AND FIELDS HERE
+};

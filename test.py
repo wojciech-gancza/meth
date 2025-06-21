@@ -12,9 +12,9 @@ import time
 # backlog:
 #--------------------------------------------------------------------------
 # -! simple types generator
-#   -- collection type
-#   -- timepoint type
 #   -- time duration type
+#   -- collection type
+#   -- patterns refactoring
 #   -- registry of all generated types
 #   -- adding tool files (when required)
 #   ++ bitflags type 
@@ -23,6 +23,7 @@ import time
 #   ++ record type
 #   ++ float type (based on float/double)
 #   ++ string type
+#   ++ timepoint type
 # -- configuration
 #   -- configuration types: key, value, node, nodes
 #   -- add reading objects from cofiguration (all types)
@@ -120,6 +121,13 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                      "accuracy": "0.005f",
                      "string_format": ".2"}
         self.generator.generate_floating_point(variables)
+
+    def test_GeneratingTimepointType(self):
+        variables = {"name": "common : event time", \
+                     "text_output_format": "$Y-$M-$D $h:$m:$s.$f",
+                     "ordered": True}
+        self.generator.generate_timepoint(variables)
+
 
 #--------------------------------------------------------------------------
 

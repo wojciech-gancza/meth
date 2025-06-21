@@ -1,0 +1,37 @@
+std::string ${class_name}::toString() const
+{
+  std::ostringstream output;
+  output << *this;
+  return output.str();
+}
+
+${class_name} ${class_name}::fromString(std::string text)
+{
+  ${decompose_string_code}
+  
+  std::tm tm = { 
+    /* .tm_sec  = */ ${#if use_seconds}seconds${#else}0${#end},
+    /* .tm_min  = */ ${#if use_minutes}minutes${#else}0${#end},
+    /* .tm_hour = */ ${#if use_hour}hour${#else}0${#end},
+    /* .tm_mday = */ ${#if use_day}day${#else}1${#end},
+    /* .tm_mon  = */ ${#if use_month}month - 1${#else}0${#end},
+    /* .tm_year = */ ${#if use_year}year - 1900${#else}80${#end}
+  };
+  tm.tm_isdst = -1; // Use DST value from local time zone
+  return ${class_name}(std::chrono::system_clock::from_time_t(std::mktime(&tm))${#if use_milliseconds} + std::chrono::milliseconds(milliseconds)${#end});
+}
+
+std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name})
+{
+  time_t t = std::chrono::system_clock::to_time_t(${object_name}.m_${object_name});
+  #pragma warning(suppress : 4996)
+  std::tm* tm = localtime(&t);
+
+  output ${compose_output_code};
+
+  return output;
+}
+
+// -vvv YOU CAN PUT ADDITIONAL DEFINITIONS BELOW
+
+// -^^^ END OF USER DEFINED DEFINITIONS

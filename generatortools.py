@@ -243,3 +243,146 @@ class EnumCodeGenerator:
         return selector_map
 
 #--------------------------------------------------------------------------
+
+class TimeFormatCodeGenerator:
+
+    def __init__(self, format_string, properties):
+        self.format_string = format_string
+        self.properties = properties
+
+    def generate_decompose_string_code(self):
+        code_elements = [ 
+                "std::string::const_iterator reader = text.begin();",
+                "std::string::const_iterator limit = text.end();" ]
+        self.properties["use_milliseconds"] = False
+        self.properties["use_seconds"] = False
+        self.properties["use_minutes"] = False
+        self.properties["use_hour"] = False
+        self.properties["use_day"] = False
+        self.properties["use_month"] = False
+        self.properties["use_year"] = False
+
+        format_string = self.format_string
+        while format_string != "":
+            if format_string[0] != '$':
+                for i in range(1, len(format_string)):
+                    if format_string[i] == '$':
+                        code_elements.append("Common::TextConverter::ensureStaticTextExist(reader, limit, \"" + format_string[:i] + "\");")
+                        format_string = format_string[i:]
+                        break
+                else:
+                    code_elements.append("Common::TextConverter::ensureStaticTextExist(reader, limit, \"" + format_string + "\");")
+                    format_string = ""
+                    break
+            else:
+                time_element_code = format_string[1]
+                output_code = self._get_format_code(time_element_code)
+                code_elements = code_elements + output_code
+                format_string = format_string[2:]
+        return code_elements + [
+                "if (reader != limit)",
+                "{",
+                "  Common::ConversionError(text, \"Extra characters at end of text.\");",
+                "}" ]
+        
+    def generate_compose_output_code(self):
+        code_elements = []
+        format_string = self.format_string
+        while format_string != "":
+            if format_string[0] != '$':
+                for i in range(1, len(format_string)):
+                    if format_string[i] == '$':
+                        code_elements.append("<< \"" + format_string[:i] + "\"")
+                        format_string = format_string[i:]
+                        break
+                else:
+                    code_elements.append("<< \"" + format_string[:i] + "\"")
+                    format_string = ""
+                    break
+            else:
+                time_element_code = format_string[1]
+                output_code = self._get_output_code(time_element_code)
+                code_elements.append(output_code)
+                format_string = format_string[2:]
+        return code_elements
+
+    def _get_output_code(self, time_element_code):
+        if time_element_code == 'Y':
+            return "<< (tm->tm_year + 1900)"
+        elif time_element_code == "M":
+            return "<< std::setw(2) << std::setfill('0') << (tm->tm_mon + 1)"
+        elif time_element_code == "D":
+            return "<< std::setw(2) << std::setfill('0') << tm->tm_mday"
+        elif time_element_code == "h":
+            return "<< std::setw(2) << std::setfill('0') << tm->tm_hour"
+        elif time_element_code == "m":
+            return "<< std::setw(2) << std::setfill('0') << tm->tm_min"
+        elif time_element_code == "s":
+            return "<< std::setw(2) << std::setfill('0') << tm->tm_sec"
+        elif time_element_code == "f":
+            return "<< std::setw(3) << (floor<std::chrono::milliseconds>(${object_name}.m_${object_name} - floor<std::chrono::seconds>(${object_name}.m_${object_name})).count())"
+        else:
+            return "<< \"<?>\"";
+
+    def _get_format_code(self, time_element_code):
+        if time_element_code == 'Y':
+            self.properties["use_year"] = True          
+            return [
+                "int year = Common::TextConverter::readFourDigitsNumber(reader, limit);",
+                "if (year < 1900 || year > 2999)",
+                "{",
+                "  Common::ConversionError(text, \"Expect number between 1900..2999.\");",
+                "}" ]
+        elif time_element_code == "M":
+            self.properties["use_month"] = True
+            return [
+                "int month = Common::TextConverter::readOneOrTwoDigitsNumber(reader, limit);",
+                "if (month < 1 || month > 12)",
+                "{",
+                "  Common::ConversionError(text, \"Expect number between 1..12.\");",
+                "}" ]
+        elif time_element_code == "D":
+            self.properties["use_day"] = True
+            return  [
+                "int day = Common::TextConverter::readOneOrTwoDigitsNumber(reader, limit);",
+                "if (day < 1 || day > 31)",
+                "{",
+                "  Common::ConversionError(text, \"Expect number between 1..31.\");",
+                "}" ]
+        elif time_element_code == "h":
+            self.properties["use_hour"] = True
+            return  [
+                "int hour = Common::TextConverter::readOneOrTwoDigitsNumber(reader, limit);",
+                "if (hour < 0 || hour >= 24)",
+                "{",
+                "  Common::ConversionError(text, \"Expect number between 0..23.\");",
+                "}" ]
+        elif time_element_code == "m":
+            self.properties["use_minutes"] = True
+            return  [
+                "int minutes = Common::TextConverter::readOneOrTwoDigitsNumber(reader, limit);",
+                "if (minutes < 0 || minutes >= 60)",
+                "{",
+                "  Common::ConversionError(text, \"Expect number between 0..59.\");",
+                "}" ]
+        elif time_element_code == "s":
+            self.properties["use_seconds"] = True
+            return  [
+                "int seconds = Common::TextConverter::readOneOrTwoDigitsNumber(reader, limit);",
+                "if (seconds < 0 || seconds >= 60)",
+                "{",
+                "  Common::ConversionError(text, \"Expect number between 0..59.\");",
+                "}" ]
+        elif time_element_code == "f":
+            self.properties["use_milliseconds"] = True
+            return  [
+                "int milliseconds = Common::TextConverter::readThreeDigitsNumber(reader, limit);",
+                "if (milliseconds < 0 || milliseconds >= 1000)",
+                "{",
+                "  Common::ConversionError(text, \"Expect number between 0..999.\");",
+                "}" ]
+        else:
+            return  [
+                "// unknown format" ];
+
+#--------------------------------------------------------------------------
