@@ -12,7 +12,7 @@ import time
 # backlog:
 #--------------------------------------------------------------------------
 # -! simple types generator
-#   -- collection type
+#   -! collection type
 #   -- registry of all generated types
 #   -- adding tool files (when required)
 #   ++ bitflags type 
@@ -25,7 +25,8 @@ import time
 #   ++ patterns refactoring
 #   ++ time duration type
 # -- configuration
-#   -- configuration types: key, value, node, nodes
+#   -! configuration types: key, value, node, nodes
+#   -- basic configuration tests
 #   -- add reading objects from cofiguration (all types)
 # ++ fixing problems
 #   ++ converting string->enum - check length of the string first. Problem with too bix index
