@@ -18,12 +18,6 @@ std::string ${class_name}::toString() const
   return buffer.str();
 }
 
-std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name})
-{
-  output << ${object_name}.toString();
-  return output;
-}
-
 Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& serializer, const ${class_name}& ${object_name})
 {
   ${int_class} count_of_bytes = ${object_name}.get${class_name}Length();

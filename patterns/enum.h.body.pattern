@@ -2,9 +2,7 @@ class ${class_name}
 {
   public:
     // type traits
-    static constexpr const char* class_name = { "${name.FullyDecoratedClassName()}" };
-    static constexpr bool is_compareable = { ${#if compareable}true${#else}false${#end} };
-    static constexpr bool is_ordered = { ${#if ordered}true${#else}false${#end} };
+    ${#include "common.traits.pattern"}
     static constexpr bool size_in_bytes = { ${int_class_size} };
 
     // internal value type
@@ -13,28 +11,21 @@ class ${class_name}
       ${format.comma_separated(["E_" + value.UPPERCASE_NAME() for value in values])}
     };
 
-    static constexpr e${class_name} first_value = { E_${first_value} };
-    static constexpr e${class_name} last_value = { E_${last_value} } ;
+    static constexpr e${class_name} first_value = { ${first_value} };
+    static constexpr e${class_name} last_value = { ${last_value} } ;
 
-    constexpr ${class_name}(${class_name}::e${class_name} e_${object_name} = ${#if default}${class_name}::${"E_" + default.UPPERCASE_NAME()}${#else}${class_name}::first_value${#end}) noexcept
-      : m_${object_name}(e_${object_name})
-    {  }
+    ${#include "simple.construction.pattern"}
 
-    ${#include "simple.assignment.pattern"}
-  
-    const ${class_name}& get${class_name}() const noexcept { return *this; }
     e${class_name} get${class_name}AsEnum() const noexcept { return m_${object_name}; }
     ${int_class} get${class_name}AsInt() const noexcept { return m_${object_name}; }
 
-    void set${class_name}(const ${class_name}& ${object_name}) { *this = ${object_name}; }
-    void setFrom(const ${class_name}& ${object_name}) { *this = ${object_name}; }
-    void setFrom(${class_name}&& ${object_name}) { *this = ${object_name}; }
+    ${#include "simple.getters.setters.pattern"}
 
     ${#include "simple.compare.pattern"}
-  
-    ${#include "dump.declaration.pattern"}
 
-    ${#include "value.binary.serialization.pattern"}
+    ${#include "common.to.from.string.declaration.pattern"}
+
+    ${#include "simple.value.serialization.pattern"}
 
   private:
     e${class_name} m_${object_name};

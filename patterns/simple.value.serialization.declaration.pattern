@@ -1,0 +1,2 @@
+friend Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& output, const ${class_name}& ${object_name});
+friend Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer& input, ${class_name}& ${object_name});

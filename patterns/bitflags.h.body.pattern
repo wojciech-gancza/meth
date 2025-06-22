@@ -2,9 +2,7 @@ class ${class_name}
 {
   public:
     // type traits
-    static constexpr const char* class_name = { "${name.FullyDecoratedClassName()}" };
-    static constexpr bool is_compareable = { ${#if compareable}true${#else}false${#end} };
-    static constexpr bool is_ordered = { ${#if ordered}true${#else}false${#end} };
+    ${#include "common.traits.pattern"}
     static constexpr bool size_in_bytes = { ${int_class_size} };
     static constexpr ${int_class} first_flag_value = { ${first_value} };
     static constexpr ${int_class} last_flag_value = { ${last_value} } ;
@@ -15,20 +13,11 @@ class ${class_name}
       ${format.bitmasks_enum(["E_" + value.UPPERCASE_NAME() for value in values])}
     };
 
-    ${class_name}() = default;
-
-    constexpr ${class_name}(${class_name}::e${class_name} e_${object_name}) noexcept
-      : m_${object_name}(e_${object_name})
-    {  }
-
-    ${#include "simple.assignment.pattern"}
+    ${#include "simple.construction.pattern"}
   
-    const ${class_name}& get${class_name}() const noexcept { return *this; }
     ${int_class} get${class_name}AsInt() const noexcept { return m_${object_name}; }
 
-    void set${class_name}(const ${class_name}& ${object_name}) { *this = ${object_name}; }
-    void setFrom(const ${class_name}& ${object_name}) { *this = ${object_name}; }
-    void setFrom(${class_name}&& ${object_name}) { *this = ${object_name}; }
+    ${#include "simple.getters.setters.pattern"}
 
     ${#include "simple.compare.pattern"}
   
@@ -74,12 +63,12 @@ class ${class_name}
       m_${object_name} &= ~${object_name}.m_${object_name};
     }
 
-    ${#include "dump.declaration.pattern"}
+    ${#include "common.to.from.string.declaration.pattern"}
 
-    ${#include "value.binary.serialization.pattern"}
+    ${#include "simple.value.serialization.pattern"}
 
   private:
-    ${int_class} m_${object_name} = { 0 };
+    ${int_class} m_${object_name};
 
     static const char* m_${object_name}_bits_names[];
 

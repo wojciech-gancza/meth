@@ -1,9 +1,4 @@
-std::string ${class_name}::toString() const
-{
-  std::ostringstream string_representation;
-  string_representation << *this;
-  return string_representation.str();
-}
+${#include "common.to.string.pattern"}
 
 ${class_name} ${class_name}::fromString(std::string text)
 {

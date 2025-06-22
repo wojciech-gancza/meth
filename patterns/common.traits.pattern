@@ -1,0 +1,3 @@
+static constexpr const char* class_name = { "${name.FullyDecoratedClassName()}" };
+static constexpr bool is_compareable = { ${#if compareable}true${#else}false${#end} };
+static constexpr bool is_ordered = { ${#if ordered}true${#else}false${#end} };

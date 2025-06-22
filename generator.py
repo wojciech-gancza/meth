@@ -32,7 +32,9 @@ class PlainOldDataTypes:
         extended_properties = self._extend_property_list(properties)
         self._set_int_class_size(extended_properties)
         self._set_default_value(extended_properties, "default", 0)
-        extended_properties["std_includes"] = ["cstdint"]
+        extended_properties["h_std_includes"].append( "cstdint" )
+        extended_properties["cpp_std_includes"].append( "sstream" )
+        extended_properties["simple_base_type"] = extended_properties["int_class"]
         self._generate_files("integer.h.body.pattern", "integer.cpp.body.pattern", extended_properties)
 
     def generate_string(self, properties):
@@ -49,10 +51,12 @@ class PlainOldDataTypes:
         self._set_default_value(extended_properties, "default", "")
         self._set_default_value(extended_properties, "compare_class", "common : strcmp compare")
         extended_properties["compare_class"] = generatortools.Name(extended_properties["compare_class"])
-        extended_properties["includes"] = [ self.tools_output_path.create_changed_by(extended_properties["compare_class"].lowercase_namespace_and_name() + ".h"), \
-                                            self.tools_output_path.create_changed_by("common_conversion_error.h") ]
-        extended_properties["std_includes"] = ["cstdint"]
-        extended_properties["std_cpp_includes"] = ["sstream"]
+        extended_properties["h_includes"] = [ self.tools_output_path.create_changed_by(extended_properties["compare_class"].lowercase_namespace_and_name() + ".h"), \
+                                              self.tools_output_path.create_changed_by("common_conversion_error.h") ]
+        extended_properties["h_std_includes"].append( "cstdint" )
+        extended_properties["cpp_std_includes"].append( "sstream" )
+        extended_properties["simple_base_type"] = "const std::string&"
+        extended_properties["default"] = "\"" + extended_properties["default"].replace("\\", "\\\\").replace("\"", "\\\"") + "\""
         self._generate_files("string.h.body.pattern", "string.cpp.body.pattern", extended_properties)
 
     def generate_floating_point(self, properties):
@@ -69,7 +73,9 @@ class PlainOldDataTypes:
         self._set_default_value(extended_properties, "default", "0.0")
         self._set_default_value(extended_properties, "accuracy", "0.0001")
         self._set_default_value(extended_properties, "format", ".4f")
-        extended_properties["std_includes"] = ["format"]
+        extended_properties["h_std_includes"] = ["format"]
+        extended_properties["cpp_std_includes"] = ["sstream"]
+        extended_properties["simple_base_type"] = extended_properties["float_class"]
         self._generate_files("float.h.body.pattern", "float.cpp.body.pattern", extended_properties)
 
     def generate_enum(self, properties):
@@ -82,13 +88,14 @@ class PlainOldDataTypes:
         # - ordered - adds "<", ">" , ... operators. When set to true also sets compareable. When not defined False is assumed
         extended_properties = self._extend_property_list(properties)
         self._set_int_type_by_count_of_values(extended_properties, len(extended_properties["values"]))
-        extended_properties["first_value"] = extended_properties["values"][0].UPPERCASE_NAME()
-        extended_properties["last_value"] = extended_properties["values"][-1].UPPERCASE_NAME()
+        extended_properties["first_value"] = "E_" + extended_properties["values"][0].UPPERCASE_NAME()
+        extended_properties["last_value"] = "E_" + extended_properties["values"][-1].UPPERCASE_NAME()
+        extended_properties["simple_base_type"] = "e" + extended_properties["class_name"]
         extended_properties["code_converting_from_string"] = generatortools.EnumCodeGenerator(extended_properties["values"]).generate_code()
-        self._set_default_value(extended_properties, "default", None)
-        if extended_properties["default"]:
-            extended_properties["default"] = generatortools.Name(properties["default"])
-        extended_properties["std_includes"] = ["cstdint"]
+        self._set_default_value(extended_properties, "default", properties["values"][0])
+        extended_properties["default"] = "E_" + generatortools.Name(extended_properties["default"]).UPPERCASE_NAME()
+        extended_properties["h_std_includes"].append( "cstdint" )
+        extended_properties["cpp_std_includes"].append( "sstream" )
         self._generate_files("enum.h.body.pattern", "enum.cpp.body.pattern", extended_properties)
 
     def generate_bitflags(self, properties):
@@ -105,7 +112,10 @@ class PlainOldDataTypes:
         extended_properties["first_value"] = hex_format.format(1)
         extended_properties["last_value"] = hex_format.format(pow(2, len(extended_properties["values"]) - 1))
         extended_properties["code_converting_from_string"] = generatortools.EnumCodeGenerator(extended_properties["values"]).generate_code()
-        extended_properties["std_includes"] = ["cstdint"]
+        extended_properties["default"] = "0"
+        extended_properties["simple_base_type"] = "e" + extended_properties["class_name"]
+        extended_properties["h_std_includes"] = ["cstdint"]
+        extended_properties["cpp_std_includes"].append( "sstream" )
         self._generate_files("bitflags.h.body.pattern", "bitflags.cpp.body.pattern", extended_properties)
 
     def generate_timepoint(self, properties):
@@ -116,11 +126,13 @@ class PlainOldDataTypes:
         # - compareable - adds "==", "=!" , ... operators. When not defined True is assumed
         # - ordered - adds "<", ">" , ... operators. When set to true also sets compareable. When not defined False is assumed
         extended_properties = self._extend_property_list(properties)
-        extended_properties["std_includes"] =  [ "chrono" ]
+        extended_properties["h_std_includes"] =  [ "chrono" ]
         extended_properties["cpp_includes"] =  [ self.tools_output_path.create_changed_by("common_text_converter.h") ]
         time_format_code_generator = generatortools.TimeFormatCodeGenerator(extended_properties["text_output_format"], extended_properties)
         extended_properties["decompose_string_code"] = time_format_code_generator.generate_decompose_string_code()
         extended_properties["compose_output_code"] = time_format_code_generator.generate_compose_output_code()
+        extended_properties["default"] = "ClockType::now()"
+        extended_properties["simple_base_type"] = "TimePointType"
         self._generate_files("time.point.h.body.pattern", "time.point.cpp.body.pattern", extended_properties)
 
     def generate_record(self, properties):
@@ -132,26 +144,26 @@ class PlainOldDataTypes:
         # - ordered - adds "<", ">" , ... operators. When set to true also sets compareable. When not defined False is assumed
         extended_properties = self._extend_property_list(properties)
         extended_properties["values"] = [ generatortools.Name(value) for value in properties["values"] ]
-        extended_properties["includes"] = [ self.output_path.create_changed_by(name.lowercase_namespace_and_name() + ".h") for name in extended_properties["values"] ]
+        extended_properties["h_includes"] = [ self.output_path.create_changed_by(name.lowercase_namespace_and_name() + ".h") for name in extended_properties["values"] ]
         extended_properties["cpp_includes"] =  [ self.tools_output_path.create_changed_by("common_record_fields_comparision.h") ]
+        extended_properties["cpp_std_includes"].append( "sstream" )
         self._generate_files("record.h.body.pattern", "record.cpp.body.pattern", extended_properties)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     def _generate_files(self, header_pattern, cpp_pattern, properties):
-        self._set_default_value(properties, "includes", [] )
-        properties["includes"] = properties["includes"] + [ self.tools_output_path.create_changed_by("serialization_binary_serialization.h") ]
-        properties["code_body_pattern"] = header_pattern
-        properties["std_includes"] = properties["std_includes"] + ["string", "iostream"]
+        properties["includes"] = properties["h_includes"] + [ self.tools_output_path.create_changed_by("serialization_binary_serialization.h") ]
+        properties["std_includes"] = properties["h_std_includes"] + ["string", "iostream"]
         properties["once"] = True
-        self._generate("source.main.pattern", "header_file_name", properties)
+        properties["code_body_pattern"] = header_pattern
+        self._generate("common.main.pattern", "header_file_name", properties)
         properties["includes"] = [ self.output_path.create_changed_by( properties["name"].lowercase_namespace_and_name() + ".h" ), \
                                    self.tools_output_path.create_changed_by("common_conversion_error.h") \
                                   ] + properties["cpp_includes"]
         properties["code_body_pattern"] = cpp_pattern
-        properties["std_includes"] = properties["std_cpp_includes"] + ["sstream"]
+        properties["std_includes"] = properties["cpp_std_includes"]
         properties["once"] = False
-        self._generate("source.main.pattern", "source_file_name", properties)
+        self._generate("common.main.pattern", "source_file_name", properties)
 
     def _generate(self, pattern_file_name, output_type, properties):
         pattern_file_path = self.environment.patterns_path.create_changed_by(pattern_file_name)
@@ -182,8 +194,9 @@ class PlainOldDataTypes:
                  "generator_line_number": generator_code_line,
                  "solution_path": self.soluton_path,
                  "cpp_includes": [],
-                 "std_includes": [],
-                 "std_cpp_includes": []}
+                 "cpp_std_includes": [],
+                 "h_includes": [],
+                 "h_std_includes": []}
         if "values" in extended_properties.keys():
             extended_properties["values"] = [generatortools.Name(value) for value in extended_properties["values"] ]
         self._set_default_value(extended_properties, "compareable", True)

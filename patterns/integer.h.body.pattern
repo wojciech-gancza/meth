@@ -2,28 +2,20 @@ class ${class_name}
 {
   public:
     // type traits
-    static constexpr const char* class_name = { "${name.FullyDecoratedClassName()}" };
-    static constexpr bool is_compareable = { ${#if compareable}true${#else}false${#end} };
-    static constexpr bool is_ordered = { ${#if ordered}true${#else}false${#end} };
+    ${#include "common.traits.pattern"}
     static constexpr uint8_t size_in_bytes = { ${int_class_size} };
 
-    constexpr ${class_name}() noexcept
-      : m_${object_name}(${default})
-    {  }
+    ${#include "simple.construction.pattern"}
 
-    constexpr explicit ${class_name}( ${int_class} ${object_name} ) noexcept
-      : m_${object_name}(${object_name})
-    {  }
+    ${int_class} get${class_name}AsInt() const noexcept { return m_${object_name}; }
 
-    ${#include "simple.assignment.pattern"}
-
-    ${#include "simple.getter.setter.pattern" "simple_type_name": "Int", "simple_type": int_class, "extra_check_code": ""}
+    ${#include "simple.getters.setters.pattern"}
 
     ${#include "simple.compare.pattern"}
-  
-    ${#include "dump.declaration.pattern"}
 
-    ${#include "value.binary.serialization.pattern"}
+    ${#include "common.to.from.string.declaration.pattern"}
+
+    ${#include "simple.value.serialization.pattern"}
 
   private:
     ${int_class} m_${object_name};

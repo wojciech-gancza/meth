@@ -1,0 +1,6 @@
+const ${class_name}& get${class_name}() const noexcept { return *this; }
+
+void set${class_name}(const ${class_name}& ${object_name}) { *this = ${object_name}; }
+void set${class_name}(${simple_base_type} ${object_name}) { *this = ${class_name}(${object_name}); }
+void setFrom(const ${class_name}& ${object_name}) { *this = ${object_name}; }
+void setFrom(${class_name}&& ${object_name}) { *this = ${object_name}; }

@@ -1,4 +1,4 @@
-${#include "header.pattern"}
+${#include "common.header.pattern"}
 
 ${#if once}#pragma once
 
@@ -10,4 +10,4 @@ ${#end}
 
 // -^^^ END OF USER DEFINED INCLUDES
 
-${#include "namespace.wrapper.pattern" "namespaces_list": namespaces}
+${#include "common.namespace.wrapper.pattern" "namespaces_list": namespaces}

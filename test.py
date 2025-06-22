@@ -12,9 +12,9 @@ import time
 # backlog:
 #--------------------------------------------------------------------------
 # -! simple types generator
+#   -! patterns refactoring
 #   -- time duration type
 #   -- collection type
-#   -- patterns refactoring
 #   -- registry of all generated types
 #   -- adding tool files (when required)
 #   ++ bitflags type 
@@ -74,11 +74,11 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
     # as should be - test of generated files. Such test is in separate C++ project
     # which need to be compiled and run to perform tests of generated files.
 
-    def test_GeneratingBitsetType(self):
-        variables = {"name": "acoustic : selected output ids",
-                     "values": ["audio input l", "audio input r", "radio transmit", "driver handphone", 
-                                "driver speaker", "cabin inner speaker", "vehicle outher speaker"] }
-        self.generator.generate_bitflags(variables)
+    def test_GeneratingIntegerType(self):
+        variables = {"name": "common : network : port number",
+                     "int_class": "uint16_t",
+                     "ordered": True}
+        self.generator.generate_integer(variables)
 
     def test_GeneratingEnumType(self):
         variables = {"name": "common : severity",
@@ -88,11 +88,26 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                      "default": "info"}
         self.generator.generate_enum(variables)
 
-    def test_GeneratingIntegerType(self):
-        variables = {"name": "common : network : port number",
-                     "int_class": "uint16_t",
+    def test_GeneratingBitsetType(self):
+        variables = {"name": "acoustic : selected output ids",
+                     "values": ["audio input l", "audio input r", "radio transmit", "driver handphone", 
+                                "driver speaker", "cabin inner speaker", "vehicle outher speaker"] }
+        self.generator.generate_bitflags(variables)
+
+    def test_GeneratingFloatingPointType(self):
+        variables = {"name": "money : netto",
+                     "ordered": True,
+                     "float_class": "float",
+                     "accuracy": "0.005f",
+                     "string_format": ".2"}
+        self.generator.generate_floating_point(variables)
+
+    def test_GeneratingStringType(self):
+        variables = {"name": "common : text message",
+                     "default": "No comments.",
+                     "max_size": 4000,
                      "ordered": True}
-        self.generator.generate_integer(variables)
+        self.generator.generate_string(variables)
 
     def test_GeneratingRecordType(self):
         variables = {"name": "test : just a record",
@@ -107,27 +122,11 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                      "compareable": False}
         self.generator.generate_record(variables)
 
-    def test_GeneratingStringType(self):
-        variables = {"name": "common : text message",
-                     "default": "No comments.",
-                     "max_size": 4000,
-                     "ordered": True}
-        self.generator.generate_string(variables)
-
-    def test_GeneratingFloatingPointType(self):
-        variables = {"name": "money : netto",
-                     "ordered": True,
-                     "float_class": "float",
-                     "accuracy": "0.005f",
-                     "string_format": ".2"}
-        self.generator.generate_floating_point(variables)
-
     def test_GeneratingTimepointType(self):
         variables = {"name": "common : event time", \
                      "text_output_format": "$Y-$M-$D $h:$m:$s.$f",
                      "ordered": True}
         self.generator.generate_timepoint(variables)
-
 
 #--------------------------------------------------------------------------
 

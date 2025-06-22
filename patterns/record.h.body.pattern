@@ -3,9 +3,7 @@ class ${class_name}
 {
   public:
     // type traits
-    static constexpr const char* class_name = { "${name.FullyDecoratedClassName()}" };
-    static constexpr bool is_compareable = { ${#if compareable}true${#else}false${#end} };
-    static constexpr bool is_ordered = { ${#if ordered}true${#else}false${#end} };
+    ${#include "common.traits.pattern"}
 
     typedef std::unique_ptr<${class_name}> Owner;
 
@@ -53,9 +51,13 @@ class ${class_name}
       }${#end}
     }
 
-    ${#include "compare.declaration.pattern"}
+    ${#include "simple.compare.declaration.pattern"}
 
-    ${#include "serialization.declaration.pattern"}
+    std::string toString() const;
+
+    friend std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name});
+
+    ${#include "simple.value.serialization.declaration.pattern"}
 
     // -vvv YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
 

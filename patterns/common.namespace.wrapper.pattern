@@ -1,4 +1,4 @@
 ${#if namespaces_list != []}namespace ${namespaces_list[0]}
 {
-  ${#include "namespace.wrapper.pattern" "namespaces_list": namespaces_list[1:]}
+  ${#include "common.namespace.wrapper.pattern" "namespaces_list": namespaces_list[1:]}
 } // end ${namespaces_list[0]}${#else}${#include code_body_pattern}${#end}

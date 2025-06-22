@@ -52,12 +52,7 @@ bool ${class_name}::operator>(const ${class_name}& ${object_name}) const noexcep
   ${#end}return false;
 }${#else}// No ordering operators${#end}
 
-std::string ${class_name}::toString() const
-{
-  std::ostringstream string_representation;
-  string_representation << *this;
-  return string_representation.str();
-}
+${#include "common.to.string.pattern"}
 
 std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name})
 {

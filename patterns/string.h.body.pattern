@@ -2,22 +2,23 @@ class ${class_name}
 {
   public:
     // type traits
-    static constexpr const char* class_name = { "${name.FullyDecoratedClassName()}" };
-    static constexpr bool is_compareable = { ${#if compareable}true${#else}false${#end} };
-    static constexpr bool is_ordered = { ${#if ordered}true${#else}false${#end} };
+    ${#include "common.traits.pattern"}
     static constexpr ${int_class} max_length = { ${max_size} };
 
-    constexpr ${class_name}() noexcept
-      : m_${object_name}("${default}")
+    explicit ${class_name}(const char* ${object_name})
+    : m_${object_name}(${object_name})
     {  }
 
-    explicit ${class_name}( const std::string& ${object_name} )
-      : m_${object_name}(${object_name})
-    { checkSize(); }
+    explicit ${class_name}(std::string&& ${object_name})
+    : m_${object_name}(${object_name})
+    {  }
 
-    ${#include "simple.assignment.pattern"}
+    ${#include "simple.construction.pattern"}
 
-    ${#include "simple.getter.setter.pattern" "simple_type_name": "String", "simple_type": "std::string", "extra_check_code": "checkSize(); "}
+    std::string get${class_name}AsString() const noexcept { return m_${object_name}; }
+
+    ${#include "simple.getters.setters.pattern"}
+    void setTextMessage(const char* text_message) { *this = ${class_name}(text_message); }
 
     ${int_class} get${class_name}Length() const { return static_cast<${int_class}>(m_${object_name}.length()); }
 
@@ -28,17 +29,23 @@ ${#if ordered}    bool operator<(const ${class_name}& other) const noexcept { re
     bool operator>=(const ${class_name}& other) const noexcept { return ${compare_class.FullyDecoratedClassName()}::isAboveOrEqual(this->m_${object_name}, other.m_${object_name}); }
     bool operator>(const ${class_name}& other) const noexcept { return ${compare_class.FullyDecoratedClassName()}::isAbove(this->m_${object_name}, other.m_${object_name}); }${#else}    // No ordering operators${#end}
 
-    ${#include "serialization.declaration.pattern"}
+    std::string toString() const;
+
+    friend std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name}) { output << ${object_name}.toString(); return output; }
+
+    ${#include "simple.value.serialization.declaration.pattern"}
 
   private:
     std::string m_${object_name};
 
     void checkSize()
     {
+      // -vvv YOU CAN PUT VALUE CHECK HANDLING HERE
       if (get${class_name}Length() > max_length)
       {
         throw Common::ConversionError(m_${object_name}, "too long string to initiate ${name.FullyDecoratedClassName()}");
       }
+      // -^^^ END OF VALUE CHECK HANDLING HERE
     }
 
     // -vvv YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW

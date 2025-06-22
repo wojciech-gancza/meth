@@ -2,31 +2,19 @@ class ${class_name}
 {
   public:
     // type traits
-    static constexpr const char* class_name = { "${name.FullyDecoratedClassName()}" };
-    static constexpr bool is_compareable = { ${#if compareable}true${#else}false${#end} };
-    static constexpr bool is_ordered = { ${#if ordered}true${#else}false${#end} };
+    ${#include "common.traits.pattern"}
     typedef std::chrono::system_clock ClockType;
     typedef std::chrono::time_point<ClockType> TimePointType;
 
-    ${class_name}() noexcept
-      : m_${object_name}( ClockType::now() )
-    {  }
+    ${#include "simple.construction.pattern"}
 
-    explicit ${class_name}(const TimePointType& ${object_name}) noexcept 
-      : m_${object_name}( ${object_name} ) 
-    {  }
+    TimePointType get${class_name}AsTimePoint() const noexcept { return m_${object_name}; }
 
-    ${class_name}(TimePointType&& ${object_name}) noexcept 
-      : m_${object_name}( ${object_name} )
-    {  }
-
-    ${#include "simple.assignment.pattern"}
-
-    ${#include "simple.getter.setter.pattern" "simple_type_name": "TimePoint", "simple_type": "TimePointType", "extra_check_code": ""}
+    ${#include "simple.getters.setters.pattern"}
 
     ${#include "simple.compare.pattern"}
 
-    ${#include "dump.declaration.pattern"}
+    ${#include "common.to.from.string.declaration.pattern"}
 
     friend Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& serializer, const ${class_name}& ${object_name}) 
     {

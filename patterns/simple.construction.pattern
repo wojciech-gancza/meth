@@ -1,3 +1,11 @@
+${class_name}() noexcept
+: m_${object_name}(${default})
+{  }
+
+constexpr explicit ${class_name}(${simple_base_type} ${object_name}) noexcept
+: m_${object_name}(${object_name})
+{  }
+
 ${class_name}(const ${class_name}& ${object_name}) noexcept = default;
 ${class_name}(${class_name}&& ${object_name}) noexcept = default;
 ${class_name}& operator=(const ${class_name}& ${object_name}) noexcept = default;
