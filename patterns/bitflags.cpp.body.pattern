@@ -1,6 +1,6 @@
 ${#include "common.to.string.pattern"}
 
-${class_name} ${class_name}::fromString(std::string text)
+${class_name} ${class_name}::fromString(const std::string& text)
 {
   ${class_name} ${object_name};
   if (text == "" || text == "NONE")
@@ -9,14 +9,15 @@ ${class_name} ${class_name}::fromString(std::string text)
   }
   else
   {
-    for (size_t separator_position = text.find_first_of("|"); 
+    std::string remaining_text = text;
+    for (size_t separator_position = remaining_text.find_first_of("|"); 
          separator_position != std::string::npos; 
-         separator_position = text.find_first_of("|"))
+         separator_position = remaining_text.find_first_of("|"))
     {
-      ${object_name} |= ${class_name}::convertTextToSingleFlag(text.substr(0, separator_position));
-      text = text.substr(separator_position + 1);
+      ${object_name} |= ${class_name}::convertTextToSingleFlag(remaining_text.substr(0, separator_position));
+      remaining_text = remaining_text.substr(separator_position + 1);
     }
-    ${object_name} |= ${class_name}::convertTextToSingleFlag(text);
+    ${object_name} |= ${class_name}::convertTextToSingleFlag(remaining_text);
     return ${object_name};
   }
 }

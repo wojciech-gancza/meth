@@ -30,7 +30,7 @@ namespace Common
       return string_representation.str();
     }
     
-    PortNumber PortNumber::fromString(std::string text)
+    PortNumber PortNumber::fromString(const std::string& text)
     {
       std::istringstream string_representation(text);
       uint16_t port_number = 0;

@@ -28,7 +28,7 @@ namespace Acoustic
     return string_representation.str();
   }
   
-  SelectedOutputIds SelectedOutputIds::fromString(std::string text)
+  SelectedOutputIds SelectedOutputIds::fromString(const std::string& text)
   {
     SelectedOutputIds selected_output_ids;
     if (text == "" || text == "NONE")
@@ -37,14 +37,15 @@ namespace Acoustic
     }
     else
     {
-      for (size_t separator_position = text.find_first_of("|"); 
+      std::string remaining_text = text;
+      for (size_t separator_position = remaining_text.find_first_of("|"); 
            separator_position != std::string::npos; 
-           separator_position = text.find_first_of("|"))
+           separator_position = remaining_text.find_first_of("|"))
       {
-        selected_output_ids |= SelectedOutputIds::convertTextToSingleFlag(text.substr(0, separator_position));
-        text = text.substr(separator_position + 1);
+        selected_output_ids |= SelectedOutputIds::convertTextToSingleFlag(remaining_text.substr(0, separator_position));
+        remaining_text = remaining_text.substr(separator_position + 1);
       }
-      selected_output_ids |= SelectedOutputIds::convertTextToSingleFlag(text);
+      selected_output_ids |= SelectedOutputIds::convertTextToSingleFlag(remaining_text);
       return selected_output_ids;
     }
   }

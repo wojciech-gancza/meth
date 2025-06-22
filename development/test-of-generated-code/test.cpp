@@ -9,6 +9,83 @@
 #include "money_netto.h"
 #include "common_text_message.h"
 #include "common_event_time.h"
+#include "common_delay.h"
+
+//--------------------------------------------------------------------------------------------
+
+TEST(TestOfGeneratedTimeDurationType, TestOfCreatingDefaultValue)
+{
+  Common::Delay delay;
+  ASSERT_EQ(delay.toString(), "00:00.010");
+}
+
+TEST(TestOfGeneratedTimeDurationType, TestOfCreatingValue)
+{
+  Common::Delay delay = Common::Delay::fromString("34:56.789");
+  ASSERT_EQ(delay.toString(), "34:56.789");
+}
+
+TEST(TestOfGeneratedTimeDurationType, TestOfComparision1)
+{
+  Common::Delay delay1 = Common::Delay::fromString("34:56.789");
+  Common::Delay delay2 = Common::Delay::fromString("34:56.789");
+
+  ASSERT_TRUE(delay1 == delay2);
+  ASSERT_FALSE(delay1 != delay2);
+  ASSERT_TRUE(delay1 >= delay2);
+  ASSERT_FALSE(delay1 > delay2);
+  ASSERT_TRUE(delay1 <= delay2);
+  ASSERT_FALSE(delay1 < delay2);
+}
+
+TEST(TestOfGeneratedTimeDurationType, TestOfComparision2)
+{
+  Common::Delay delay1 = Common::Delay::fromString("34:56.789");
+  Common::Delay delay2 = Common::Delay::fromString("14:56.789");
+
+  ASSERT_FALSE(delay1 == delay2);
+  ASSERT_TRUE(delay1 != delay2);
+  ASSERT_TRUE(delay1 >= delay2);
+  ASSERT_TRUE(delay1 > delay2);
+  ASSERT_FALSE(delay1 <= delay2);
+  ASSERT_FALSE(delay1 < delay2);
+}
+
+TEST(TestOfGeneratedTimeDurationType, TestOfSerialization)
+{
+  Common::Delay delay = Common::Delay::fromString("34:56.789");
+  Serialization::BinarySerializer serializer;
+  serializer << delay;
+  const std::vector<uint8_t>& serialized_data = serializer.getSerializedData();
+  ASSERT_EQ(serialized_data.size(), 8);
+  ASSERT_EQ(serialized_data[0], 0x00);
+  ASSERT_EQ(serialized_data[1], 0x00);
+  ASSERT_EQ(serialized_data[2], 0x00);
+  ASSERT_EQ(serialized_data[3], 0x00);
+  ASSERT_EQ(serialized_data[4], 0x7c);
+  ASSERT_EQ(serialized_data[5], 0xfa);
+  ASSERT_EQ(serialized_data[6], 0x76);
+  ASSERT_EQ(serialized_data[7], 0x08);
+}
+
+TEST(TestOfGeneratedTimeDurationType, TestOfDeserialization)
+{
+  Common::Delay delay;
+  std::vector<uint8_t> serialized_data = { 0x00, 0x00, 0x00, 0x00, 0x7c, 0xfa, 0x76, 0x08 };
+  Serialization::BinaryDeserializer deserializer(serialized_data);
+  deserializer >> delay;
+  ASSERT_EQ(delay.toString(), "34:56.789");
+}
+
+TEST(TestOfGeneratedTimeDurationType, TestOfAddingDurationToTime)
+{
+  Common::Delay delay = Common::Delay::fromString("34:56.789");
+  Common::EventTime timestamp = Common::EventTime::fromString("2025-06-10 12:34:56.789");
+
+  Common::EventTime timestamp2 = Common::EventTime(timestamp.getEventTimeAsTimePoint() + delay.getDelayAsTimeDuration());
+
+  ASSERT_EQ(timestamp2.toString(), "2025-06-10 13:09:53.578");
+}
 
 //--------------------------------------------------------------------------------------------
 

@@ -1,0 +1,52 @@
+${#include "common.to.string.pattern"}
+
+std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name})
+{
+  int64_t duration = std::chrono::duration_cast<std::chrono::milliseconds>(${object_name}.m_${object_name}).count();
+  if (duration < 0)
+  {
+    duration = -duration;
+    output << "-";
+  }
+
+  ${decomposition_code}
+
+  output ${serialization_code};
+
+  return output;
+}
+
+${class_name} ${class_name}::fromString(const std::string& text)
+{
+  TimeDurationType time_duration = {  };
+
+  std::string::const_iterator reader = text.begin();
+  std::string::const_iterator limit = text.end();
+
+  if (reader != limit)
+  {
+    bool is_negative = false;
+    std::string to_convert = text;
+
+    if (*reader == '-')
+    {
+      is_negative = true;
+      if (++reader == limit)
+      {
+        Common::ConversionError(text, "No text to convert.");
+      }
+    }
+
+    ${deserialization_code}
+
+    if (is_negative)
+    {
+      time_duration = -time_duration;
+    }
+  }
+  return ${class_name}(time_duration);
+}
+  
+// -vvv YOU CAN PUT ADDITIONAL DEFINITIONS BELOW
+
+// -^^^ END OF USER DEFINED DEFINITIONS

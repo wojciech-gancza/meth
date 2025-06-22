@@ -116,7 +116,7 @@ namespace Acoustic
       }
   
       std::string toString() const;
-      static SelectedOutputIds fromString(std::string text);
+      static SelectedOutputIds fromString(const std::string& text);
       
       friend std::ostream& operator<<(std::ostream& output, const SelectedOutputIds& selected_output_ids);
   

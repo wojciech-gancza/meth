@@ -1,6 +1,6 @@
 ${#include "common.to.string.pattern"}
 
-${class_name} ${class_name}::fromString(std::string text)
+${class_name} ${class_name}::fromString(const std::string& text)
 {
   e${class_name} possible_result = convertTextToPossibleEnum(text);
   if (m_${object_name}_names[possible_result] == text)

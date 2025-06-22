@@ -28,7 +28,7 @@ namespace Common
     return string_representation.str();
   }
   
-  Severity Severity::fromString(std::string text)
+  Severity Severity::fromString(const std::string& text)
   {
     eSeverity possible_result = convertTextToPossibleEnum(text);
     if (m_severity_names[possible_result] == text)

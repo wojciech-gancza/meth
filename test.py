@@ -12,8 +12,6 @@ import time
 # backlog:
 #--------------------------------------------------------------------------
 # -! simple types generator
-#   -! patterns refactoring
-#   -- time duration type
 #   -- collection type
 #   -- registry of all generated types
 #   -- adding tool files (when required)
@@ -24,6 +22,8 @@ import time
 #   ++ float type (based on float/double)
 #   ++ string type
 #   ++ timepoint type
+#   ++ patterns refactoring
+#   ++ time duration type
 # -- configuration
 #   -- configuration types: key, value, node, nodes
 #   -- add reading objects from cofiguration (all types)
@@ -109,6 +109,19 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                      "ordered": True}
         self.generator.generate_string(variables)
 
+    def test_GeneratingTimepointType(self):
+        variables = {"name": "common : event time", \
+                     "text_output_format": "$Y-$M-$D $h:$m:$s.$f",
+                     "ordered": True}
+        self.generator.generate_timepoint(variables)
+
+    def test_GeneratingTimeDuration(self):
+        variables = {"name": "common : delay", \
+                     "text_output_format": "$m:$s.$f",
+                     "ordered": True,
+                     "default": "std::chrono::milliseconds(10)"}
+        self.generator.generate_time_duration(variables)
+
     def test_GeneratingRecordType(self):
         variables = {"name": "test : just a record",
                      "values": ["common : severity", \
@@ -121,12 +134,6 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                                 "common : network : port number"],
                      "compareable": False}
         self.generator.generate_record(variables)
-
-    def test_GeneratingTimepointType(self):
-        variables = {"name": "common : event time", \
-                     "text_output_format": "$Y-$M-$D $h:$m:$s.$f",
-                     "ordered": True}
-        self.generator.generate_timepoint(variables)
 
 #--------------------------------------------------------------------------
 

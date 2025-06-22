@@ -85,7 +85,7 @@ namespace Common
       bool operator>(const Severity& severity) const noexcept { return (m_severity > severity.m_severity); }
   
       std::string toString() const;
-      static Severity fromString(std::string text);
+      static Severity fromString(const std::string& text);
       
       friend std::ostream& operator<<(std::ostream& output, const Severity& severity);
   

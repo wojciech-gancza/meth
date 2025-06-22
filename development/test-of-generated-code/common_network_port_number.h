@@ -65,7 +65,7 @@ namespace Common
         bool operator>(const PortNumber& port_number) const noexcept { return (m_port_number > port_number.m_port_number); }
     
         std::string toString() const;
-        static PortNumber fromString(std::string text);
+        static PortNumber fromString(const std::string& text);
         
         friend std::ostream& operator<<(std::ostream& output, const PortNumber& port_number);
     

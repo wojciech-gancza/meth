@@ -1,6 +1,6 @@
 ${#include "common.to.string.pattern"}
 
-${class_name} ${class_name}::fromString(std::string text)
+${class_name} ${class_name}::fromString(const std::string& text)
 {
   std::istringstream string_representation(text);
   ${int_class} ${object_name} = 0;

@@ -1,0 +1,40 @@
+class ${class_name}
+{
+  public:
+    // type traits
+    ${#include "common.traits.pattern"}
+    typedef std::chrono::system_clock ClockType;
+    typedef std::chrono::system_clock::duration TimeDurationType;
+
+    ${#include "simple.construction.pattern"}
+
+    TimeDurationType get${class_name}AsTimeDuration() const noexcept { return m_${object_name}; }
+
+    ${#include "simple.getters.setters.pattern"}
+
+    ${#include "simple.compare.pattern"}
+
+    ${#include "common.to.from.string.declaration.pattern"}
+
+    friend Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& serializer, const ${class_name}& ${object_name}) 
+    {
+      uint64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(${object_name}.m_${object_name}).count(); 
+      serializer.storeValue(duration); 
+      return serializer; 
+    }
+
+    friend Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer& deserializer, ${class_name}& ${object_name})
+    { 
+      uint64_t duration; 
+      deserializer.readValue(duration); 
+      ${object_name}.m_${object_name} = std::chrono::duration_cast<TimeDurationType>(std::chrono::microseconds(duration)); 
+      return deserializer; 
+    }
+
+  private:
+    TimeDurationType m_${object_name};
+
+    // -vvv YOU CAN PUT ADDITIONAL PRIVATE METHODS AND FIELDS HERE
+
+    // -^^^ YOU CAN PUT ADDITIONAL PRIVATE METHODS AND FIELDS HERE
+};

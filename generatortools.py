@@ -386,3 +386,127 @@ class TimeFormatCodeGenerator:
                 "// unknown format" ];
 
 #--------------------------------------------------------------------------
+
+class TimeDurationCodeGenerator:
+
+    def __init__(self, format_string):
+        self.format_string = format_string
+        self.use_milliseconds = False
+        self.use_seconds = False
+        self.use_minutes = False
+        self.use_hours = False
+        self.use_days = False
+        for i in range(0, len(format_string)):
+            if (format_string[i] == '$'):
+                if format_string[i+1] == 'D':
+                    self.use_days = True
+                elif format_string[i+1] == 'h':
+                    self.use_hours = True
+                elif format_string[i+1] == 'm':
+                    self.use_minutes = True
+                elif format_string[i+1] == 's':
+                    self.use_seconds = True
+                elif format_string[i+1] == 'f':
+                    self.use_milliseconds = True
+
+    def get_decomposition_code(self):
+        code_elements = [  ]
+        if self.use_days:
+            if not self.use_hours and not self.use_minutes and not self.use_seconds and not self.use_milliseconds:
+                code_elements.append("uint64_t seconds = static_cast<uint64_t>((duration + 43200000) / 86400000);")
+            else:
+                code_elements.append("uint64_t days = static_cast<uint64_t>(duration / 86400000);")
+                code_elements.append("duration = duration % 86400000;")
+        if self.use_hours:
+            if not self.use_minutes and not self.use_seconds and not self.use_milliseconds:
+                code_elements.append("uint64_t seconds = static_cast<uint64_t>((duration + 1800000) / 3600000);")
+            else:
+                code_elements.append("uint64_t hours = static_cast<uint64_t>(duration / 3600000);")
+                code_elements.append("duration = duration % 3600000;")
+        if self.use_minutes:
+            if not self.use_seconds and not self.use_milliseconds:
+                code_elements.append("uint64_t seconds = static_cast<uint64_t>((duration + 3000) / 60000);")
+            else:
+                code_elements.append("uint64_t minutes = static_cast<uint64_t>(duration / 60000);")
+                code_elements.append("duration = duration % 60000;")
+        if self.use_seconds:
+            if not self.use_milliseconds:
+                code_elements.append("uint64_t seconds = static_cast<uint64_t>((duration + 500) / 1000);")
+            else:
+                code_elements.append("uint64_t seconds = static_cast<uint64_t>(duration / 1000);")
+                code_elements.append("duration = duration % 1000;")
+        if self.use_milliseconds:
+            code_elements.append("uint64_t milliseconds = static_cast<uint64_t>(duration);")
+        return code_elements;
+
+    def get_serializatrion_code(self):
+        code_elements = []
+        format_string = self.format_string
+        while format_string != "":
+            if format_string[0] != '$':
+                for i in range(1, len(format_string)):
+                    if format_string[i] == '$':
+                        code_elements.append("<< \"" + format_string[:i] + "\"")
+                        format_string = format_string[i:]
+                        break
+                else:
+                    code_elements.append("<< \"" + format_string + "\"")
+                    format_string = ""
+                    break
+            else:
+                time_element_code = format_string[1]
+                output_code = self._get_output_code(time_element_code)
+                code_elements.append(output_code)
+                format_string = format_string[2:]
+        return code_elements
+
+    def get_deserializatrion_code(self):
+        code_elements = []
+        format_string = self.format_string
+        while format_string != "":
+            if format_string[0] != '$':
+                for i in range(1, len(format_string)):
+                    if format_string[i] == '$':
+                        code_elements.append("Common::TextConverter::ensureStaticTextExist(reader, limit, \"" + format_string[:i] + "\");")
+                        format_string = format_string[i:]
+                        break
+                else:
+                    code_elements.append("Common::TextConverter::ensureStaticTextExist(reader, limit, \"" + format_string + "\");")
+                    format_string = ""
+                    break
+            else:
+                time_element_code = format_string[1]
+                output_code = self._get_deserialize_code(time_element_code)
+                code_elements.append(output_code)
+                format_string = format_string[2:]
+        return code_elements
+
+    def _get_output_code(self, time_element_code):
+        if time_element_code == "D":
+            return "<< std::setw(2) << std::setfill('0') << days"
+        elif time_element_code == "h":
+            return "<< std::setw(2) << std::setfill('0') << hours"
+        elif time_element_code == "m":
+            return "<< std::setw(2) << std::setfill('0') << minutes"
+        elif time_element_code == "s":
+            return "<< std::setw(2) << std::setfill('0') << seconds"
+        elif time_element_code == "f":
+            return "<< std::setw(3) << milliseconds"
+        else:
+            return "<< \"<?>\"";
+
+    def _get_deserialize_code(self, time_element_code):
+        if time_element_code == "D":
+            return "time_duration += std::chrono::days( Common::TextConverter::readNumber( reader, limit ) );"
+        elif time_element_code == "h":
+            return "time_duration += std::chrono::hours( Common::TextConverter::readNumber( reader, limit ) );"
+        elif time_element_code == "m":
+            return "time_duration += std::chrono::minutes( Common::TextConverter::readNumber( reader, limit ) );"
+        elif time_element_code == "s":
+            return "time_duration += std::chrono::seconds( Common::TextConverter::readNumber( reader, limit ) );"
+        elif time_element_code == "f":
+            return "time_duration += std::chrono::milliseconds( Common::TextConverter::readNumber( reader, limit ) );"
+        else:
+            return "\"<?>\"";
+
+#--------------------------------------------------------------------------

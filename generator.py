@@ -135,6 +135,24 @@ class PlainOldDataTypes:
         extended_properties["simple_base_type"] = "TimePointType"
         self._generate_files("time.point.h.body.pattern", "time.point.cpp.body.pattern", extended_properties)
 
+    def generate_time_duration(self, properties):
+        # required properties:
+        # - name - fully qualified type name defined as single string where words are name elements ( example: "common : severity"),
+        # - text_output_format - format used to convert to string and from string
+        # optional properties:
+        # - compareable - adds "==", "=!" , ... operators. When not defined True is assumed
+        # - ordered - adds "<", ">" , ... operators. When set to true also sets compareable. When not defined False is assumed
+        # - default - default value
+        extended_properties = self._extend_property_list(properties)
+        extended_properties["h_std_includes"] =  [ "chrono" ]
+        extended_properties["cpp_includes"] =  [ self.tools_output_path.create_changed_by("common_text_converter.h") ]
+        duration_code = generatortools.TimeDurationCodeGenerator(extended_properties["text_output_format"])
+        extended_properties["decomposition_code"] = duration_code.get_decomposition_code()
+        extended_properties["serialization_code"] = duration_code.get_serializatrion_code()
+        extended_properties["deserialization_code"] = duration_code.get_deserializatrion_code()
+        extended_properties["simple_base_type"] = "TimeDurationType"
+        self._generate_files("time.duration.h.body.pattern", "time.duration.cpp.body.pattern", extended_properties)
+
     def generate_record(self, properties):
         # required properties:
         # - name - fully qualified type name defined as single string where words are name elements ( example: "common : severity"),
