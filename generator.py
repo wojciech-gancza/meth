@@ -167,6 +167,18 @@ class PlainOldDataTypes:
         extended_properties["cpp_std_includes"].append( "sstream" )
         self._generate_files("record.h.body.pattern", "record.cpp.body.pattern", extended_properties)
 
+    def generate_collection(self, properties):
+        # required properties:
+        # - name - fully qualified type name defined as single string where words are name elements ( example: "common : severity"),
+        # - element_type - type of collection elment
+        # optional properties:
+        # - compareable - adds "==", "=!" , ... operators. When not defined True is assumed
+        # - ordered - adds "<", ">" , ... operators. When set to true also sets compareable. When not defined False is assumed
+        extended_properties = self._extend_property_list(properties)
+        extended_properties["element_type"] = generatortools.Name(extended_properties["element_type"]) 
+        extended_properties["cpp_std_includes"].append( "sstream" )
+        self._generate_files("collection.h.body.pattern", "collection.cpp.body.pattern", extended_properties)
+
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     def _generate_files(self, header_pattern, cpp_pattern, properties):

@@ -115,7 +115,7 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                      "ordered": True}
         self.generator.generate_timepoint(variables)
 
-    def test_GeneratingTimeDuration(self):
+    def test_GeneratingTimeDurationType(self):
         variables = {"name": "common : delay", \
                      "text_output_format": "$m:$s.$f",
                      "ordered": True,
@@ -134,6 +134,27 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                                 "common : network : port number"],
                      "compareable": False}
         self.generator.generate_record(variables)
+
+    def test_GeneratingCollectionType(self):
+        self.generator.generate_string({ \
+                "name": "configuration : key",
+                "max_size": 255,
+                "ordered": True})
+        self.generator.generate_string({ \
+                "name": "configuration : value",
+                "default": "",
+                "max_size": 64000,
+                "compareable": False })
+        self.generator.generate_collection({ \
+                "name": "configuration : nodes", \
+                "element_type": "configuration : node", \
+                "ordered": True })
+        self.generator.generate_record({
+                "name": "configuration : node",
+                "values": ["configuration : key", \
+                           "configuration : value", \
+                           "configuration : nodes"],
+                "ordered": True })
 
 #--------------------------------------------------------------------------
 
