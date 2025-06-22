@@ -14,6 +14,7 @@
 
 #include "configuration_nodes.h"
 #include "common_conversion_error.h"
+#include "configuration_node.h"
 
 // -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
 
@@ -21,5 +22,39 @@
 
 namespace Configuration
 {
+  std::string Nodes::toString() const
+  {
+    std::ostringstream string_representation;
+    string_representation << *this;
+    return string_representation.str();
+  }
   
+  std::ostream& operator<<(std::ostream& output, const Nodes& nodes)
+  {
+    
+    
+    
+    return output;
+  }
+  
+  Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& serializer, const Nodes& nodes)
+  {
+    
+    
+    
+    return serializer;
+  }
+  
+  Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer& deserializer, Nodes& nodes)
+  {
+    
+    
+    
+    return deserializer;
+  }
+  
+  // -vvv YOU CAN PUT ADDITIONAL CODE BELOW
+  
+  // -^^^ END OF USER DEFINED CODE
+
 } // end Configuration

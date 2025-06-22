@@ -1,0 +1,27 @@
+class ${class_name}
+{
+  public:
+    // type traits
+    ${#include "common.traits.pattern"}
+
+
+
+
+
+
+
+
+
+    std::string toString() const;
+
+    friend std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name});
+
+    ${#include "simple.value.serialization.declaration.pattern"}
+
+  private:
+    std::vector<${element_type.FullyDecoratedClassName()}> m_${object_name};
+
+    // -vvv YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
+
+    // -^^^ END OF USER DEFINED CLASS ELEMENTS
+};

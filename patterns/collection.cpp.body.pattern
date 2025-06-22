@@ -1,0 +1,29 @@
+${#include "common.to.string.pattern"}
+
+std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name})
+{
+  
+  
+  
+  return output;
+}
+
+Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& serializer, const ${class_name}& ${object_name})
+{
+  
+  
+  
+  return serializer;
+}
+
+Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer& deserializer, ${class_name}& ${object_name})
+{
+  
+  
+  
+  return deserializer;
+}
+
+// -vvv YOU CAN PUT ADDITIONAL CODE BELOW
+
+// -^^^ END OF USER DEFINED CODE

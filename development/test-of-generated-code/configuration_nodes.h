@@ -12,10 +12,16 @@
 
 #pragma once
 
+#include <vector>
 #include <string>
 #include <iostream>
 
 #include "serialization_binary_serialization.h"
+
+namespace Configuration
+{
+  class Node;
+}
 
 // -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
 
@@ -23,5 +29,34 @@
 
 namespace Configuration
 {
+  class Nodes
+  {
+    public:
+      // type traits
+      static constexpr const char* class_name = { "Configuration::Nodes" };
+      static constexpr bool is_compareable = { true };
+      static constexpr bool is_ordered = { true };
   
+  
+  
+  
+  
+  
+  
+  
+  
+      std::string toString() const;
+  
+      friend std::ostream& operator<<(std::ostream& output, const Nodes& nodes);
+  
+      friend Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& output, const Nodes& nodes);
+      friend Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer& input, Nodes& nodes);
+  
+    private:
+      std::vector<Configuration::Node> m_nodes;
+  
+      // -vvv YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
+  
+      // -^^^ END OF USER DEFINED CLASS ELEMENTS
+  };
 } // end Configuration

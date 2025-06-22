@@ -1,0 +1,4 @@
+${#if namespaces_list != []}namespace ${namespaces_list[0]}
+{
+  ${#include "common.forward_declaration.pattern" "namespaces_list": namespaces_list[1:]}
+}${#else}class ${forward_class_name};${#end}

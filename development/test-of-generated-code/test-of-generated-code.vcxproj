@@ -40,6 +40,10 @@
     <ClCompile Include="common_severity.cpp" />
     <ClCompile Include="common_text_converter.cpp" />
     <ClCompile Include="common_text_message.cpp" />
+    <ClCompile Include="configuration_key.cpp" />
+    <ClCompile Include="configuration_node.cpp" />
+    <ClCompile Include="configuration_nodes.cpp" />
+    <ClCompile Include="configuration_value.cpp" />
     <ClCompile Include="money_netto.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="test_another_record.cpp" />
@@ -57,6 +61,10 @@
     <ClInclude Include="common_strcmp_compare.h" />
     <ClInclude Include="common_text_converter.h" />
     <ClInclude Include="common_text_message.h" />
+    <ClInclude Include="configuration_key.h" />
+    <ClInclude Include="configuration_node.h" />
+    <ClInclude Include="configuration_nodes.h" />
+    <ClInclude Include="configuration_value.h" />
     <ClInclude Include="money_netto.h" />
     <ClInclude Include="serialization_binary_serialization.h" />
     <ClInclude Include="common_conversion_error.h" />

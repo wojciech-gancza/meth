@@ -176,7 +176,10 @@ class PlainOldDataTypes:
         # - ordered - adds "<", ">" , ... operators. When set to true also sets compareable. When not defined False is assumed
         extended_properties = self._extend_property_list(properties)
         extended_properties["element_type"] = generatortools.Name(extended_properties["element_type"]) 
+        extended_properties["h_std_includes"].append( "vector" )
+        extended_properties["cpp_includes"].append( self.output_path.create_changed_by(extended_properties["element_type"].lowercase_namespace_and_name() + ".h") )
         extended_properties["cpp_std_includes"].append( "sstream" )
+        extended_properties["h_forward_declare"].append( extended_properties["element_type"] )
         self._generate_files("collection.h.body.pattern", "collection.cpp.body.pattern", extended_properties)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -184,6 +187,7 @@ class PlainOldDataTypes:
     def _generate_files(self, header_pattern, cpp_pattern, properties):
         properties["includes"] = properties["h_includes"] + [ self.tools_output_path.create_changed_by("serialization_binary_serialization.h") ]
         properties["std_includes"] = properties["h_std_includes"] + ["string", "iostream"]
+        properties["forward_declare"] = properties["h_forward_declare"]
         properties["once"] = True
         properties["code_body_pattern"] = header_pattern
         self._generate("common.main.pattern", "header_file_name", properties)
@@ -192,6 +196,7 @@ class PlainOldDataTypes:
                                   ] + properties["cpp_includes"]
         properties["code_body_pattern"] = cpp_pattern
         properties["std_includes"] = properties["cpp_std_includes"]
+        properties["forward_declare"] = properties["cpp_forward_declare"]
         properties["once"] = False
         self._generate("common.main.pattern", "source_file_name", properties)
 
@@ -226,7 +231,9 @@ class PlainOldDataTypes:
                  "cpp_includes": [],
                  "cpp_std_includes": [],
                  "h_includes": [],
-                 "h_std_includes": []}
+                 "h_std_includes": [],
+                 "h_forward_declare": [],
+                 "cpp_forward_declare": []}
         if "values" in extended_properties.keys():
             extended_properties["values"] = [generatortools.Name(value) for value in extended_properties["values"] ]
         self._set_default_value(extended_properties, "compareable", True)
