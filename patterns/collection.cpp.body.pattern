@@ -1,3 +1,34 @@
+${#if compareable}bool ${class_name}::operator==(const ${class_name}& ${object_name}) const noexcept 
+{ 
+  return false;
+}
+
+bool ${class_name}::operator!=(const ${class_name}& ${object_name}) const noexcept  
+{ 
+  return false;
+}
+${#else}// No compare operators${#end}
+${#if ordered}bool ${class_name}::operator<(const ${class_name}& ${object_name}) const noexcept 
+{ 
+  return false;
+}
+
+bool ${class_name}::operator<=(const ${class_name}& ${object_name}) const noexcept 
+{ 
+  return false;
+}
+
+bool ${class_name}::operator>=(const ${class_name}& ${object_name}) const noexcept 
+{ 
+  return false;
+}
+
+bool ${class_name}::operator>(const ${class_name}& ${object_name}) const noexcept 
+{ 
+  return false;
+}
+${#else}// No ordering operators${#end}
+
 ${#include "common.to.string.pattern"}
 
 std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name})
@@ -24,6 +55,6 @@ Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer&
   return deserializer;
 }
 
-// -vvv YOU CAN PUT ADDITIONAL CODE BELOW
+// vvv--- YOU CAN PUT ADDITIONAL CODE BELOW
 
-// -^^^ END OF USER DEFINED CODE
+// ^^^--- END OF USER DEFINED CODE

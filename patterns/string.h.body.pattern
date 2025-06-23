@@ -40,15 +40,15 @@ ${#if ordered}    bool operator<(const ${class_name}& other) const noexcept { re
 
     void checkSize()
     {
-      // -vvv YOU CAN PUT VALUE CHECK HANDLING HERE
+      // vvv--- YOU CAN PUT VALUE CHECK HANDLING HERE
       if (get${class_name}Length() > max_length)
       {
         throw Common::ConversionError(m_${object_name}, "too long string to initiate ${name.FullyDecoratedClassName()}");
       }
-      // -^^^ END OF VALUE CHECK HANDLING HERE
+      // ^^^--- END OF VALUE CHECK HANDLING HERE
     }
 
-    // -vvv YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
+    // vvv--- YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
 
-    // -^^^ END OF USER DEFINED CLASS ELEMENTS
+    // ^^^--- END OF USER DEFINED CLASS ELEMENTS
 };

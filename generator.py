@@ -171,15 +171,20 @@ class PlainOldDataTypes:
         # required properties:
         # - name - fully qualified type name defined as single string where words are name elements ( example: "common : severity"),
         # - element_type - type of collection elment
+        # - max_size - maximum size of string. Used to deduct size type used also in serialization
         # optional properties:
         # - compareable - adds "==", "=!" , ... operators. When not defined True is assumed
         # - ordered - adds "<", ">" , ... operators. When set to true also sets compareable. When not defined False is assumed
         extended_properties = self._extend_property_list(properties)
+        self._set_int_type_by_count_of_values(extended_properties, extended_properties["max_size"])
         extended_properties["element_type"] = generatortools.Name(extended_properties["element_type"]) 
+        extended_properties["h_includes"].append( self.tools_output_path.create_changed_by("common_size_error.h") )
         extended_properties["h_std_includes"].append( "vector" )
         extended_properties["cpp_includes"].append( self.output_path.create_changed_by(extended_properties["element_type"].lowercase_namespace_and_name() + ".h") )
         extended_properties["cpp_std_includes"].append( "sstream" )
         extended_properties["h_forward_declare"].append( extended_properties["element_type"] )
+        extended_properties["item_class_name"] = extended_properties["element_type"].UppercaseCamelName()
+        extended_properties["item_object_name"] = extended_properties["element_type"].lowercase_name()
         self._generate_files("collection.h.body.pattern", "collection.cpp.body.pattern", extended_properties)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

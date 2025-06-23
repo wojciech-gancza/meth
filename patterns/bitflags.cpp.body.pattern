@@ -78,6 +78,6 @@ std::string ${class_name}::convertSingleFlagToString(${class_name}::e${class_nam
   return m_${object_name}_bits_names[bit_number];
 }
 
-// -vvv YOU CAN PUT ADDITIONAL CODE BELOW
+// vvv--- YOU CAN PUT ADDITIONAL CODE BELOW
 
-// -^^^ END OF USER DEFINED CODE
+// ^^^--- END OF USER DEFINED CODE

@@ -34,9 +34,9 @@ class ${class_name}
 
     static e${class_name} convertTextToPossibleEnum(const std::string& text) noexcept;
 
-    // -vvv YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
+    // vvv--- YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
 
-    // -^^^ END OF USER DEFINED CLASS ELEMENTS
+    // ^^^--- END OF USER DEFINED CLASS ELEMENTS
 };
 ${#for value in values}
 constexpr ${class_name} ${value.UPPERCASE_NAME()} { ${class_name}(${class_name}::E_${value.UPPERCASE_NAME()}) };${#end}

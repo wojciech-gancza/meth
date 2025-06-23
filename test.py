@@ -149,13 +149,14 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
         self.generator.generate_collection({ \
                 "name": "configuration : nodes", \
                 "element_type": "configuration : node", \
-                "ordered": True })
+                "ordered": True,
+                "max_size": 64000 })
         self.generator.generate_record({
                 "name": "configuration : node",
                 "values": ["configuration : key", \
                            "configuration : value", \
                            "configuration : nodes"],
-                "ordered": True })
+                "ordered": True})
 
 #--------------------------------------------------------------------------
 

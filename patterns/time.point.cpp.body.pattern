@@ -27,6 +27,6 @@ std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_nam
   return output;
 }
 
-// -vvv YOU CAN PUT ADDITIONAL DEFINITIONS BELOW
+// vvv--- YOU CAN PUT ADDITIONAL DEFINITIONS BELOW
 
-// -^^^ END OF USER DEFINED DEFINITIONS
+// ^^^--- END OF USER DEFINED DEFINITIONS

@@ -42,6 +42,6 @@ Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer&
   return deserializer;
 }
  
-// -vvv YOU CAN PUT ADDITIONAL DEFINITIONS BELOW
+// vvv--- YOU CAN PUT ADDITIONAL DEFINITIONS BELOW
 
-// -^^^ END OF USER DEFINED DEFINITIONS
+// ^^^--- END OF USER DEFINED DEFINITIONS

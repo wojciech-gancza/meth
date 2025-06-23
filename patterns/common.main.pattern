@@ -8,8 +8,8 @@ ${#for include from includes}#include "${include.get_relative_to(header_file_nam
 ${#end}
 ${#for forward_declaration from forward_declare}${#include "common.forward_declaration.pattern" "namespaces_list": forward_declaration.UppercaseCamelsNamespaces() , "forward_class_name": forward_declaration.UppercaseCamelName()}
 
-${#end}// -vvv YOU CAN PUT ADDITIONAL INCLUDES BELOW
+${#end}// vvv--- YOU CAN PUT ADDITIONAL INCLUDES BELOW
 
-// -^^^ END OF USER DEFINED INCLUDES
+// ^^^--- END OF USER DEFINED INCLUDES
 
 ${#include "common.namespace.wrapper.pattern" "namespaces_list": namespaces}

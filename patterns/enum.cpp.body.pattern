@@ -28,6 +28,6 @@ ${class_name}::e${class_name} ${class_name}::convertTextToPossibleEnum(const std
   ${code_converting_from_string}
 }
 
-// -vvv YOU CAN PUT ADDITIONAL CODE BELOW
+// vvv--- YOU CAN PUT ADDITIONAL CODE BELOW
 
-// -^^^ END OF USER DEFINED CODE
+// ^^^--- END OF USER DEFINED CODE

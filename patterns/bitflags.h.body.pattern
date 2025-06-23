@@ -80,13 +80,13 @@ class ${class_name}
     static e${class_name} convertTextToPossibleFlag(const std::string& text) noexcept;
     static std::string convertSingleFlagToString(e${class_name} bit) noexcept;
 
-    // -vvv YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
+    // vvv--- YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
 
-    // -^^^ END OF USER DEFINED CLASS ELEMENTS
+    // ^^^--- END OF USER DEFINED CLASS ELEMENTS
 };
 ${#for value in values}
 constexpr ${class_name} ${value.UPPERCASE_NAME()} { ${class_name}(${class_name}::E_${value.UPPERCASE_NAME()}) };${#end}
 
-// -vvv YOU CAN PUT ADDITIONAL DEFINITIONS BELOW
+// vvv--- YOU CAN PUT ADDITIONAL DEFINITIONS BELOW
 
-// -^^^ END OF USER DEFINED DEFINITIONS
+// ^^^--- END OF USER DEFINED DEFINITIONS

@@ -59,7 +59,7 @@ class ${class_name}
 
     ${#include "simple.value.serialization.declaration.pattern"}
 
-    // -vvv YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
+    // vvv--- YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
 
-    // -^^^ END OF USER DEFINED CLASS ELEMENTS
+    // ^^^--- END OF USER DEFINED CLASS ELEMENTS
 };

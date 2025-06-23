@@ -10,6 +10,6 @@ ${class_name} ${class_name}::fromString(const std::string& text)
   return ${class_name}(${object_name});
 }
 
-// -vvv YOU CAN PUT ADDITIONAL DEFINITIONS BELOW
+// vvv--- YOU CAN PUT ADDITIONAL DEFINITIONS BELOW
 
-// -^^^ END OF USER DEFINED DEFINITIONS
+// ^^^--- END OF USER DEFINED DEFINITIONS

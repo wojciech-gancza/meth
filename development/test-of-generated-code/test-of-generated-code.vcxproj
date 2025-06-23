@@ -58,6 +58,7 @@
     <ClInclude Include="common_event_time.h" />
     <ClInclude Include="common_network_port_number.h" />
     <ClInclude Include="common_record_fields_comparision.h" />
+    <ClInclude Include="common_size_error.h" />
     <ClInclude Include="common_strcmp_compare.h" />
     <ClInclude Include="common_text_converter.h" />
     <ClInclude Include="common_text_message.h" />

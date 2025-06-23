@@ -3,14 +3,27 @@ class ${class_name}
   public:
     // type traits
     ${#include "common.traits.pattern"}
+    static constexpr ${int_class} max_count = { ${max_size} };
 
+    ${class_name}() = default;
+    ${class_name}(const ${class_name}& ${object_name}) = default;
+    ${class_name}(${class_name}&& ${object_name}) = default;
+    ${class_name}& operator=(const ${class_name}& ${object_name}) = default;
+    ${class_name}& operator=(${class_name}&& ${object_name}) = default;
 
+    void Insert${item_class_name}(const ${item_class_name}& ${item_object_name}) { m_${object_name}.push_back(${item_object_name}); checkSize(); }
+    void Insert${item_class_name}(${item_class_name}&& ${item_object_name}) { m_${object_name}.push_back(${item_object_name}); checkSize(); }
 
+    ${int_class} get${class_name}Count() const { return static_cast<${int_class}>(m_${object_name}.size()); }
 
+    ${#if compareable}bool operator==(const ${class_name}& ${object_name}) const noexcept;
+    bool operator!=(const ${class_name}& ${object_name}) const noexcept;${#else}// No compare operators${#end}
+    ${#if ordered}bool operator<(const ${class_name}& ${object_name}) const noexcept;
+    bool operator<=(const ${class_name}& ${object_name}) const noexcept;
+    bool operator>=(const ${class_name}& ${object_name}) const noexcept;
+    bool operator>(const ${class_name}& ${object_name}) const noexcept;${#else}// No ordering operators${#end}
 
-
-
-
+    // ...
 
     std::string toString() const;
 
@@ -21,7 +34,17 @@ class ${class_name}
   private:
     std::vector<${element_type.FullyDecoratedClassName()}> m_${object_name};
 
-    // -vvv YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
+    void checkSize()
+    {
+      // vvv--- YOU CAN PUT VALUE CHECK HANDLING HERE
+      if (get${class_name}Count() > max_count)
+      {
+        throw Common::SizeError(get${class_name}Count(), "too long string to initiate ${class_name}");
+      }
+      // ^^^--- END OF VALUE CHECK HANDLING HERE
+    }
 
-    // -^^^ END OF USER DEFINED CLASS ELEMENTS
+    // vvv--- YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
+
+    // ^^^--- END OF USER DEFINED CLASS ELEMENTS
 };
