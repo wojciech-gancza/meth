@@ -69,6 +69,9 @@ namespace Configuration
       , Configuration::Nodes(configuration_nodes)
       {  }
   
+      Node& operator=(const Node& node) noexcept = default;
+      Node& operator=(Node&& node) noexcept = default;
+  
       template <class OTHER>
       void setFrom(const OTHER& other)
       {

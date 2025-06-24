@@ -178,8 +178,12 @@ bool ${class_name}::operator>(const ${class_name}& ${object_name}) const noexcep
       return false;
     }
   }
+}${#else}// No ordering operators${#end}
+
+void ${class_name}::remove${item_class_name}(const Iterator& ${item_object_name})
+{
+  m_${object_name}.erase(${item_object_name}); 
 }
-${#else}// No ordering operators${#end}
 
 ${#include "common.to.string.pattern"}
 

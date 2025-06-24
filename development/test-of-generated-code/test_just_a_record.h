@@ -69,6 +69,9 @@ namespace Test
       , Common::Network::PortNumber(common_network_port_number)
       {  }
   
+      JustARecord& operator=(const JustARecord& just_a_record) noexcept = default;
+      JustARecord& operator=(JustARecord&& just_a_record) noexcept = default;
+  
       template <class OTHER>
       void setFrom(const OTHER& other)
       {

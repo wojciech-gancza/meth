@@ -204,6 +204,10 @@ namespace Configuration
     }
   }
   
+  void Nodes::removeNode(const Iterator& node)
+  {
+    m_nodes.erase(node); 
+  }
   
   std::string Nodes::toString() const
   {

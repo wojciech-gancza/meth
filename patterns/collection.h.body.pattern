@@ -49,6 +49,8 @@ class ${class_name}
     ConstReverseIterator get${class_name}ReverseConstBegin() const { return ConstReverseIterator(m_${object_name}.rbegin()); }
     ConstReverseIterator get${class_name}ReverseConstEnd() const { return ConstReverseIterator(m_${object_name}.rend()); }
 
+    void remove${item_class_name}(const Iterator& ${item_object_name});
+
     // ...
 
     std::string toString() const;

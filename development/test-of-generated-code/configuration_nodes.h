@@ -119,6 +119,8 @@ namespace Configuration
       ConstReverseIterator getNodesReverseConstBegin() const { return ConstReverseIterator(m_nodes.rbegin()); }
       ConstReverseIterator getNodesReverseConstEnd() const { return ConstReverseIterator(m_nodes.rend()); }
   
+      void removeNode(const Iterator& node);
+  
       // ...
   
       std::string toString() const;

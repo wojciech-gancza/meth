@@ -131,6 +131,26 @@ TEST(TestOfGeneratedCollectionsType, TestOfIteration)
   ASSERT_EQ(j, root.getNodesReverseEnd());
 }
 
+TEST(TestOfGeneratedCollectionsType, TestOfRemovingElements)
+{
+  Configuration::Nodes root;
+  root.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("klm"), Configuration::Value("Dirk"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("wx"), Configuration::Value("Epire"), Configuration::Nodes()));
+
+  Configuration::Nodes::Iterator i = root.getNodesBegin() + 2;
+  root.removeNode(i);
+  ASSERT_EQ(root.toString(), "[ { configuration_key: \"A\", configuration_value: \"Hello\", configuration_nodes: [  ] }, "
+                               "{ configuration_key: \"x\", configuration_value: \"Dolly\", configuration_nodes: [  ] }, "
+                               "{ configuration_key: \"wx\", configuration_value: \"Epire\", configuration_nodes: [  ] } ]");
+  root.removeNode( --root.getNodesEnd() );
+  ASSERT_EQ(root.toString(), "[ { configuration_key: \"A\", configuration_value: \"Hello\", configuration_nodes: [  ] }, "
+                               "{ configuration_key: \"x\", configuration_value: \"Dolly\", configuration_nodes: [  ] } ]");
+  root.removeNode(root.getNodesBegin());
+  ASSERT_EQ(root.toString(), "[ { configuration_key: \"x\", configuration_value: \"Dolly\", configuration_nodes: [  ] } ]");
+}
+
 //--------------------------------------------------------------------------------------------
 
 TEST(TestOfGeneratedTimeDurationType, TestOfCreatingDefaultValue)

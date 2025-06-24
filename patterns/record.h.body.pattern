@@ -25,6 +25,9 @@ class ${class_name}
     ${format.inheritance_list([value.FullyDecoratedClassName() + "(" + value.lowercase_namespace_and_name() + ")" for value in values])}
     {  }
 
+    ${class_name}& operator=(const ${class_name}& ${object_name}) noexcept = default;
+    ${class_name}& operator=(${class_name}&& ${object_name}) noexcept = default;
+
     template <class OTHER>
     void setFrom(const OTHER& other)
     {${#for value : values}
