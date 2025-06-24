@@ -106,6 +106,31 @@ TEST(TestOfGeneratedCollectionsType, TestOfDeserialization)
   ASSERT_EQ(root.toString(), "[ { configuration_key: \"A\", configuration_value: \"Hello\", configuration_nodes: [  ] }, { configuration_key: \"x\", configuration_value: \"Dolly\", configuration_nodes: [  ] } ]");
 }
 
+TEST(TestOfGeneratedCollectionsType, TestOfIteration)
+{
+  Configuration::Nodes root;
+  root.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("klm"), Configuration::Value("Dirk"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("wx"), Configuration::Value("Epire"), Configuration::Nodes()));
+
+  Configuration::Nodes::Iterator i = root.getNodesBegin();
+  ASSERT_EQ(i->toString(), "{ configuration_key: \"A\", configuration_value: \"Hello\", configuration_nodes: [  ] }");
+  ++i;
+  ++i;
+  ASSERT_EQ(i->toString(), "{ configuration_key: \"klm\", configuration_value: \"Dirk\", configuration_nodes: [  ] }");
+
+  Configuration::Nodes::ReverseIterator j = root.getNodesReverseBegin();
+  ASSERT_EQ(j->toString(), "{ configuration_key: \"wx\", configuration_value: \"Epire\", configuration_nodes: [  ] }");
+  ++j;
+  ++j;
+  ASSERT_EQ(j->toString(), "{ configuration_key: \"x\", configuration_value: \"Dolly\", configuration_nodes: [  ] }");
+  ++j;
+  ++j;
+
+  ASSERT_EQ(j, root.getNodesReverseEnd());
+}
+
 //--------------------------------------------------------------------------------------------
 
 TEST(TestOfGeneratedTimeDurationType, TestOfCreatingDefaultValue)

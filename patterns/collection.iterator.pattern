@@ -1,0 +1,10 @@
+class ${iterator_type}Iterator : public std::vector<${element_type.FullyDecoratedClassName()}>::${inner_type}iterator
+{ 
+  public: 
+    ${iterator_type}Iterator() {} 
+    ${iterator_type}Iterator(const std::vector<${element_type.FullyDecoratedClassName()}>::${inner_type}iterator& iterator) : std::vector<${element_type.FullyDecoratedClassName()}>::${inner_type}iterator(iterator) { }
+    ${iterator_type}Iterator(const ${iterator_type}Iterator& iterator) = default;
+    ${iterator_type}Iterator(${iterator_type}Iterator&& iterator) = default;
+    ${iterator_type}Iterator& operator=(const ${iterator_type}Iterator& iterator) = default;
+    ${iterator_type}Iterator& operator=(${iterator_type}Iterator&& iterator) = default;
+};

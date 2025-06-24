@@ -23,6 +23,32 @@ class ${class_name}
     bool operator>=(const ${class_name}& ${object_name}) const noexcept;
     bool operator>(const ${class_name}& ${object_name}) const noexcept;${#else}// No ordering operators${#end}
 
+    ${#include "collection.iterator.pattern" "iterator_type": "", "inner_type": ""}
+
+    ${#include "collection.iterator.pattern" "iterator_type": "Const", "inner_type": "const_"}
+
+    ${#include "collection.iterator.pattern" "iterator_type": "Reverse", "inner_type": "reverse_"}
+
+    ${#include "collection.iterator.pattern" "iterator_type": "ConstReverse", "inner_type": "const_reverse_"}
+
+    Iterator get${class_name}Begin() { return Iterator(m_${object_name}.begin()); }
+    Iterator get${class_name}End() { return Iterator(m_${object_name}.end()); }
+
+    ConstIterator get${class_name}Begin() const { return ConstIterator(m_${object_name}.begin()); }
+    ConstIterator get${class_name}End() const { return ConstIterator(m_${object_name}.end()); }
+
+    ConstIterator get${class_name}ConstBegin() const { return ConstIterator(m_${object_name}.begin()); }
+    ConstIterator get${class_name}ConstEnd() const { return ConstIterator(m_${object_name}.end()); }
+
+    ReverseIterator get${class_name}ReverseBegin() { return ReverseIterator(m_${object_name}.rbegin()); }
+    ReverseIterator get${class_name}ReverseEnd() { return ReverseIterator(m_${object_name}.rend()); }
+
+    ConstReverseIterator get${class_name}ReverseBegin() const { return ConstReverseIterator(m_${object_name}.rbegin()); }
+    ConstReverseIterator get${class_name}ReverseEnd() const { return ConstReverseIterator(m_${object_name}.rend()); }
+
+    ConstReverseIterator get${class_name}ReverseConstBegin() const { return ConstReverseIterator(m_${object_name}.rbegin()); }
+    ConstReverseIterator get${class_name}ReverseConstEnd() const { return ConstReverseIterator(m_${object_name}.rend()); }
+
     // ...
 
     std::string toString() const;

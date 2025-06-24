@@ -57,6 +57,68 @@ namespace Configuration
       bool operator>=(const Nodes& nodes) const noexcept;
       bool operator>(const Nodes& nodes) const noexcept;
   
+      class Iterator : public std::vector<Configuration::Node>::iterator
+      { 
+        public: 
+          Iterator() {} 
+          Iterator(const std::vector<Configuration::Node>::iterator& iterator) : std::vector<Configuration::Node>::iterator(iterator) { }
+          Iterator(const Iterator& iterator) = default;
+          Iterator(Iterator&& iterator) = default;
+          Iterator& operator=(const Iterator& iterator) = default;
+          Iterator& operator=(Iterator&& iterator) = default;
+      };
+  
+      class ConstIterator : public std::vector<Configuration::Node>::const_iterator
+      { 
+        public: 
+          ConstIterator() {} 
+          ConstIterator(const std::vector<Configuration::Node>::const_iterator& iterator) : std::vector<Configuration::Node>::const_iterator(iterator) { }
+          ConstIterator(const ConstIterator& iterator) = default;
+          ConstIterator(ConstIterator&& iterator) = default;
+          ConstIterator& operator=(const ConstIterator& iterator) = default;
+          ConstIterator& operator=(ConstIterator&& iterator) = default;
+      };
+  
+      class ReverseIterator : public std::vector<Configuration::Node>::reverse_iterator
+      { 
+        public: 
+          ReverseIterator() {} 
+          ReverseIterator(const std::vector<Configuration::Node>::reverse_iterator& iterator) : std::vector<Configuration::Node>::reverse_iterator(iterator) { }
+          ReverseIterator(const ReverseIterator& iterator) = default;
+          ReverseIterator(ReverseIterator&& iterator) = default;
+          ReverseIterator& operator=(const ReverseIterator& iterator) = default;
+          ReverseIterator& operator=(ReverseIterator&& iterator) = default;
+      };
+  
+      class ConstReverseIterator : public std::vector<Configuration::Node>::const_reverse_iterator
+      { 
+        public: 
+          ConstReverseIterator() {} 
+          ConstReverseIterator(const std::vector<Configuration::Node>::const_reverse_iterator& iterator) : std::vector<Configuration::Node>::const_reverse_iterator(iterator) { }
+          ConstReverseIterator(const ConstReverseIterator& iterator) = default;
+          ConstReverseIterator(ConstReverseIterator&& iterator) = default;
+          ConstReverseIterator& operator=(const ConstReverseIterator& iterator) = default;
+          ConstReverseIterator& operator=(ConstReverseIterator&& iterator) = default;
+      };
+  
+      Iterator getNodesBegin() { return Iterator(m_nodes.begin()); }
+      Iterator getNodesEnd() { return Iterator(m_nodes.end()); }
+  
+      ConstIterator getNodesBegin() const { return ConstIterator(m_nodes.begin()); }
+      ConstIterator getNodesEnd() const { return ConstIterator(m_nodes.end()); }
+  
+      ConstIterator getNodesConstBegin() const { return ConstIterator(m_nodes.begin()); }
+      ConstIterator getNodesConstEnd() const { return ConstIterator(m_nodes.end()); }
+  
+      ReverseIterator getNodesReverseBegin() { return ReverseIterator(m_nodes.rbegin()); }
+      ReverseIterator getNodesReverseEnd() { return ReverseIterator(m_nodes.rend()); }
+  
+      ConstReverseIterator getNodesReverseBegin() const { return ConstReverseIterator(m_nodes.rbegin()); }
+      ConstReverseIterator getNodesReverseEnd() const { return ConstReverseIterator(m_nodes.rend()); }
+  
+      ConstReverseIterator getNodesReverseConstBegin() const { return ConstReverseIterator(m_nodes.rbegin()); }
+      ConstReverseIterator getNodesReverseConstEnd() const { return ConstReverseIterator(m_nodes.rend()); }
+  
       // ...
   
       std::string toString() const;
