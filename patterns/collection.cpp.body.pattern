@@ -1,31 +1,183 @@
 ${#if compareable}bool ${class_name}::operator==(const ${class_name}& ${object_name}) const noexcept 
-{ 
-  return false;
+{
+  std::vector<${element_type.FullyDecoratedClassName()}>::const_iterator my_${item_object_name} = m_${object_name}.begin();
+  std::vector<${element_type.FullyDecoratedClassName()}>::const_iterator other_${item_object_name} = ${object_name}.m_${object_name}.begin();
+  while ( my_${item_object_name} != m_${object_name}.end() && other_${item_object_name} != ${object_name}.m_${object_name}.end() )
+  {
+    if (!( *my_${item_object_name} == *other_${item_object_name} ))
+    {
+      return false;
+    }
+    ++my_${item_object_name};
+    ++other_${item_object_name};
+  }
+  if (my_${item_object_name} == m_${object_name}.end() || other_${item_object_name} == ${object_name}.m_${object_name}.end())
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 bool ${class_name}::operator!=(const ${class_name}& ${object_name}) const noexcept  
-{ 
-  return false;
+{
+  std::vector<${element_type.FullyDecoratedClassName()}>::const_iterator my_${item_object_name} = m_${object_name}.begin();
+  std::vector<${element_type.FullyDecoratedClassName()}>::const_iterator other_${item_object_name} = ${object_name}.m_${object_name}.begin();
+  while ( my_${item_object_name} != m_${object_name}.end() && other_${item_object_name} != ${object_name}.m_${object_name}.end() )
+  {
+    if ( *my_${item_object_name} != *other_${item_object_name} )
+    {
+      return true;
+    }
+    ++my_${item_object_name};
+    ++other_${item_object_name};
+  }
+  if (my_${item_object_name} == m_${object_name}.end() || other_${item_object_name} == ${object_name}.m_${object_name}.end())
+  {
+    return false;
+  }
+  else
+  {
+    return true;
+  }
 }
 ${#else}// No compare operators${#end}
 ${#if ordered}bool ${class_name}::operator<(const ${class_name}& ${object_name}) const noexcept 
-{ 
-  return false;
+{
+  std::vector<${element_type.FullyDecoratedClassName()}>::const_iterator my_${item_object_name} = m_${object_name}.begin();
+  std::vector<${element_type.FullyDecoratedClassName()}>::const_iterator other_${item_object_name} = ${object_name}.m_${object_name}.begin();
+  while ( my_${item_object_name} != m_${object_name}.end() && other_${item_object_name} != ${object_name}.m_${object_name}.end() )
+  {
+    if ( *my_${item_object_name} < *other_${item_object_name} )
+    {
+      return true;
+    }
+    if ( *my_${item_object_name} != *other_${item_object_name} )
+    {
+      return false;
+    }
+    ++my_${item_object_name};
+    ++other_${item_object_name};
+  }
+  if (my_${item_object_name} == m_${object_name}.end() || other_${item_object_name} == ${object_name}.m_${object_name}.end())
+  {
+    return false;
+  }
+  else
+  {
+    if (my_${item_object_name} != m_${object_name}.end())
+    {
+       return false;
+    }
+    else
+    {
+      return true;
+    }
+  }
 }
 
 bool ${class_name}::operator<=(const ${class_name}& ${object_name}) const noexcept 
-{ 
-  return false;
+{
+  std::vector<${element_type.FullyDecoratedClassName()}>::const_iterator my_${item_object_name} = m_${object_name}.begin();
+  std::vector<${element_type.FullyDecoratedClassName()}>::const_iterator other_${item_object_name} = ${object_name}.m_${object_name}.begin();
+  while ( my_${item_object_name} != m_${object_name}.end() && other_${item_object_name} != ${object_name}.m_${object_name}.end() )
+  {
+    if ( *my_${item_object_name} < *other_${item_object_name} )
+    {
+      return true;
+    }
+    if ( *my_${item_object_name} != *other_${item_object_name} )
+    {
+      return false;
+    }
+    ++my_${item_object_name};
+    ++other_${item_object_name};
+  }
+  if (my_${item_object_name} == m_${object_name}.end() || other_${item_object_name} == ${object_name}.m_${object_name}.end())
+  {
+    return true;
+  }
+  else
+  {
+    if (my_${item_object_name} != m_${object_name}.end())
+    {
+       return false;
+    }
+    else
+    {
+      return true;
+    }
+  }
 }
 
 bool ${class_name}::operator>=(const ${class_name}& ${object_name}) const noexcept 
-{ 
-  return false;
+{
+  std::vector<${element_type.FullyDecoratedClassName()}>::const_iterator my_${item_object_name} = m_${object_name}.begin();
+  std::vector<${element_type.FullyDecoratedClassName()}>::const_iterator other_${item_object_name} = ${object_name}.m_${object_name}.begin();
+  while ( my_${item_object_name} != m_${object_name}.end() && other_${item_object_name} != ${object_name}.m_${object_name}.end() )
+  {
+    if ( *my_${item_object_name} > *other_${item_object_name} )
+    {
+      return true;
+    }
+    if ( *my_${item_object_name} != *other_${item_object_name} )
+    {
+      return false;
+    }
+    ++my_${item_object_name};
+    ++other_${item_object_name};
+  }
+  if (my_${item_object_name} == m_${object_name}.end() || other_${item_object_name} == ${object_name}.m_${object_name}.end())
+  {
+    return true;
+  }
+  else
+  {
+    if (my_${item_object_name} != m_${object_name}.end())
+    {
+       return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
 }
 
 bool ${class_name}::operator>(const ${class_name}& ${object_name}) const noexcept 
-{ 
-  return false;
+{
+  std::vector<${element_type.FullyDecoratedClassName()}>::const_iterator my_${item_object_name} = m_${object_name}.begin();
+  std::vector<${element_type.FullyDecoratedClassName()}>::const_iterator other_${item_object_name} = ${object_name}.m_${object_name}.begin();
+  while ( my_${item_object_name} != m_${object_name}.end() && other_${item_object_name} != ${object_name}.m_${object_name}.end() )
+  {
+    if ( *my_${item_object_name} > *other_${item_object_name} )
+    {
+      return true;
+    }
+    if ( *my_${item_object_name} != *other_${item_object_name} )
+    {
+      return false;
+    }
+    ++my_${item_object_name};
+    ++other_${item_object_name};
+  }
+  if (my_${item_object_name} == m_${object_name}.end() || other_${item_object_name} == ${object_name}.m_${object_name}.end())
+  {
+    return false;
+  }
+  else
+  {
+    if (my_${item_object_name} != m_${object_name}.end())
+    {
+       return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
 }
 ${#else}// No ordering operators${#end}
 
@@ -33,25 +185,40 @@ ${#include "common.to.string.pattern"}
 
 std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name})
 {
-  
-  
-  
+  output << "[ ";
+  const char* separator = "";
+  for (std::vector<${element_type.FullyDecoratedClassName()}>::const_iterator ${item_object_name} = ${object_name}.m_${object_name}.begin(); ${item_object_name} != ${object_name}.m_${object_name}.end(); ++${item_object_name})
+  {
+    output << separator << *${item_object_name};
+    separator = ", ";
+  }
+
+  output << " ]";
   return output;
 }
 
 Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& serializer, const ${class_name}& ${object_name})
 {
-  
-  
-  
+  ${int_class} count_of_items = ${object_name}.get${class_name}Count();
+  serializer.storeValue(count_of_items);
+  for (std::vector<${element_type.FullyDecoratedClassName()}>::const_iterator ${item_object_name} = ${object_name}.m_${object_name}.begin(); ${item_object_name} != ${object_name}.m_${object_name}.end(); ++${item_object_name})
+  {
+    serializer << *${item_object_name};
+  }
   return serializer;
 }
 
 Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer& deserializer, ${class_name}& ${object_name})
 {
-  
-  
-  
+  ${int_class} count_of_items = 0;
+  deserializer.readValue(count_of_items);
+  ${object_name}.m_${object_name}.clear();
+  ${element_type.FullyDecoratedClassName()} ${item_object_name};
+  for (${int_class} item_number = 0; item_number < count_of_items; ++item_number)
+  {
+    deserializer >> ${item_object_name};
+    ${object_name}.insert${item_class_name}(${item_object_name});
+  }
   return deserializer;
 }
 

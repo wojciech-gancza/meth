@@ -10,6 +10,101 @@
 #include "common_text_message.h"
 #include "common_event_time.h"
 #include "common_delay.h"
+#include "configuration_node.h"
+
+//--------------------------------------------------------------------------------------------
+
+TEST(TestOfGeneratedCollectionsType, TestOfCreatingDefaultValue)
+{
+  Configuration::Nodes root;
+  ASSERT_EQ(root.toString(), "[  ]");
+}
+
+TEST(TestOfGeneratedCollectionsType, TestOfCreatingValue)
+{
+  Configuration::Nodes root;
+  root.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly"), Configuration::Nodes()));
+  ASSERT_EQ(root.toString(), "[ { configuration_key: \"A\", configuration_value: \"Hello\", configuration_nodes: [  ] }, { configuration_key: \"x\", configuration_value: \"Dolly\", configuration_nodes: [  ] } ]");
+}
+
+TEST(TestOfGeneratedCollectionsType, TestOfComparision1)
+{
+  Configuration::Nodes root1;
+  root1.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello"), Configuration::Nodes()));
+  root1.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly"), Configuration::Nodes()));
+  Configuration::Nodes root2;
+  root2.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello"), Configuration::Nodes()));
+  root2.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Aolly"), Configuration::Nodes()));
+
+  ASSERT_TRUE(root1 == root2);
+  ASSERT_FALSE(root1 != root2);
+  ASSERT_TRUE(root1 >= root2);
+  ASSERT_FALSE(root1 > root2);
+  ASSERT_TRUE(root1 <= root2);
+  ASSERT_FALSE(root1 < root2);
+}
+
+TEST(TestOfGeneratedCollectionsType, TestOfComparision2)
+{
+  Configuration::Nodes root1;
+  root1.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello"), Configuration::Nodes()));
+  root1.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly"), Configuration::Nodes()));
+  Configuration::Nodes root2;
+  root2.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello"), Configuration::Nodes()));
+  root2.insertNode(Configuration::Node(Configuration::Key("X"), Configuration::Value("Dolly"), Configuration::Nodes()));
+
+  ASSERT_FALSE(root1 == root2);
+  ASSERT_TRUE(root1 != root2);
+  ASSERT_TRUE(root1 >= root2);
+  ASSERT_TRUE(root1 > root2);
+  ASSERT_FALSE(root1 <= root2);
+  ASSERT_FALSE(root1 < root2);
+}
+
+TEST(TestOfGeneratedCollectionsType, TestOfSerialization)
+{
+  Configuration::Nodes root;
+  root.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly"), Configuration::Nodes()));
+  Serialization::BinarySerializer serializer;
+  serializer << root;
+  const std::vector<uint8_t>& serialized_data = serializer.getSerializedData();
+  ASSERT_EQ(serialized_data.size(), 24);
+  ASSERT_EQ(serialized_data[0], 0x00);
+  ASSERT_EQ(serialized_data[1], 0x02);
+  ASSERT_EQ(serialized_data[2], 0x01);
+  ASSERT_EQ(serialized_data[3], 0x41);
+  ASSERT_EQ(serialized_data[4], 0x00);
+  ASSERT_EQ(serialized_data[5], 0x05);
+  ASSERT_EQ(serialized_data[6], 0x48);
+  ASSERT_EQ(serialized_data[7], 0x65);
+  ASSERT_EQ(serialized_data[8], 0x6c);
+  ASSERT_EQ(serialized_data[9], 0x6c);
+  ASSERT_EQ(serialized_data[10], 0x6f);
+  ASSERT_EQ(serialized_data[11], 0x00);
+  ASSERT_EQ(serialized_data[12], 0x00);
+  ASSERT_EQ(serialized_data[13], 0x01);
+  ASSERT_EQ(serialized_data[14], 0x78);
+  ASSERT_EQ(serialized_data[15], 0x00);
+  ASSERT_EQ(serialized_data[16], 0x05);
+  ASSERT_EQ(serialized_data[17], 0x44);
+  ASSERT_EQ(serialized_data[18], 0x6f);
+  ASSERT_EQ(serialized_data[19], 0x6c);
+  ASSERT_EQ(serialized_data[20], 0x6c);
+  ASSERT_EQ(serialized_data[21], 0x79);
+  ASSERT_EQ(serialized_data[22], 0x00);
+  ASSERT_EQ(serialized_data[23], 0x00);
+}
+
+TEST(TestOfGeneratedCollectionsType, TestOfDeserialization)
+{
+  Configuration::Nodes root;
+  std::vector<uint8_t> serialized_data = { 0x00, 0x02, 0x01, 0x41, 0x00, 0x05, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x00, 0x00, 0x01, 0x78, 0x00, 0x05, 0x44, 0x6f, 0x6c, 0x6c, 0x79, 0x00, 0x00 };
+  Serialization::BinaryDeserializer deserializer(serialized_data);
+  deserializer >> root;
+  ASSERT_EQ(root.toString(), "[ { configuration_key: \"A\", configuration_value: \"Hello\", configuration_nodes: [  ] }, { configuration_key: \"x\", configuration_value: \"Dolly\", configuration_nodes: [  ] } ]");
+}
 
 //--------------------------------------------------------------------------------------------
 

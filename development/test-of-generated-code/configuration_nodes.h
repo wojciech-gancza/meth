@@ -45,8 +45,8 @@ namespace Configuration
       Nodes& operator=(const Nodes& nodes) = default;
       Nodes& operator=(Nodes&& nodes) = default;
   
-      void InsertNode(const Node& node) { m_nodes.push_back(node); checkSize(); }
-      void InsertNode(Node&& node) { m_nodes.push_back(node); checkSize(); }
+      void insertNode(const Node& node) { m_nodes.push_back(node); checkSize(); }
+      void insertNode(Node&& node) { m_nodes.push_back(node); checkSize(); }
   
       uint16_t getNodesCount() const { return static_cast<uint16_t>(m_nodes.size()); }
   

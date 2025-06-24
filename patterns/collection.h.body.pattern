@@ -11,8 +11,8 @@ class ${class_name}
     ${class_name}& operator=(const ${class_name}& ${object_name}) = default;
     ${class_name}& operator=(${class_name}&& ${object_name}) = default;
 
-    void Insert${item_class_name}(const ${item_class_name}& ${item_object_name}) { m_${object_name}.push_back(${item_object_name}); checkSize(); }
-    void Insert${item_class_name}(${item_class_name}&& ${item_object_name}) { m_${object_name}.push_back(${item_object_name}); checkSize(); }
+    void insert${item_class_name}(const ${item_class_name}& ${item_object_name}) { m_${object_name}.push_back(${item_object_name}); checkSize(); }
+    void insert${item_class_name}(${item_class_name}&& ${item_object_name}) { m_${object_name}.push_back(${item_object_name}); checkSize(); }
 
     ${int_class} get${class_name}Count() const { return static_cast<${int_class}>(m_${object_name}.size()); }
 

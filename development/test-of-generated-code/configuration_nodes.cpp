@@ -23,33 +23,185 @@
 namespace Configuration
 {
   bool Nodes::operator==(const Nodes& nodes) const noexcept 
-  { 
-    return false;
+  {
+    std::vector<Configuration::Node>::const_iterator my_node = m_nodes.begin();
+    std::vector<Configuration::Node>::const_iterator other_node = nodes.m_nodes.begin();
+    while ( my_node != m_nodes.end() && other_node != nodes.m_nodes.end() )
+    {
+      if (!( *my_node == *other_node ))
+      {
+        return false;
+      }
+      ++my_node;
+      ++other_node;
+    }
+    if (my_node == m_nodes.end() || other_node == nodes.m_nodes.end())
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
   
   bool Nodes::operator!=(const Nodes& nodes) const noexcept  
-  { 
-    return false;
+  {
+    std::vector<Configuration::Node>::const_iterator my_node = m_nodes.begin();
+    std::vector<Configuration::Node>::const_iterator other_node = nodes.m_nodes.begin();
+    while ( my_node != m_nodes.end() && other_node != nodes.m_nodes.end() )
+    {
+      if ( *my_node != *other_node )
+      {
+        return true;
+      }
+      ++my_node;
+      ++other_node;
+    }
+    if (my_node == m_nodes.end() || other_node == nodes.m_nodes.end())
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }
   }
   
   bool Nodes::operator<(const Nodes& nodes) const noexcept 
-  { 
-    return false;
+  {
+    std::vector<Configuration::Node>::const_iterator my_node = m_nodes.begin();
+    std::vector<Configuration::Node>::const_iterator other_node = nodes.m_nodes.begin();
+    while ( my_node != m_nodes.end() && other_node != nodes.m_nodes.end() )
+    {
+      if ( *my_node < *other_node )
+      {
+        return true;
+      }
+      if ( *my_node != *other_node )
+      {
+        return false;
+      }
+      ++my_node;
+      ++other_node;
+    }
+    if (my_node == m_nodes.end() || other_node == nodes.m_nodes.end())
+    {
+      return false;
+    }
+    else
+    {
+      if (my_node != m_nodes.end())
+      {
+         return false;
+      }
+      else
+      {
+        return true;
+      }
+    }
   }
   
   bool Nodes::operator<=(const Nodes& nodes) const noexcept 
-  { 
-    return false;
+  {
+    std::vector<Configuration::Node>::const_iterator my_node = m_nodes.begin();
+    std::vector<Configuration::Node>::const_iterator other_node = nodes.m_nodes.begin();
+    while ( my_node != m_nodes.end() && other_node != nodes.m_nodes.end() )
+    {
+      if ( *my_node < *other_node )
+      {
+        return true;
+      }
+      if ( *my_node != *other_node )
+      {
+        return false;
+      }
+      ++my_node;
+      ++other_node;
+    }
+    if (my_node == m_nodes.end() || other_node == nodes.m_nodes.end())
+    {
+      return true;
+    }
+    else
+    {
+      if (my_node != m_nodes.end())
+      {
+         return false;
+      }
+      else
+      {
+        return true;
+      }
+    }
   }
   
   bool Nodes::operator>=(const Nodes& nodes) const noexcept 
-  { 
-    return false;
+  {
+    std::vector<Configuration::Node>::const_iterator my_node = m_nodes.begin();
+    std::vector<Configuration::Node>::const_iterator other_node = nodes.m_nodes.begin();
+    while ( my_node != m_nodes.end() && other_node != nodes.m_nodes.end() )
+    {
+      if ( *my_node > *other_node )
+      {
+        return true;
+      }
+      if ( *my_node != *other_node )
+      {
+        return false;
+      }
+      ++my_node;
+      ++other_node;
+    }
+    if (my_node == m_nodes.end() || other_node == nodes.m_nodes.end())
+    {
+      return true;
+    }
+    else
+    {
+      if (my_node != m_nodes.end())
+      {
+         return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
   }
   
   bool Nodes::operator>(const Nodes& nodes) const noexcept 
-  { 
-    return false;
+  {
+    std::vector<Configuration::Node>::const_iterator my_node = m_nodes.begin();
+    std::vector<Configuration::Node>::const_iterator other_node = nodes.m_nodes.begin();
+    while ( my_node != m_nodes.end() && other_node != nodes.m_nodes.end() )
+    {
+      if ( *my_node > *other_node )
+      {
+        return true;
+      }
+      if ( *my_node != *other_node )
+      {
+        return false;
+      }
+      ++my_node;
+      ++other_node;
+    }
+    if (my_node == m_nodes.end() || other_node == nodes.m_nodes.end())
+    {
+      return false;
+    }
+    else
+    {
+      if (my_node != m_nodes.end())
+      {
+         return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
   }
   
   
@@ -62,25 +214,40 @@ namespace Configuration
   
   std::ostream& operator<<(std::ostream& output, const Nodes& nodes)
   {
-    
-    
-    
+    output << "[ ";
+    const char* separator = "";
+    for (std::vector<Configuration::Node>::const_iterator node = nodes.m_nodes.begin(); node != nodes.m_nodes.end(); ++node)
+    {
+      output << separator << *node;
+      separator = ", ";
+    }
+  
+    output << " ]";
     return output;
   }
   
   Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& serializer, const Nodes& nodes)
   {
-    
-    
-    
+    uint16_t count_of_items = nodes.getNodesCount();
+    serializer.storeValue(count_of_items);
+    for (std::vector<Configuration::Node>::const_iterator node = nodes.m_nodes.begin(); node != nodes.m_nodes.end(); ++node)
+    {
+      serializer << *node;
+    }
     return serializer;
   }
   
   Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer& deserializer, Nodes& nodes)
   {
-    
-    
-    
+    uint16_t count_of_items = 0;
+    deserializer.readValue(count_of_items);
+    nodes.m_nodes.clear();
+    Configuration::Node node;
+    for (uint16_t item_number = 0; item_number < count_of_items; ++item_number)
+    {
+      deserializer >> node;
+      nodes.insertNode(node);
+    }
     return deserializer;
   }
   
