@@ -13,6 +13,10 @@ import time
 #--------------------------------------------------------------------------
 # -! simple types generator
 #   -! collection type
+#     -- const search result - parametrize current search result
+#     -- opeartions on search results ( +, - ) remove element, remove by key (also in main collection)
+#     ++ collection itself, construct, add, remove, iterate
+#     ++ search, search result and search result iteration
 #   -- registry of all generated types
 #   -- adding tool files (when required)
 #   ++ bitflags type 
@@ -24,10 +28,10 @@ import time
 #   ++ timepoint type
 #   ++ patterns refactoring
 #   ++ time duration type
-# -- configuration
-#   -! configuration types: key, value, node, nodes
+# -! configuration
 #   -- basic configuration tests
 #   -- add reading objects from cofiguration (all types)
+#   ++ configuration types: key, value, node, nodes
 # ++ fixing problems
 #   ++ converting string->enum - check length of the string first. Problem with too bix index
 # ++ main part of metagenerator

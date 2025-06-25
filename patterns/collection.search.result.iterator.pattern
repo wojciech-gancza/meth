@@ -1,0 +1,13 @@
+class ${iterator_type}Iterator : public std::vector<${class_name}::Iterator>::${inner_type}iterator
+{ 
+  public: 
+    ${iterator_type}Iterator() {} 
+    ${iterator_type}Iterator(const std::vector<${class_name}::Iterator>::${inner_type}iterator& iterator) noexcept : std::vector<${class_name}::Iterator>::${inner_type}iterator(iterator) { }
+    ${iterator_type}Iterator(const ${iterator_type}Iterator& iterator) noexcept = default;
+    ${iterator_type}Iterator(${iterator_type}Iterator&& iterator) noexcept = default;
+    ${iterator_type}Iterator& operator=(const ${iterator_type}Iterator& iterator) noexcept = default;
+    ${iterator_type}Iterator& operator=(${iterator_type}Iterator&& iterator) noexcept = default;
+
+    ${element_type.FullyDecoratedClassName()}& operator*() const noexcept { return *(std::vector<${class_name}::Iterator>::${inner_type}iterator::operator*()); }
+    ${element_type.FullyDecoratedClassName()}* operator->() const noexcept { return &(*(std::vector<${class_name}::Iterator>::${inner_type}iterator::operator*())); }
+};
