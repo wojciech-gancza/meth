@@ -13,7 +13,7 @@ import time
 #--------------------------------------------------------------------------
 # -! simple types generator
 #   -! collection type
-#     -- opeartions on search results ( +, - ) remove element, remove by key (also in main collection)
+#     -! opeartions on search results ( +=, -= ) remove element, remove by in main collection)
 #     ++ collection itself, construct, add, remove, iterate
 #     ++ search, search result and search result iteration
 #     ++ const search result - parametrize current search result

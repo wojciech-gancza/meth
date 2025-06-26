@@ -1,0 +1,13 @@
+std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name})
+{
+  output << "[ ";
+  const char* separator = "";
+  for (std::vector<${element_type.FullyDecoratedClassName()}::${name_decorator}Iterator>::const_iterator ${item_object_name} = ${object_name}.m_found_${object_name}.begin(); ${item_object_name} != ${object_name}.m_found_${object_name}.end(); ++${item_object_name})
+  {
+    output << separator << **${item_object_name};
+    separator = ", ";
+  }
+
+  output << " ]";
+  return output;
+}

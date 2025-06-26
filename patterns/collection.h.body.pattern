@@ -55,9 +55,17 @@ class ${class_name}
 
     void remove${item_class_name}(const Iterator& ${item_object_name});
 
-    // ... remove many (by key)
+    template <class KEY>
+    void remove${class_name}(const KEY& key)
+    {
+      SearchResult items_to_delete = search${class_name}(key);
+      for (SearchResult::ReverseIterator item = items_to_delete.get${class_name}ReverseBegin(); item != items_to_delete.get${class_name}ReverseEnd(); ++item)
+      {
+        remove${item_class_name}(item.getIteratorToNodes());
+      }
+    }
 
-    // ... adding collections
+    // ${class_name}& operator+=(const ${class_name}& ${object_name));
 
     std::string toString() const;
 

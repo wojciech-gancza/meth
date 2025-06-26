@@ -189,9 +189,9 @@ ${#include "common.to.string.pattern" "class_name": class_name+"::SearchResult"}
 
 ${#include "common.to.string.pattern" "class_name": class_name+"::ConstSearchResult"}
 
-${#include "collection.out.operator.pattern" "class_name": class_name+"::SearchResult"}
+${#include "collection.out.operator.pattern" "class_name": class_name+"::SearchResult", "name_decorator": ""}
 
-${#include "collection.out.operator.pattern" "class_name": class_name+"::ConstSearchResult"}
+${#include "collection.out.operator.pattern" "class_name": class_name+"::ConstSearchResult", "name_decorator": "Const"}
 
 ${#include "common.to.string.pattern"}
 

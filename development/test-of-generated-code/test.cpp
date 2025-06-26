@@ -228,6 +228,48 @@ TEST(TestOfGeneratedCollectionsType, TestOfIterationOverConstSearchResult)
   ASSERT_EQ(found_items2.toString(), "[ { configuration_key: \"x\", configuration_value: \"Dolly2\", configuration_nodes: [  ] } ]");
 }
 
+TEST(TestOfGeneratedCollectionsType, TestOfRemovingItemFromSearchResult)
+{
+  Configuration::Nodes root;
+  root.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("klm"), Configuration::Value("Dirk1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("wx"), Configuration::Value("Epire1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello2"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly2"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dirk2"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("wx"), Configuration::Value("Epire2"), Configuration::Nodes()));
+
+  Configuration::Nodes::SearchResult found_items = root.searchNodes(Configuration::Key("x"));
+  Configuration::Nodes::SearchResult::Iterator found_item = found_items.getNodesBegin();
+  ++found_item;
+  found_items.removeNodesIterator(found_item);
+
+  ASSERT_EQ(found_items.toString(), "[ { configuration_key: \"x\", configuration_value: \"Dolly1\", configuration_nodes: [  ] }, "
+                                      "{ configuration_key: \"x\", configuration_value: \"Dirk2\", configuration_nodes: [  ] } ]");
+}
+
+TEST(TestOfGeneratedCollectionsType, TestOfRemovingItemsByKey)
+{
+  Configuration::Nodes root;
+  root.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("klm"), Configuration::Value("Dirk1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("wx"), Configuration::Value("Epire1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello2"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly2"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dirk2"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("wx"), Configuration::Value("Epire2"), Configuration::Nodes()));
+
+  root.removeNodes(Configuration::Key("x"));
+
+  ASSERT_EQ(root.toString(), "[ { configuration_key: \"A\", configuration_value: \"Hello1\", configuration_nodes: [  ] }, "
+                               "{ configuration_key: \"klm\", configuration_value: \"Dirk1\", configuration_nodes: [  ] }, "
+                               "{ configuration_key: \"wx\", configuration_value: \"Epire1\", configuration_nodes: [  ] }, "
+                               "{ configuration_key: \"A\", configuration_value: \"Hello2\", configuration_nodes: [  ] }, "
+                               "{ configuration_key: \"wx\", configuration_value: \"Epire2\", configuration_nodes: [  ] } ]" );
+}
+
 //--------------------------------------------------------------------------------------------
 
 TEST(TestOfGeneratedTimeDurationType, TestOfCreatingDefaultValue)

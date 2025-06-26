@@ -182,6 +182,11 @@ namespace Configuration
             return search_result;
           }
       
+          void removeNodesIterator(const Iterator& iterator) { m_found_nodes.erase(iterator); }
+      
+          // SearchResult& operator+=(const SearchResult& result_to_append);
+          // SearchResult& operator-=(const SearchResult& result_to_append);
+      
           std::string toString() const;
           friend std::ostream& operator<<(std::ostream& output, const Nodes::SearchResult& nodes);
       
@@ -266,6 +271,11 @@ namespace Configuration
             return search_result;
           }
       
+          void removeNodesConstIterator(const ConstIterator& iterator) { m_found_nodes.erase(iterator); }
+      
+          // ConstSearchResult& operator+=(const ConstSearchResult& result_to_append);
+          // ConstSearchResult& operator-=(const ConstSearchResult& result_to_append);
+      
           std::string toString() const;
           friend std::ostream& operator<<(std::ostream& output, const Nodes::ConstSearchResult& nodes);
       
@@ -289,9 +299,17 @@ namespace Configuration
   
       void removeNode(const Iterator& node);
   
-      // ... remove many (by key)
+      template <class KEY>
+      void removeNodes(const KEY& key)
+      {
+        SearchResult items_to_delete = searchNodes(key);
+        for (SearchResult::ReverseIterator item = items_to_delete.getNodesReverseBegin(); item != items_to_delete.getNodesReverseEnd(); ++item)
+        {
+          removeNode(item.getIteratorToNodes());
+        }
+      }
   
-      // ... adding collections
+      // Nodes& operator+=(const Nodes& ${object_name));
   
       std::string toString() const;
   
