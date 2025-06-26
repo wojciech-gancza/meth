@@ -187,20 +187,11 @@ void ${class_name}::remove${item_class_name}(const Iterator& ${item_object_name}
 
 ${#include "common.to.string.pattern" "class_name": class_name+"::SearchResult"}
 
-std::ostream& operator<<(std::ostream& output, const ${class_name}::SearchResult& ${object_name})
-{
-  output << "[ ";
-  const char* separator = "";
-  for (std::vector<${element_type.FullyDecoratedClassName()}::Iterator>::const_iterator ${item_object_name} = ${object_name}.m_found_${object_name}.begin(); ${item_object_name} != ${object_name}.m_found_${object_name}.end(); ++${item_object_name})
-  {
-    output << separator << **${item_object_name};
-    separator = ", ";
-  }
+${#include "common.to.string.pattern" "class_name": class_name+"::ConstSearchResult"}
 
-  output << " ]";
-  return output;
-}
+${#include "collection.out.operator.pattern" "class_name": class_name+"::SearchResult"}
 
+${#include "collection.out.operator.pattern" "class_name": class_name+"::ConstSearchResult"}
 
 ${#include "common.to.string.pattern"}
 

@@ -1,0 +1,55 @@
+class ${name_decorator}SearchResult
+{
+  public:
+    ${name_decorator}SearchResult() = default;
+    ${name_decorator}SearchResult(const ${name_decorator}SearchResult& ${object_name}) = default;
+    ${name_decorator}SearchResult(${name_decorator}SearchResult&& ${object_name}) = default;
+    ${name_decorator}SearchResult& operator=(const ${name_decorator}SearchResult& ${object_name}) = default;
+    ${name_decorator}SearchResult& operator=(${name_decorator}SearchResult&& ${object_name}) = default;
+
+    void insertIterator(const ${class_name}::${name_decorator}Iterator& item) { m_found_${object_name}.push_back(item); };
+
+    ${#include "collection.search.result.iterator.pattern" "iterator_type": name_decorator, "inner_type": ""}
+
+    ${#include "collection.search.result.iterator.pattern" "iterator_type": name_decorator + "Reverse", "inner_type": "reverse_"}
+
+    ${name_decorator}Iterator get${class_name}Begin() { return ${name_decorator}Iterator(m_found_${object_name}.begin()); }
+    ${name_decorator}Iterator get${class_name}End() { return ${name_decorator}Iterator(m_found_${object_name}.end()); } 
+
+    ${name_decorator}ReverseIterator get${class_name}ReverseBegin() { return ${name_decorator}ReverseIterator(m_found_${object_name}.rbegin()); }
+    ${name_decorator}ReverseIterator get${class_name}ReverseEnd() { return ${name_decorator}ReverseIterator(m_found_${object_name}.rend()); }
+
+    template <class KEY>
+    ${name_decorator}SearchResult search${class_name}(const KEY& key)
+    {
+      ${name_decorator}SearchResult search_result;
+      for (${name_decorator}Iterator item = get${class_name}Begin(); item != get${class_name}End(); ++item)
+      {
+        if (*item == key)
+        {
+          search_result.insertIterator(item.getIteratorTo${class_name}());
+        }
+      }
+      return search_result;
+    }
+
+    std::string toString() const;
+    friend std::ostream& operator<<(std::ostream& output, const ${class_name}::${name_decorator}SearchResult& ${object_name});
+
+  private:
+    std::vector<${class_name}::${name_decorator}Iterator> m_found_${object_name};
+};
+
+template <class KEY>
+${name_decorator}SearchResult search${class_name}(const KEY& key)${const_search_specifier}
+{
+  ${name_decorator}SearchResult search_result;
+  for (${name_decorator}Iterator item = get${class_name}Begin(); item != get${class_name}End(); ++item)
+  {
+    if (*item == key)
+    {
+      search_result.insertIterator(item);
+    }
+  }
+  return search_result;
+}

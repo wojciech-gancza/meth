@@ -13,12 +13,12 @@ import time
 #--------------------------------------------------------------------------
 # -! simple types generator
 #   -! collection type
-#     -- const search result - parametrize current search result
 #     -- opeartions on search results ( +, - ) remove element, remove by key (also in main collection)
 #     ++ collection itself, construct, add, remove, iterate
 #     ++ search, search result and search result iteration
-#   -- registry of all generated types
+#     ++ const search result - parametrize current search result
 #   -- adding tool files (when required)
+#   -- registry of all generated types
 #   ++ bitflags type 
 #   ++ enum type
 #   ++ integer type
@@ -149,7 +149,7 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                 "name": "configuration : value",
                 "default": "",
                 "max_size": 64000,
-                "compareable": False })
+                "compareable": True })
         self.generator.generate_collection({ \
                 "name": "configuration : nodes", \
                 "element_type": "configuration : node", \

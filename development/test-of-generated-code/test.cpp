@@ -35,7 +35,7 @@ TEST(TestOfGeneratedCollectionsType, TestOfComparision1)
   root1.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly"), Configuration::Nodes()));
   Configuration::Nodes root2;
   root2.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello"), Configuration::Nodes()));
-  root2.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Aolly"), Configuration::Nodes()));
+  root2.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly"), Configuration::Nodes()));
 
   ASSERT_TRUE(root1 == root2);
   ASSERT_FALSE(root1 != root2);
@@ -193,6 +193,39 @@ TEST(TestOfGeneratedCollectionsType, TestOfIterationOverSearchResult)
   ASSERT_EQ(found_item->toString(), "{ configuration_key: \"x\", configuration_value: \"Dirk2\", configuration_nodes: [  ] }");
   ++found_item;
   ASSERT_EQ(found_item, found_items.getNodesEnd());
+
+  Configuration::Nodes::SearchResult found_items2 = found_items.searchNodes(Configuration::Value("Dolly2"));
+
+  ASSERT_EQ(found_items2.toString(), "[ { configuration_key: \"x\", configuration_value: \"Dolly2\", configuration_nodes: [  ] } ]");
+}
+
+TEST(TestOfGeneratedCollectionsType, TestOfIterationOverConstSearchResult)
+{
+  Configuration::Nodes root;
+  root.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("klm"), Configuration::Value("Dirk1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("wx"), Configuration::Value("Epire1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello2"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly2"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dirk2"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("wx"), Configuration::Value("Epire2"), Configuration::Nodes()));
+
+  const Configuration::Nodes& root_reference = root;
+  Configuration::Nodes::ConstSearchResult found_items = root_reference.searchNodes(Configuration::Key("x"));
+  Configuration::Nodes::ConstSearchResult::ConstIterator found_item = found_items.getNodesBegin();
+
+  ASSERT_EQ((*found_item).toString(), "{ configuration_key: \"x\", configuration_value: \"Dolly1\", configuration_nodes: [  ] }");
+  ++found_item;
+  ASSERT_EQ((*found_item).toString(), "{ configuration_key: \"x\", configuration_value: \"Dolly2\", configuration_nodes: [  ] }");
+  ++found_item;
+  ASSERT_EQ(found_item->toString(), "{ configuration_key: \"x\", configuration_value: \"Dirk2\", configuration_nodes: [  ] }");
+  ++found_item;
+  ASSERT_EQ(found_item, found_items.getNodesEnd());
+
+  Configuration::Nodes::ConstSearchResult found_items2 = found_items.searchNodes(Configuration::Value("Dolly2"));
+
+  ASSERT_EQ(found_items2.toString(), "[ { configuration_key: \"x\", configuration_value: \"Dolly2\", configuration_nodes: [  ] } ]");
 }
 
 //--------------------------------------------------------------------------------------------

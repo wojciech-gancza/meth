@@ -49,67 +49,15 @@ class ${class_name}
     ConstReverseIterator get${class_name}ReverseConstBegin() const { return ConstReverseIterator(m_${object_name}.rbegin()); }
     ConstReverseIterator get${class_name}ReverseConstEnd() const { return ConstReverseIterator(m_${object_name}.rend()); }
 
-    class SearchResult
-    {
-      public:
-        SearchResult() = default;
-        SearchResult(const SearchResult& ${object_name}) = default;
-        SearchResult(SearchResult&& ${object_name}) = default;
-        SearchResult& operator=(const SearchResult& ${object_name}) = default;
-        SearchResult& operator=(SearchResult&& ${object_name}) = default;
+    ${#include "collection.search.pattern" "name_decorator": "", "const_modifier": "", "const_search_specifier": ""}
 
-        void insertIterator(const ${class_name}::Iterator& item) { m_found_${object_name}.push_back(item); };
-
-        ${#include "collection.search.result.iterator.pattern" "iterator_type": "", "inner_type": ""}
-
-        ${#include "collection.search.result.iterator.pattern" "iterator_type": "Reverse", "inner_type": "reverse_"}
-
-        Iterator get${class_name}Begin() { return Iterator(m_found_${object_name}.begin()); }
-        Iterator get${class_name}End() { return Iterator(m_found_${object_name}.end()); }
-
-        ReverseIterator get${class_name}ReverseBegin() { return ReverseIterator(m_found_${object_name}.rbegin()); }
-        ReverseIterator get${class_name}ReverseEnd() { return ReverseIterator(m_found_${object_name}.rend()); }
-
-        template <class KEY>
-        SearchResult search${class_name}(const KEY& key)
-        {
-          SearchResult search_result;
-          for (Iterator item = get${class_name}Begin(); item != get${class_name}End(); ++item)
-          {
-            if (*item == key)
-            {
-              search_result.insertIterator(item);
-            }
-          }
-          return search_result;
-        }
-
-        std::string toString() const;
-        friend std::ostream& operator<<(std::ostream& output, const ${class_name}::SearchResult& ${object_name});
-
-      private:
-        std::vector<${class_name}::Iterator> m_found_${object_name};
-    };
-
-    template <class KEY>
-    SearchResult search${class_name}(const KEY& key)
-    {
-      SearchResult search_result;
-      for (Iterator item = get${class_name}Begin(); item != get${class_name}End(); ++item)
-      {
-        if (*item == key)
-        {
-          search_result.insertIterator(item);
-        }
-      }
-      return search_result;
-    }
+    ${#include "collection.search.pattern" "name_decorator": "Const", "const_modifier": " const", "const_search_specifier": " const"}
 
     void remove${item_class_name}(const Iterator& ${item_object_name});
 
     // ... remove many (by key)
 
-    // ...
+    // ... adding collections
 
     std::string toString() const;
 
