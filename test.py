@@ -12,22 +12,24 @@ import time
 # backlog:
 #--------------------------------------------------------------------------
 # -! simple types generator
-#   -! collection type
-#     -! opeartions on search results ( +=, -= ) remove element, remove by in main collection)
-#     ++ collection itself, construct, add, remove, iterate
-#     ++ search, search result and search result iteration
-#     ++ const search result - parametrize current search result
 #   -- adding tool files (when required)
 #   -- registry of all generated types
+#   -! string type
+#     -- search by regex as compare option
+#     ++ implementation
 #   ++ bitflags type 
 #   ++ enum type
 #   ++ integer type
 #   ++ record type
 #   ++ float type (based on float/double)
-#   ++ string type
 #   ++ timepoint type
 #   ++ patterns refactoring
 #   ++ time duration type
+#   ++ collection type
+#     ++ opeartions on search results ( +=, -= ) remove element, remove by in main collection)
+#     ++ collection itself, construct, add, remove, iterate
+#     ++ search, search result and search result iteration
+#     ++ const search result - parametrize current search result
 # -! configuration
 #   -- basic configuration tests
 #   -- add reading objects from cofiguration (all types)

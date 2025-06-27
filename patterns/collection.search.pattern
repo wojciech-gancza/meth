@@ -13,11 +13,11 @@ class ${name_decorator}SearchResult
 
     ${#include "collection.search.result.iterator.pattern" "iterator_type": name_decorator + "Reverse", "inner_type": "reverse_"}
 
-    ${name_decorator}Iterator get${class_name}Begin() { return ${name_decorator}Iterator(m_found_${object_name}.begin()); }
-    ${name_decorator}Iterator get${class_name}End() { return ${name_decorator}Iterator(m_found_${object_name}.end()); } 
+    ${name_decorator}Iterator get${class_name}Begin() const { return ${name_decorator}Iterator(const_cast<std::vector<${class_name}::${name_decorator}Iterator>&>(m_found_${object_name}).begin()); }
+    ${name_decorator}Iterator get${class_name}End() const { return ${name_decorator}Iterator(const_cast<std::vector<${class_name}::${name_decorator}Iterator>&>(m_found_${object_name}).end()); } 
 
-    ${name_decorator}ReverseIterator get${class_name}ReverseBegin() { return ${name_decorator}ReverseIterator(m_found_${object_name}.rbegin()); }
-    ${name_decorator}ReverseIterator get${class_name}ReverseEnd() { return ${name_decorator}ReverseIterator(m_found_${object_name}.rend()); }
+    ${name_decorator}ReverseIterator get${class_name}ReverseBegin() const { return ${name_decorator}ReverseIterator(const_cast<std::vector<${class_name}::${name_decorator}Iterator>&>(m_found_${object_name}).rbegin()); }
+    ${name_decorator}ReverseIterator get${class_name}ReverseEnd() const { return ${name_decorator}ReverseIterator(const_cast<std::vector<${class_name}::${name_decorator}Iterator>&>(m_found_${object_name}).rend()); }
 
     template <class KEY>
     ${name_decorator}SearchResult search${class_name}(const KEY& key)
@@ -35,8 +35,27 @@ class ${name_decorator}SearchResult
 
     void remove${class_name}${name_decorator}Iterator(const ${name_decorator}Iterator& iterator) { m_found_${object_name}.erase(iterator); }
 
-    // ${name_decorator}SearchResult& operator+=(const ${name_decorator}SearchResult& result_to_append);
-    // ${name_decorator}SearchResult& operator-=(const ${name_decorator}SearchResult& result_to_append);
+    ${name_decorator}SearchResult& operator+=(const ${name_decorator}SearchResult& result_to_append)
+    {
+      for (${name_decorator}Iterator item = result_to_append.get${class_name}Begin(); item != result_to_append.get${class_name}End(); ++item)
+      {
+        m_found_${object_name}.push_back(item.getIteratorToNodes());
+      }
+      return *this;
+    }
+
+    ${name_decorator}SearchResult& operator-=(const ${name_decorator}SearchResult& result_to_remove)
+    {
+      for (${name_decorator}Iterator item = result_to_remove.get${class_name}Begin(); item != result_to_remove.get${class_name}End(); ++item)
+      {
+        std::vector<${class_name}::${name_decorator}Iterator>::const_iterator ${object_name}_pointer = std::find(m_found_${object_name}.begin(), m_found_${object_name}.end(), item.getIteratorToNodes());
+        if (${object_name}_pointer != m_found_${object_name}.end())
+        {
+          m_found_${object_name}.erase( ${object_name}_pointer );
+        }
+      }
+      return *this;
+    }
 
     std::string toString() const;
     friend std::ostream& operator<<(std::ostream& output, const ${class_name}::${name_decorator}SearchResult& ${object_name});

@@ -54,18 +54,10 @@ class ${class_name}
     ${#include "collection.search.pattern" "name_decorator": "Const", "const_modifier": " const", "const_search_specifier": " const"}
 
     void remove${item_class_name}(const Iterator& ${item_object_name});
+    void remove${class_name}(const SearchResult& items_to_delete);
+    template <class KEY> void remove${class_name}(const KEY& key) { remove${class_name}(search${class_name}(key)); }
 
-    template <class KEY>
-    void remove${class_name}(const KEY& key)
-    {
-      SearchResult items_to_delete = search${class_name}(key);
-      for (SearchResult::ReverseIterator item = items_to_delete.get${class_name}ReverseBegin(); item != items_to_delete.get${class_name}ReverseEnd(); ++item)
-      {
-        remove${item_class_name}(item.getIteratorToNodes());
-      }
-    }
-
-    // ${class_name}& operator+=(const ${class_name}& ${object_name));
+    ${class_name}& operator+=(const ${class_name}& ${object_name});
 
     std::string toString() const;
 

@@ -162,11 +162,11 @@ namespace Configuration
               Nodes::Iterator& getIteratorToNodes() const { return std::vector<Nodes::Iterator>::reverse_iterator::operator*(); }
           };
       
-          Iterator getNodesBegin() { return Iterator(m_found_nodes.begin()); }
-          Iterator getNodesEnd() { return Iterator(m_found_nodes.end()); } 
+          Iterator getNodesBegin() const { return Iterator(const_cast<std::vector<Nodes::Iterator>&>(m_found_nodes).begin()); }
+          Iterator getNodesEnd() const { return Iterator(const_cast<std::vector<Nodes::Iterator>&>(m_found_nodes).end()); } 
       
-          ReverseIterator getNodesReverseBegin() { return ReverseIterator(m_found_nodes.rbegin()); }
-          ReverseIterator getNodesReverseEnd() { return ReverseIterator(m_found_nodes.rend()); }
+          ReverseIterator getNodesReverseBegin() const { return ReverseIterator(const_cast<std::vector<Nodes::Iterator>&>(m_found_nodes).rbegin()); }
+          ReverseIterator getNodesReverseEnd() const { return ReverseIterator(const_cast<std::vector<Nodes::Iterator>&>(m_found_nodes).rend()); }
       
           template <class KEY>
           SearchResult searchNodes(const KEY& key)
@@ -184,8 +184,27 @@ namespace Configuration
       
           void removeNodesIterator(const Iterator& iterator) { m_found_nodes.erase(iterator); }
       
-          // SearchResult& operator+=(const SearchResult& result_to_append);
-          // SearchResult& operator-=(const SearchResult& result_to_append);
+          SearchResult& operator+=(const SearchResult& result_to_append)
+          {
+            for (Iterator item = result_to_append.getNodesBegin(); item != result_to_append.getNodesEnd(); ++item)
+            {
+              m_found_nodes.push_back(item.getIteratorToNodes());
+            }
+            return *this;
+          }
+      
+          SearchResult& operator-=(const SearchResult& result_to_remove)
+          {
+            for (Iterator item = result_to_remove.getNodesBegin(); item != result_to_remove.getNodesEnd(); ++item)
+            {
+              std::vector<Nodes::Iterator>::const_iterator nodes_pointer = std::find(m_found_nodes.begin(), m_found_nodes.end(), item.getIteratorToNodes());
+              if (nodes_pointer != m_found_nodes.end())
+              {
+                m_found_nodes.erase( nodes_pointer );
+              }
+            }
+            return *this;
+          }
       
           std::string toString() const;
           friend std::ostream& operator<<(std::ostream& output, const Nodes::SearchResult& nodes);
@@ -251,11 +270,11 @@ namespace Configuration
               Nodes::ConstIterator& getIteratorToNodes() const { return std::vector<Nodes::ConstIterator>::reverse_iterator::operator*(); }
           };
       
-          ConstIterator getNodesBegin() { return ConstIterator(m_found_nodes.begin()); }
-          ConstIterator getNodesEnd() { return ConstIterator(m_found_nodes.end()); } 
+          ConstIterator getNodesBegin() const { return ConstIterator(const_cast<std::vector<Nodes::ConstIterator>&>(m_found_nodes).begin()); }
+          ConstIterator getNodesEnd() const { return ConstIterator(const_cast<std::vector<Nodes::ConstIterator>&>(m_found_nodes).end()); } 
       
-          ConstReverseIterator getNodesReverseBegin() { return ConstReverseIterator(m_found_nodes.rbegin()); }
-          ConstReverseIterator getNodesReverseEnd() { return ConstReverseIterator(m_found_nodes.rend()); }
+          ConstReverseIterator getNodesReverseBegin() const { return ConstReverseIterator(const_cast<std::vector<Nodes::ConstIterator>&>(m_found_nodes).rbegin()); }
+          ConstReverseIterator getNodesReverseEnd() const { return ConstReverseIterator(const_cast<std::vector<Nodes::ConstIterator>&>(m_found_nodes).rend()); }
       
           template <class KEY>
           ConstSearchResult searchNodes(const KEY& key)
@@ -273,8 +292,27 @@ namespace Configuration
       
           void removeNodesConstIterator(const ConstIterator& iterator) { m_found_nodes.erase(iterator); }
       
-          // ConstSearchResult& operator+=(const ConstSearchResult& result_to_append);
-          // ConstSearchResult& operator-=(const ConstSearchResult& result_to_append);
+          ConstSearchResult& operator+=(const ConstSearchResult& result_to_append)
+          {
+            for (ConstIterator item = result_to_append.getNodesBegin(); item != result_to_append.getNodesEnd(); ++item)
+            {
+              m_found_nodes.push_back(item.getIteratorToNodes());
+            }
+            return *this;
+          }
+      
+          ConstSearchResult& operator-=(const ConstSearchResult& result_to_remove)
+          {
+            for (ConstIterator item = result_to_remove.getNodesBegin(); item != result_to_remove.getNodesEnd(); ++item)
+            {
+              std::vector<Nodes::ConstIterator>::const_iterator nodes_pointer = std::find(m_found_nodes.begin(), m_found_nodes.end(), item.getIteratorToNodes());
+              if (nodes_pointer != m_found_nodes.end())
+              {
+                m_found_nodes.erase( nodes_pointer );
+              }
+            }
+            return *this;
+          }
       
           std::string toString() const;
           friend std::ostream& operator<<(std::ostream& output, const Nodes::ConstSearchResult& nodes);
@@ -298,18 +336,10 @@ namespace Configuration
       }
   
       void removeNode(const Iterator& node);
+      void removeNodes(const SearchResult& items_to_delete);
+      template <class KEY> void removeNodes(const KEY& key) { removeNodes(searchNodes(key)); }
   
-      template <class KEY>
-      void removeNodes(const KEY& key)
-      {
-        SearchResult items_to_delete = searchNodes(key);
-        for (SearchResult::ReverseIterator item = items_to_delete.getNodesReverseBegin(); item != items_to_delete.getNodesReverseEnd(); ++item)
-        {
-          removeNode(item.getIteratorToNodes());
-        }
-      }
-  
-      // Nodes& operator+=(const Nodes& ${object_name));
+      Nodes& operator+=(const Nodes& nodes);
   
       std::string toString() const;
   

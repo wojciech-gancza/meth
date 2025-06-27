@@ -270,6 +270,53 @@ TEST(TestOfGeneratedCollectionsType, TestOfRemovingItemsByKey)
                                "{ configuration_key: \"wx\", configuration_value: \"Epire2\", configuration_nodes: [  ] } ]" );
 }
 
+TEST(TestOfGeneratedCollectionsType, TestOfAddingCollection)
+{
+  Configuration::Nodes root1, root2;
+  root1.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello1"), Configuration::Nodes()));
+  root1.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly1"), Configuration::Nodes()));
+  root1.insertNode(Configuration::Node(Configuration::Key("klm"), Configuration::Value("Dirk1"), Configuration::Nodes()));
+  root2.insertNode(Configuration::Node(Configuration::Key("wx"), Configuration::Value("Epire1"), Configuration::Nodes()));
+  root2.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello2"), Configuration::Nodes()));
+
+  root2 += root1;
+
+  ASSERT_EQ(root2.toString(), "[ { configuration_key: \"wx\", configuration_value: \"Epire1\", configuration_nodes: [  ] }, "
+                                "{ configuration_key: \"A\", configuration_value: \"Hello2\", configuration_nodes: [  ] }, "
+                                "{ configuration_key: \"A\", configuration_value: \"Hello1\", configuration_nodes: [  ] }, "
+                                "{ configuration_key: \"x\", configuration_value: \"Dolly1\", configuration_nodes: [  ] }, "
+                                "{ configuration_key: \"klm\", configuration_value: \"Dirk1\", configuration_nodes: [  ] } ]");
+}
+
+TEST(TestOfGeneratedCollectionsType, TestOfOperationsOnSearchResults)
+{
+  Configuration::Nodes root;
+  root.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("klm"), Configuration::Value("Dirk1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("wx"), Configuration::Value("Epire1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello2"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly2"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dirk2"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("wx"), Configuration::Value("Epire2"), Configuration::Nodes()));
+
+  Configuration::Nodes::SearchResult found_items1 = root.searchNodes(Configuration::Key("x"));
+  Configuration::Nodes::SearchResult found_items2 = root.searchNodes(Configuration::Key("A"));
+
+  found_items1 += found_items2;
+
+  ASSERT_EQ(found_items1.toString(), "[ { configuration_key: \"x\", configuration_value: \"Dolly1\", configuration_nodes: [  ] }, "
+                                       "{ configuration_key: \"x\", configuration_value: \"Dolly2\", configuration_nodes: [  ] }, "
+                                       "{ configuration_key: \"x\", configuration_value: \"Dirk2\", configuration_nodes: [  ] }, "
+                                       "{ configuration_key: \"A\", configuration_value: \"Hello1\", configuration_nodes: [  ] }, "
+                                       "{ configuration_key: \"A\", configuration_value: \"Hello2\", configuration_nodes: [  ] } ]");
+
+  found_items1 -= root.searchNodes(Configuration::Key("x"));
+
+  ASSERT_EQ(found_items1.toString(), "[ { configuration_key: \"A\", configuration_value: \"Hello1\", configuration_nodes: [  ] }, "
+                                       "{ configuration_key: \"A\", configuration_value: \"Hello2\", configuration_nodes: [  ] } ]");
+}
+
 //--------------------------------------------------------------------------------------------
 
 TEST(TestOfGeneratedTimeDurationType, TestOfCreatingDefaultValue)

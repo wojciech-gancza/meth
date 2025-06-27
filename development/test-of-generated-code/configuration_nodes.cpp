@@ -209,14 +209,15 @@ namespace Configuration
     m_nodes.erase(node); 
   }
   
-  std::string Nodes::SearchResult::toString() const
+  void Nodes::removeNodes(const SearchResult& items_to_delete)
   {
-    std::ostringstream string_representation;
-    string_representation << *this;
-    return string_representation.str();
+    for (SearchResult::ReverseIterator item = items_to_delete.getNodesReverseBegin(); item != items_to_delete.getNodesReverseEnd(); ++item)
+    {
+      removeNode(item.getIteratorToNodes());
+    }
   }
   
-  std::string Nodes::ConstSearchResult::toString() const
+  std::string Nodes::SearchResult::toString() const
   {
     std::ostringstream string_representation;
     string_representation << *this;
@@ -237,6 +238,13 @@ namespace Configuration
     return output;
   }
   
+  std::string Nodes::ConstSearchResult::toString() const
+  {
+    std::ostringstream string_representation;
+    string_representation << *this;
+    return string_representation.str();
+  }
+  
   std::ostream& operator<<(std::ostream& output, const Nodes::ConstSearchResult& nodes)
   {
     output << "[ ";
@@ -249,6 +257,15 @@ namespace Configuration
   
     output << " ]";
     return output;
+  }
+  
+  Nodes& Nodes::operator+=(const Nodes& nodes)
+  {
+    for (Nodes::ConstIterator Node = nodes.getNodesBegin(); Node != nodes.getNodesEnd(); ++Node)
+    {
+      insertNode(*Node);
+    }
+    return *this;
   }
   
   std::string Nodes::toString() const

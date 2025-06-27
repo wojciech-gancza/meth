@@ -185,13 +185,30 @@ void ${class_name}::remove${item_class_name}(const Iterator& ${item_object_name}
   m_${object_name}.erase(${item_object_name}); 
 }
 
-${#include "common.to.string.pattern" "class_name": class_name+"::SearchResult"}
+void ${class_name}::remove${class_name}(const SearchResult& items_to_delete)
+{
+  for (SearchResult::ReverseIterator item = items_to_delete.get${class_name}ReverseBegin(); item != items_to_delete.get${class_name}ReverseEnd(); ++item)
+  {
+    remove${item_class_name}(item.getIteratorToNodes());
+  }
+}
 
-${#include "common.to.string.pattern" "class_name": class_name+"::ConstSearchResult"}
+${#include "common.to.string.pattern" "class_name": class_name+"::SearchResult"}
 
 ${#include "collection.out.operator.pattern" "class_name": class_name+"::SearchResult", "name_decorator": ""}
 
+${#include "common.to.string.pattern" "class_name": class_name+"::ConstSearchResult"}
+
 ${#include "collection.out.operator.pattern" "class_name": class_name+"::ConstSearchResult", "name_decorator": "Const"}
+
+${class_name}& ${class_name}::operator+=(const ${class_name}& ${object_name})
+{
+  for (${class_name}::ConstIterator ${item_class_name} = ${object_name}.get${class_name}Begin(); ${item_class_name} != ${object_name}.get${class_name}End(); ++${item_class_name})
+  {
+    insert${item_class_name}(*${item_class_name});
+  }
+  return *this;
+}
 
 ${#include "common.to.string.pattern"}
 
