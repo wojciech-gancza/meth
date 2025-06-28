@@ -4,17 +4,14 @@
 
 namespace Common
 {
-  class StrcmpCompare
+  class RegexCompare
   {
     public:
-      static bool isEqual(const std::string& first, const std::string& second)
-      {
-        return first == second;
-      }
+      static bool isEqual(const std::string& first, const std::string& second);
 
       static bool isNotEqual(const std::string& first, const std::string& second)
       {
-        return first != second;
+        return !isEqual(first, second);
       }
 
       static bool isLower(const std::string& first, const std::string& second)
@@ -24,17 +21,25 @@ namespace Common
 
       static bool isLowerOrEqual(const std::string& first, const std::string& second)
       {
-        return first <= second;
+        if (isEqual(first, second))
+        {
+          return true;
+        }
+        return first < second;
       }
 
       static bool isAboveOrEqual(const std::string& first, const std::string& second)
       {
-        return first >= second;
+        if (isEqual(first, second))
+        {
+          return true;
+        }
+        return first < second;
       }
 
       static bool isAbove(const std::string& first, const std::string& second)
       {
         return first > second;
       }
-  };
+    };
 }

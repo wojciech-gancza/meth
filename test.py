@@ -14,9 +14,6 @@ import time
 # -! simple types generator
 #   -- adding tool files (when required)
 #   -- registry of all generated types
-#   -! string type
-#     -- search by regex as compare option
-#     ++ implementation
 #   ++ bitflags type 
 #   ++ enum type
 #   ++ integer type
@@ -30,6 +27,9 @@ import time
 #     ++ collection itself, construct, add, remove, iterate
 #     ++ search, search result and search result iteration
 #     ++ const search result - parametrize current search result
+#   ++ string type
+#     ++ search by regex as compare option
+#     ++ implementation
 # -! configuration
 #   -- basic configuration tests
 #   -- add reading objects from cofiguration (all types)
@@ -144,13 +144,14 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
 
     def test_GeneratingCollectionType(self):
         self.generator.generate_string({ \
-                "name": "configuration : key",
-                "max_size": 255,
-                "ordered": True})
+                "name": "configuration : key", \
+                "max_size": 255, \
+                "ordered": True, \
+                "compare_class" : "common : regex compare"})
         self.generator.generate_string({ \
-                "name": "configuration : value",
-                "default": "",
-                "max_size": 64000,
+                "name": "configuration : value", \
+                "default": "", \
+                "max_size": 64000, \
                 "compareable": True })
         self.generator.generate_collection({ \
                 "name": "configuration : nodes", \

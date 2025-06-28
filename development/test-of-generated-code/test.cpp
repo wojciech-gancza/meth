@@ -171,6 +171,28 @@ TEST(TestOfGeneratedCollectionsType, TestOfSearchingElements)
                                      "{ configuration_key: \"x\", configuration_value: \"Dirk2\", configuration_nodes: [  ] } ]");
 }
 
+TEST(TestOfGeneratedCollectionsType, TestOfSearchingElementsByRegex)
+{
+  Configuration::Nodes root;
+  root.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("klm"), Configuration::Value("Dirk1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("wx"), Configuration::Value("Epire1"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("A"), Configuration::Value("Hello2"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dolly2"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("x"), Configuration::Value("Dirk2"), Configuration::Nodes()));
+  root.insertNode(Configuration::Node(Configuration::Key("wx"), Configuration::Value("Epire2"), Configuration::Nodes()));
+
+  Configuration::Nodes::SearchResult found_items = root.searchNodes(Configuration::Key(".*x"));
+  std::string string_representation = found_items.toString();
+
+  ASSERT_EQ(string_representation, "[ { configuration_key: \"x\", configuration_value: \"Dolly1\", configuration_nodes: [  ] }, "
+                                     "{ configuration_key: \"wx\", configuration_value: \"Epire1\", configuration_nodes: [  ] }, "
+                                     "{ configuration_key: \"x\", configuration_value: \"Dolly2\", configuration_nodes: [  ] }, "
+                                     "{ configuration_key: \"x\", configuration_value: \"Dirk2\", configuration_nodes: [  ] }, "
+                                     "{ configuration_key: \"wx\", configuration_value: \"Epire2\", configuration_nodes: [  ] } ]");
+}
+
 TEST(TestOfGeneratedCollectionsType, TestOfIterationOverSearchResult)
 {
   Configuration::Nodes root;

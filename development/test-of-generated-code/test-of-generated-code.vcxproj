@@ -37,6 +37,7 @@
     <ClCompile Include="common_delay.cpp" />
     <ClCompile Include="common_event_time.cpp" />
     <ClCompile Include="common_network_port_number.cpp" />
+    <ClCompile Include="common_regex_compare.cpp" />
     <ClCompile Include="common_severity.cpp" />
     <ClCompile Include="common_text_converter.cpp" />
     <ClCompile Include="common_text_message.cpp" />
@@ -58,6 +59,7 @@
     <ClInclude Include="common_event_time.h" />
     <ClInclude Include="common_network_port_number.h" />
     <ClInclude Include="common_record_fields_comparision.h" />
+    <ClInclude Include="common_regex_compare.h" />
     <ClInclude Include="common_size_error.h" />
     <ClInclude Include="common_strcmp_compare.h" />
     <ClInclude Include="common_text_converter.h" />
