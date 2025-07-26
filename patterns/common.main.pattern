@@ -3,12 +3,11 @@ ${#include "common.header.pattern"}
 ${#if once}#pragma once
 
 ${#end}${#for std_include in std_includes}#include <${std_include}>
-${#end}
-${#for include from includes}#include "${include.get_relative_to(header_file_name.parent())}"
-${#end}
-${#for forward_declaration from forward_declare}${#include "common.forward_declaration.pattern" "namespaces_list": forward_declaration.UppercaseCamelsNamespaces() , "forward_class_name": forward_declaration.UppercaseCamelName()}
+${#end}${#for include from includes}#include "${include.get_relative_to(header_file_name.parent())}"
+${#end}${#for forward_declaration from forward_declare}${#include "common.forward_declaration.pattern" "namespaces_list": forward_declaration.UppercaseCamelsNamespaces() , "forward_class_name": forward_declaration.UppercaseCamelName()}
 
-${#end}// vvv--- YOU CAN PUT ADDITIONAL INCLUDES BELOW
+${#end}
+// vvv--- YOU CAN PUT ADDITIONAL INCLUDES BELOW
 
 // ^^^--- END OF USER DEFINED INCLUDES
 

@@ -49,6 +49,7 @@
     <ClCompile Include="test.cpp" />
     <ClCompile Include="test_another_record.cpp" />
     <ClCompile Include="test_just_a_record.cpp" />
+    <ClCompile Include="test_the_door.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -74,6 +75,7 @@
     <ClInclude Include="common_severity.h" />
     <ClInclude Include="test_another_record.h" />
     <ClInclude Include="test_just_a_record.h" />
+    <ClInclude Include="test_the_door.h" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

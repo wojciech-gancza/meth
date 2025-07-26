@@ -11,6 +11,19 @@ import time
 #--------------------------------------------------------------------------
 # backlog:
 #--------------------------------------------------------------------------
+# -! state machine generator
+#   -- other needed functionalities (to be defined)
+#     -- conditions
+#     -- generate state event handlers
+#     -- composite states
+#     -- concurrent (parallel) states
+#     -- PlantUML parser and locating plantuml souce in .cpp or .h output
+#   -! core patterns
+#     ++ header file
+#     -- remove unnecessary includes from cpp and header
+#     -- core functions of cpp - processing events
+#     -- stubs of events processing functions
+#     -- test - cvheck how the machine works
 # -! simple types generator
 #   -- adding tool files (when required)
 #   -- registry of all generated types
@@ -66,6 +79,29 @@ class TestEnvironment:
         return (modification_year == "2012")
 
 #==========================================================================
+
+class Test_StateMachineGenerator(unittest.TestCase):
+
+    def __init__(self, *args, **kwargs):
+        super(Test_StateMachineGenerator, self).__init__(*args, **kwargs)
+        self.environment = TestEnvironment("Test_SimpleTypesGenerator")
+        self.generator = generator.StateMachine(self.environment.output_path.parent().parent().parent(), self.environment.cpp_output_path)
+        self.generator.set_output_path(self.environment.cpp_output_path)
+        
+    def test_FirstTestJustCurrentlyWorkingOn(self):
+        variables = { "name": "test : the door",
+                      "events": ["unlock", "open", "close", "lock"],
+                      "states": [ generator.StateMachine.StateDefinition("closed"),
+                                  generator.StateMachine.StateDefinition("opened", on_leave="do not allow to enter"),
+                                  generator.StateMachine.StateDefinition("locked") ],
+                      "transitions": [ generator.StateMachine.Transition("open", "closed", "opened", action="turn the knob and pull"),
+                                       generator.StateMachine.Transition("close", "opened", "closed"),
+                                       generator.StateMachine.Transition("lock", "closed", "locked", action="lock with key"),
+                                       generator.StateMachine.Transition("unlock", "locked", "closed") ], 
+                      "initial_state": "opened" }
+        self.generator.create_state_machine(variables)
+
+#--------------------------------------------------------------------------
 
 class Test_SimpleTypesGenerator(unittest.TestCase):
 

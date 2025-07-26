@@ -1,0 +1,8 @@
+${#for state_class in states}void ${class_name}::${state_class.name.UppercaseCamelName()}::process_event(Event event, ${class_name}& ${object_name})
+{
+  ${state_class.process_event_code}
+}
+
+${#end}// vvv--- ${class_name} additional fields and methods
+
+// ^^^--- End of ${class_name} additional fields and methods

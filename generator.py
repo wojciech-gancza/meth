@@ -7,7 +7,7 @@ import inspect
 
 #--------------------------------------------------------------------------
 
-class PlainOldDataTypes:
+class CodeGenerator:
 
     def __init__(self, soluton_path, tools_target_path = None):
         if not tools_target_path:
@@ -17,9 +17,68 @@ class PlainOldDataTypes:
         self.output_path = soluton_path
         self.tools_output_path = generatortools.AbsolutePath(tools_target_path)
         self.generator = meth.Metamorph(self.environment.patterns_path.get_as_directory())
+        self.mandatory_cpp_headers = [ ]
+        self.mandatory_h_headers = [ ]
+        self.mandatory_h_std_headers = [ ]
 
     def set_output_path(self, output_path):
         self.output_path = generatortools.AbsolutePath(output_path)
+
+    def _add_generator_properties(self, properties):
+        name = generatortools.Name(properties["name"])
+        frame = inspect.currentframe().f_back.f_back
+        generator_code_line = frame.f_lineno
+        generator_code_file = generatortools.AbsolutePath(inspect.getmodule(frame).__file__)
+        return { **properties, 
+                 "format": generatortools.ListFormatter(),
+                 "name": name, 
+                 "class_name": name.UppercaseCamelName(),
+                 "object_name": name.lowercase_name(),
+                 "header_file_name": self.output_path.create_changed_by(name.lowercase_namespace_and_name() + ".h"),
+                 "source_file_name": self.output_path.create_changed_by(name.lowercase_namespace_and_name() + ".cpp"),
+                 "namespaces": name.UppercaseCamelsNamespaces(),
+                 "generator_path": generator_code_file,
+                 "generator_line_number": generator_code_line,
+                 "solution_path": self.soluton_path,
+                 "cpp_includes": [],
+                 "cpp_std_includes": [],
+                 "h_includes": [],
+                 "h_std_includes": [],
+                 "h_forward_declare": [],
+                 "cpp_forward_declare": [] }
+
+    def _generate_files(self, header_pattern, cpp_pattern, properties):
+        properties["includes"] = properties["h_includes"] + self.mandatory_h_headers
+        properties["std_includes"] = properties["h_std_includes"] + self.mandatory_h_std_headers
+        properties["forward_declare"] = properties["h_forward_declare"]
+        properties["once"] = True
+        properties["code_body_pattern"] = header_pattern
+        self._generate("common.main.pattern", "header_file_name", properties)
+        properties["includes"] = [ self.output_path.create_changed_by( properties["name"].lowercase_namespace_and_name() + ".h" ) ] \
+                                 + self.mandatory_cpp_headers + properties["cpp_includes"]
+        properties["code_body_pattern"] = cpp_pattern
+        properties["std_includes"] = properties["cpp_std_includes"]
+        properties["forward_declare"] = properties["cpp_forward_declare"]
+        properties["once"] = False
+        self._generate("common.main.pattern", "source_file_name", properties)
+
+    def _generate(self, pattern_file_name, output_type, properties):
+        pattern_file_path = self.environment.patterns_path.create_changed_by(pattern_file_name)
+        properties["pattern_file_path"] = self.environment.patterns_path.create_changed_by(properties["code_body_pattern"])
+        properties["pattern_wrapper_file_path"] = pattern_file_path
+        output_file_name = properties[output_type]
+        properties["output_file_name"] = output_file_name
+        self.generator.generate(pattern_file_name, str(output_file_name), properties)
+
+#--------------------------------------------------------------------------
+
+class PlainOldDataTypes(CodeGenerator):
+
+    def __init__(self, soluton_path, tools_target_path = None):
+        CodeGenerator.__init__(self, soluton_path, tools_target_path)
+        self.mandatory_cpp_headers.append( self.tools_output_path.create_changed_by("common_conversion_error.h") )
+        self.mandatory_h_headers.append( self.tools_output_path.create_changed_by("serialization_binary_serialization.h") )
+        self.mandatory_h_std_headers = ["string", "iostream"]
 
     def generate_integer(self, properties):
         # required properties:
@@ -189,56 +248,12 @@ class PlainOldDataTypes:
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    def _generate_files(self, header_pattern, cpp_pattern, properties):
-        properties["includes"] = properties["h_includes"] + [ self.tools_output_path.create_changed_by("serialization_binary_serialization.h") ]
-        properties["std_includes"] = properties["h_std_includes"] + ["string", "iostream"]
-        properties["forward_declare"] = properties["h_forward_declare"]
-        properties["once"] = True
-        properties["code_body_pattern"] = header_pattern
-        self._generate("common.main.pattern", "header_file_name", properties)
-        properties["includes"] = [ self.output_path.create_changed_by( properties["name"].lowercase_namespace_and_name() + ".h" ), \
-                                   self.tools_output_path.create_changed_by("common_conversion_error.h") \
-                                  ] + properties["cpp_includes"]
-        properties["code_body_pattern"] = cpp_pattern
-        properties["std_includes"] = properties["cpp_std_includes"]
-        properties["forward_declare"] = properties["cpp_forward_declare"]
-        properties["once"] = False
-        self._generate("common.main.pattern", "source_file_name", properties)
-
-    def _generate(self, pattern_file_name, output_type, properties):
-        pattern_file_path = self.environment.patterns_path.create_changed_by(pattern_file_name)
-        properties["pattern_file_path"] = self.environment.patterns_path.create_changed_by(properties["code_body_pattern"])
-        properties["pattern_wrapper_file_path"] = pattern_file_path
-        output_file_name = properties[output_type]
-        properties["output_file_name"] = output_file_name
-        self.generator.generate(pattern_file_name, str(output_file_name), properties)
-
     def _set_default_value(self, properties, name, default_value):
         if name not in properties.keys():
             properties[name] = default_value
 
     def _extend_property_list(self, properties):
-        name = generatortools.Name(properties["name"])
-        frame = inspect.currentframe().f_back.f_back
-        generator_code_line = frame.f_lineno
-        generator_code_file = generatortools.AbsolutePath(inspect.getmodule(frame).__file__)
-        extended_properties = { **properties, 
-                 "format": generatortools.ListFormatter(),
-                 "name": name, 
-                 "class_name": name.UppercaseCamelName(),
-                 "object_name": name.lowercase_name(),
-                 "header_file_name": self.output_path.create_changed_by(name.lowercase_namespace_and_name() + ".h"),
-                 "source_file_name": self.output_path.create_changed_by(name.lowercase_namespace_and_name() + ".cpp"),
-                 "namespaces": name.UppercaseCamelsNamespaces(),
-                 "generator_path": generator_code_file,
-                 "generator_line_number": generator_code_line,
-                 "solution_path": self.soluton_path,
-                 "cpp_includes": [],
-                 "cpp_std_includes": [],
-                 "h_includes": [],
-                 "h_std_includes": [],
-                 "h_forward_declare": [],
-                 "cpp_forward_declare": []}
+        extended_properties = self._add_generator_properties(properties)
         if "values" in extended_properties.keys():
             extended_properties["values"] = [generatortools.Name(value) for value in extended_properties["values"] ]
         self._set_default_value(extended_properties, "compareable", True)
@@ -284,4 +299,39 @@ class PlainOldDataTypes:
 
 #--------------------------------------------------------------------------
 
+class StateMachine(CodeGenerator):
+
+    class StateDefinition:
+
+        def __init__(self, name, *, on_enter=None, on_leave=None):
+            self.name = generatortools.Name(name)
+            self.on_enter = on_enter
+            self.on_leave = on_leave
+            self.outgoing_events = []
+            self.process_event_code = []
+
+    class OutgoingEvent:
+
+        def __init__(self, event_name):
+            self.event_name = event_name
+            self.transitions = []
+
+    class Transition:
+
+        def __init__(self, event, source, target, *, action=None):
+            self.event = generatortools.Name(event)
+            self.source = generatortools.Name(source)
+            self.target = generatortools.Name(target)
+            self.action = action
+
+    def create_state_machine(self, properties):
+        extended_properties = self._add_generator_properties(properties)
+        self._normalize_properties(extended_properties)
+        self._generate_files("state.machine.h.body.pattern", "state.machine.cpp.body.pattern", extended_properties)
+
+    def _normalize_properties(self, properties):
+        properties["initial_state"] = generatortools.Name(properties["initial_state"])
+        properties["events"] = [ generatortools.Name(event) for event in properties["events"] ] 
+
+#--------------------------------------------------------------------------
 
