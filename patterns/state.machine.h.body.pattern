@@ -4,7 +4,7 @@ class ${class_name}
     // event enum - this is the list of all events
     enum Event
     {
-      ${format.comma_separated(["E_" + event.UPPERCASE_NAME() for event in events])}
+      ${format.comma_separated([event.UPPERCASE_NAME() for event in events])}
     };
     
   private:
@@ -49,7 +49,10 @@ ${#end}  public:
     {
       m_current_state->process_event(event, *this);
     }
-    
+  
+  protected:
+${#for action in list_of_actions}    void ${action}();
+${#end}  
   private:
     // all possible states
 ${#for state_class in states}    ${state_class.name.UppercaseCamelName()} m_${state_class.name.lowercase_name()};

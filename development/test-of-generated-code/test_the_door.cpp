@@ -20,17 +20,62 @@ namespace Test
 {
   void TheDoor::Closed::process_event(Event event, TheDoor& the_door)
   {
+    switch( event )
+    {
+      case OPEN:
+        the_door.turn_the_knob_and_pull();
+        the_door.m_current_state = &the_door.m_opened;
+        break;
     
+      case LOCK:
+        the_door.m_current_state = &the_door.m_locked;
+        the_door.lock_with_key();
+        break;
+    }
   }
   
   void TheDoor::Opened::process_event(Event event, TheDoor& the_door)
   {
-    
+    switch( event )
+    {
+      case CLOSE:
+        the_door.do_not_allow_to_enter();
+        the_door.m_current_state = &the_door.m_closed;
+        break;
+    }
   }
   
   void TheDoor::Locked::process_event(Event event, TheDoor& the_door)
   {
+    switch( event )
+    {
+      case UNLOCK:
+        the_door.m_current_state = &the_door.m_closed;
+        break;
+    }
+  }
+  
+  // --- ACTIONS ---
+  
+  void TheDoor::do_not_allow_to_enter()
+  {
+    // vvv--- Implementation of do_not_allow_to_enter functionality
     
+    // ^^^--- End of implementation of do_not_allow_to_enter
+  }
+  
+  void TheDoor::lock_with_key()
+  {
+    // vvv--- Implementation of lock_with_key functionality
+    
+    // ^^^--- End of implementation of lock_with_key
+  }
+  
+  void TheDoor::turn_the_knob_and_pull()
+  {
+    // vvv--- Implementation of turn_the_knob_and_pull functionality
+    
+    // ^^^--- End of implementation of turn_the_knob_and_pull
   }
   
   // vvv--- TheDoor additional fields and methods

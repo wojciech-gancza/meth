@@ -20,10 +20,10 @@ import time
 #     -- PlantUML parser and locating plantuml souce in .cpp or .h output
 #   -! core patterns
 #     ++ header file
-#     -- remove unnecessary includes from cpp and header
-#     -- core functions of cpp - processing events
+#     ++ remove unnecessary includes from cpp and header
+#     ++ core functions of cpp - processing events
 #     -- stubs of events processing functions
-#     -- test - cvheck how the machine works
+#     -- test - check how the machine works
 # -! simple types generator
 #   -- adding tool files (when required)
 #   -- registry of all generated types
@@ -93,10 +93,10 @@ class Test_StateMachineGenerator(unittest.TestCase):
                       "events": ["unlock", "open", "close", "lock"],
                       "states": [ generator.StateMachine.StateDefinition("closed"),
                                   generator.StateMachine.StateDefinition("opened", on_leave="do not allow to enter"),
-                                  generator.StateMachine.StateDefinition("locked") ],
+                                  generator.StateMachine.StateDefinition("locked", on_enter="lock with key") ],
                       "transitions": [ generator.StateMachine.Transition("open", "closed", "opened", action="turn the knob and pull"),
                                        generator.StateMachine.Transition("close", "opened", "closed"),
-                                       generator.StateMachine.Transition("lock", "closed", "locked", action="lock with key"),
+                                       generator.StateMachine.Transition("lock", "closed", "locked"),
                                        generator.StateMachine.Transition("unlock", "locked", "closed") ], 
                       "initial_state": "opened" }
         self.generator.create_state_machine(variables)

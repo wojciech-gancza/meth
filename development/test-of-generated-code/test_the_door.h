@@ -25,10 +25,10 @@ namespace Test
       // event enum - this is the list of all events
       enum Event
       {
-        E_UNLOCK,
-        E_OPEN,
-        E_CLOSE,
-        E_LOCK
+        UNLOCK,
+        OPEN,
+        CLOSE,
+        LOCK
       };
       
     private:
@@ -87,7 +87,12 @@ namespace Test
       {
         m_current_state->process_event(event, *this);
       }
-      
+    
+    protected:
+      void do_not_allow_to_enter();
+      void lock_with_key();
+      void turn_the_knob_and_pull();
+    
     private:
       // all possible states
       Closed m_closed;
