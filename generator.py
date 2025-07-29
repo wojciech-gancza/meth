@@ -326,13 +326,14 @@ class StateMachine(CodeGenerator):
 
     class Transition:
 
-        def __init__(self, event, source, target, *, action=None):
+        def __init__(self, event, source, target, *, action=None, condition=None):
             self.event = generatortools.Name(event)
             self.source = generatortools.Name(source)
             self.source_name = self.source.lowercase_name()
             self.target = generatortools.Name(target)
             self.target_name = self.target.lowercase_name()
             self.action = action
+            self.condition = condition
 
     def create_state_machine(self, properties):
         extended_properties = self._add_generator_properties(properties)
@@ -344,11 +345,15 @@ class StateMachine(CodeGenerator):
         properties["events"] = [ generatortools.Name(event) for event in properties["events"] ] 
         state_index = { state.name.lowercase_name() : state for state in properties["states"] }
         list_of_actions = []
+        list_of_conditions = []
         for transition in properties["transitions"]:
             state_index[transition.source_name].append_outgoing_transition(transition)
             transition.action = self._create_function_name(transition.action)
+            transition.condition = self._create_function_name(transition.condition)
             if transition.action:
                 list_of_actions.append(transition.action)
+            if transition.condition:
+                list_of_conditions.append(transition.condition)
         for state in properties["states"]:
             state.on_enter = self._create_function_name(state.on_enter)
             if state.on_enter:
@@ -359,8 +364,14 @@ class StateMachine(CodeGenerator):
         for state in properties["states"]:
             self._prepare_event_processing_code(state, state_index, properties["object_name"])
         list_of_actions = list(dict.fromkeys(list_of_actions))
+        list_of_conditions = list(dict.fromkeys(list_of_conditions))
         list_of_actions.sort()
+        list_of_conditions.sort()
         properties["list_of_actions"] = list_of_actions
+        properties["list_of_conditions"] = list_of_conditions
+        all_methods = list_of_actions + list_of_conditions
+        all_methods.sort()
+        properties["all_methods"] = [(name in list_of_conditions, name) for name in all_methods] 
 
     def _prepare_event_processing_code(self, state, state_index, machine_name):
         if state.outgoing_transitions:
@@ -381,16 +392,31 @@ class StateMachine(CodeGenerator):
     def _prepare_transitions_code(self, transitions, state_index, machine_name):
         transition_code = []
         for transition in transitions.transitions:
-            from_state = state_index[transition.source_name]
-            if from_state.on_leave:
-                transition_code.append(machine_name + "." + from_state.on_leave + "();")
-            if transition.action:
-                transition_code.append(machine_name + "." + transition.action + "();")
-            to_state =  state_index[transition.target_name]
-            transition_code.append(machine_name + ".m_current_state = &" + machine_name + ".m_" + to_state.name.lowercase_name() + ";")
-            if to_state.on_enter:
-                transition_code.append(machine_name + "." + to_state.on_enter + "();")
+            if transition.condition:
+                transition_code = transition_code + self._prepare_conditional_transition_code(transition, state_index, machine_name)
+            else:
+                transition_code = transition_code + self._prepare_transition_code(transition, state_index, machine_name)
         return transition_code;
+
+    def _prepare_conditional_transition_code(self, transition, state_index, machine_name):
+        transition_code = self._indent_code(self._prepare_transition_code(transition, state_index, machine_name), 2)
+        return [ "if ( " + machine_name + "." + transition.condition + "() )", \
+                 "{"] + \
+                 transition_code + \
+                 ["}"]
+
+    def _prepare_transition_code(self, transition, state_index, machine_name):
+        transition_code = []
+        from_state = state_index[transition.source_name]
+        if from_state.on_leave:
+            transition_code.append(machine_name + "." + from_state.on_leave + "();")
+        if transition.action:
+            transition_code.append(machine_name + "." + transition.action + "();")
+        to_state =  state_index[transition.target_name]
+        transition_code.append(machine_name + ".m_current_state = &" + machine_name + ".m_" + to_state.name.lowercase_name() + ";")
+        if to_state.on_enter:
+            transition_code.append(machine_name + "." + to_state.on_enter + "();")
+        return transition_code
 
     def _indent_code(self, code_lines, spaces_count):
         return [ (" " * spaces_count) + line for line in code_lines ]

@@ -51,7 +51,7 @@ ${#end}  public:
     }
   
   protected:
-${#for action in list_of_actions}    void ${action}();
+${#for method in all_methods}    ${#if method[0]}bool${#else}void${#end} ${method[1]}();
 ${#end}  
   private:
     // all possible states

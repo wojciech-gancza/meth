@@ -93,11 +93,13 @@ class Test_StateMachineGenerator(unittest.TestCase):
                       "events": ["unlock", "open", "close", "lock"],
                       "states": [ generator.StateMachine.StateDefinition("closed"),
                                   generator.StateMachine.StateDefinition("opened", on_leave="do not allow to enter"),
-                                  generator.StateMachine.StateDefinition("locked", on_enter="lock with key") ],
+                                  generator.StateMachine.StateDefinition("locked", on_enter="lock with key"),
+                                  generator.StateMachine.StateDefinition("broken", on_enter="opened with force") ],
                       "transitions": [ generator.StateMachine.Transition("open", "closed", "opened", action="turn the knob and pull"),
                                        generator.StateMachine.Transition("close", "opened", "closed"),
-                                       generator.StateMachine.Transition("lock", "closed", "locked"),
-                                       generator.StateMachine.Transition("unlock", "locked", "closed") ], 
+                                       generator.StateMachine.Transition("lock", "closed", "locked", condition="key match"),
+                                       generator.StateMachine.Transition("unlock", "locked", "closed", condition="key match"), 
+                                       generator.StateMachine.Transition("unlock", "locked", "broken", condition="use crowbar") ], 
                       "initial_state": "opened" }
         self.generator.create_state_machine(variables)
 

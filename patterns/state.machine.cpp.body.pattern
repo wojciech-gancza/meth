@@ -3,13 +3,13 @@ ${#for state_class in states}void ${class_name}::${state_class.name.UppercaseCam
   ${state_class.process_event_code}
 }
 
-${#end}// --- ACTIONS ---
+${#end}// -----------------------------------
 
-${#for action in list_of_actions}void ${class_name}::${action}()
+${#for method in all_methods}${#if method[0]}bool${#else}void${#end} ${class_name}::${method[1]}()
 {
-  // vvv--- Implementation of ${action} functionality
-  
-  // ^^^--- End of implementation of ${action}
+  // vvv--- Implementation of ${method[1]} functionality
+  ${#if method[0]}return false;${#end}
+  // ^^^--- End of implementation of ${method[1]}
 }
 
 ${#end}// vvv--- ${class_name} additional fields and methods
