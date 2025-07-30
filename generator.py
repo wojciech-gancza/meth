@@ -309,12 +309,16 @@ class StateMachine(CodeGenerator):
 
     class StateDefinition:
 
-        def __init__(self, name, *, on_enter=None, on_leave=None):
+        def __init__(self, name, *, on_enter=None, on_leave=None, parent=None):
             self.name = generatortools.Name(name)
             self.on_enter = on_enter
             self.on_leave = on_leave
             self.outgoing_transitions = []
             self.process_event_code = []
+            if parent:
+                self.parent = generatortools.Name(parent).lowercase_name()
+            else:
+                self.parent = None
 
         def append_outgoing_transition(self, transition):
             event_name = transition.event.UPPERCASE_NAME()
@@ -407,15 +411,24 @@ class StateMachine(CodeGenerator):
 
     def _prepare_transition_code(self, transition, state_index, machine_name):
         transition_code = []
-        from_state = state_index[transition.source_name]
-        if from_state.on_leave:
-            transition_code.append(machine_name + "." + from_state.on_leave + "();")
+        source_path = self._get_state_path(transition.source_name, state_index)
+        target_path = self._get_state_path(transition.target_name, state_index)
+        while len(source_path) > 1 and len(target_path) > 1 and source_path[0] == target_path[0]:
+            source_path = source_path[1:]
+            target_path = target_path[1:]
+        source_path.reverse()
+        for state in source_path:
+            from_state = state_index[state]
+            if from_state.on_leave:
+                transition_code.append(machine_name + "." + from_state.on_leave + "();")
         if transition.action:
             transition_code.append(machine_name + "." + transition.action + "();")
-        to_state =  state_index[transition.target_name]
+        to_state = state_index[transition.target.lowercase_name()]
         transition_code.append(machine_name + ".m_current_state = &" + machine_name + ".m_" + to_state.name.lowercase_name() + ";")
-        if to_state.on_enter:
-            transition_code.append(machine_name + "." + to_state.on_enter + "();")
+        for state in target_path:
+            to_state = state_index[state]
+            if to_state.on_enter:
+                transition_code.append(machine_name + "." + to_state.on_enter + "();")
         return transition_code
 
     def _indent_code(self, code_lines, spaces_count):
@@ -426,6 +439,13 @@ class StateMachine(CodeGenerator):
             return generatortools.Name(function_text).lowercase_name()
         else:
             return None
+
+    def _get_state_path(self, state_name, state_index):
+        state = state_index[state_name]
+        if state.parent:
+            return self._get_state_path(state.parent, state_index) + [ state_name ]
+        else:
+            return [ state_name ]
 
 #--------------------------------------------------------------------------
 

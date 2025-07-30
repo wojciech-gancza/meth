@@ -13,17 +13,22 @@ import time
 #--------------------------------------------------------------------------
 # -! state machine generator
 #   -- other needed functionalities (to be defined)
-#     -- conditions
-#     -- generate state event handlers
-#     -- composite states
+#     ++ conditions
+#     ++ generate state event handlers
+#     -- global/state events
+#     -! composite states
+#       -- building state structures - with proper event handling
+#       ++ generating proper list of actions
 #     -- concurrent (parallel) states
 #     -- PlantUML parser and locating plantuml souce in .cpp or .h output
 #   -! core patterns
 #     ++ header file
 #     ++ remove unnecessary includes from cpp and header
 #     ++ core functions of cpp - processing events
-#     -- stubs of events processing functions
-#     -- test - check how the machine works
+#     ++ stubs of events processing functions
+#     -! test - check how the machine works
+#       -- test working in C++
+#       ++ test in python - generation of cpp file
 # -! simple types generator
 #   -- adding tool files (when required)
 #   -- registry of all generated types
@@ -91,10 +96,11 @@ class Test_StateMachineGenerator(unittest.TestCase):
     def test_FirstTestJustCurrentlyWorkingOn(self):
         variables = { "name": "test : the door",
                       "events": ["unlock", "open", "close", "lock"],
-                      "states": [ generator.StateMachine.StateDefinition("closed"),
-                                  generator.StateMachine.StateDefinition("opened", on_leave="do not allow to enter"),
-                                  generator.StateMachine.StateDefinition("locked", on_enter="lock with key"),
-                                  generator.StateMachine.StateDefinition("broken", on_enter="opened with force") ],
+                      "states": [ generator.StateMachine.StateDefinition("closed", parent="operatable"),
+                                  generator.StateMachine.StateDefinition("opened", on_leave="do not allow to enter", parent="operatable"),
+                                  generator.StateMachine.StateDefinition("locked", on_enter="lock with key", parent="operatable"),
+                                  generator.StateMachine.StateDefinition("broken", on_enter="opened with force"),
+                                  generator.StateMachine.StateDefinition("operatable", on_leave="call for repair") ],
                       "transitions": [ generator.StateMachine.Transition("open", "closed", "opened", action="turn the knob and pull"),
                                        generator.StateMachine.Transition("close", "opened", "closed"),
                                        generator.StateMachine.Transition("lock", "closed", "locked", condition="key match"),
