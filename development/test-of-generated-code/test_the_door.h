@@ -38,7 +38,10 @@ namespace Test
       class State
       {
         public:
-          virtual void process_event(Event event, TheDoor& the_door) = 0;
+          virtual void process_event(Event event, TheDoor& the_door) {  };
+  
+          virtual void on_entry(TheDoor& the_door) {  }
+          virtual void on_leave(TheDoor& the_door) {  }
       };
       
       // all possible states
@@ -52,24 +55,28 @@ namespace Test
       {
         public:
           void process_event(Event event, TheDoor& the_door) override;
+          
+          virtual void on_leave(TheDoor& the_door)   { the_door.do_not_allow_to_enter(); }
       };
   
       class Locked : public State
       {
         public:
           void process_event(Event event, TheDoor& the_door) override;
+          
+          virtual void on_entry(TheDoor& the_door)   { the_door.lock_with_key(); }
       };
   
       class Broken : public State
       {
         public:
-          void process_event(Event event, TheDoor& the_door) override;
+          virtual void on_entry(TheDoor& the_door)   { the_door.opened_with_force(); }
       };
   
       class Operatable : public State
       {
         public:
-          void process_event(Event event, TheDoor& the_door) override;
+          virtual void on_leave(TheDoor& the_door)   { the_door.call_for_repair(); }
       };
   
     public:
@@ -94,15 +101,9 @@ namespace Test
         reset();
       }
       
-      void reset()
-      {
-        m_current_state = &m_opened;
-      }
+      void reset()   { m_current_state = &m_opened; }
       
-      bool process_event(Event event)
-      {
-        m_current_state->process_event(event, *this);
-      }
+      bool process_event(Event event)   { m_current_state->process_event(event, *this); }
     
     protected:
       void call_for_repair();

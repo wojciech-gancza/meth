@@ -23,7 +23,7 @@ namespace Test
     switch( event )
     {
       case OPEN:
-        the_door.turn_the_knob_and_pull();
+        the_door.turn_the_knob_and_pull();    // transition action connected to event Open
         the_door.m_current_state = &the_door.m_opened;
         break;
     
@@ -31,7 +31,7 @@ namespace Test
         if ( the_door.key_match() )
         {
           the_door.m_current_state = &the_door.m_locked;
-          the_door.lock_with_key();
+          the_door.lock_with_key();    // Locked::on_enter(...)
         }
         break;
     }
@@ -42,7 +42,7 @@ namespace Test
     switch( event )
     {
       case CLOSE:
-        the_door.do_not_allow_to_enter();
+        the_door.do_not_allow_to_enter();    // Opened::on_leave(...)
         the_door.m_current_state = &the_door.m_closed;
         break;
     }
@@ -59,22 +59,12 @@ namespace Test
         }
         if ( the_door.use_crowbar() )
         {
-          the_door.call_for_repair();
+          the_door.call_for_repair();    // Operatable::on_leave(...)
           the_door.m_current_state = &the_door.m_broken;
-          the_door.opened_with_force();
+          the_door.opened_with_force();    // Broken::on_enter(...)
         }
         break;
     }
-  }
-  
-  void TheDoor::Broken::process_event(Event event, TheDoor& the_door)
-  {
-    
-  }
-  
-  void TheDoor::Operatable::process_event(Event event, TheDoor& the_door)
-  {
-    
   }
   
   // -----------------------------------

@@ -1,9 +1,9 @@
-${#for state_class in states}void ${class_name}::${state_class.name.UppercaseCamelName()}::process_event(Event event, ${class_name}& ${object_name})
+${#for state_class in states}${#if state_class.process_event_code}void ${class_name}::${state_class.name.UppercaseCamelName()}::process_event(Event event, ${class_name}& ${object_name})
 {
   ${state_class.process_event_code}
 }
 
-${#end}// -----------------------------------
+${#end}${#end}// -----------------------------------
 
 ${#for method in all_methods}${#if method[0]}bool${#else}void${#end} ${class_name}::${method[1]}()
 {

@@ -420,15 +420,15 @@ class StateMachine(CodeGenerator):
         for state in source_path:
             from_state = state_index[state]
             if from_state.on_leave:
-                transition_code.append(machine_name + "." + from_state.on_leave + "();")
+                transition_code.append(machine_name + "." + from_state.on_leave + "();    // " + from_state.name.UppercaseCamelName() + "::on_leave(...)")
         if transition.action:
-            transition_code.append(machine_name + "." + transition.action + "();")
+            transition_code.append(machine_name + "." + transition.action + "();    // transition action connected to event " + transition.event.UppercaseCamelName() )
         to_state = state_index[transition.target.lowercase_name()]
         transition_code.append(machine_name + ".m_current_state = &" + machine_name + ".m_" + to_state.name.lowercase_name() + ";")
         for state in target_path:
             to_state = state_index[state]
             if to_state.on_enter:
-                transition_code.append(machine_name + "." + to_state.on_enter + "();")
+                transition_code.append(machine_name + "." + to_state.on_enter + "();    // " + to_state.name.UppercaseCamelName() + "::on_enter(...)")
         return transition_code
 
     def _indent_code(self, code_lines, spaces_count):
