@@ -26,7 +26,9 @@ ${#if state_class.process_event_code}        void process_event(Event event, ${c
 ${#end}${#if state_class.process_event_code and (state_class.on_enter or state_class.on_leave)}        
 ${#end}${#if state_class.on_enter}        virtual void on_entry(${class_name}& ${object_name})   { ${object_name}.${state_class.on_enter}(); }
 ${#end}${#if state_class.on_leave}        virtual void on_leave(${class_name}& ${object_name})   { ${object_name}.${state_class.on_leave}(); }
-${#end}    };
+${#end}${#if state_class.children}        
+${#for child_state in state_class.children}        ${child_state.UppercaseCamelName()} m_${child_state.lowercase_name()};
+${#end}${#end}    };
 
 ${#end}  public:
     ${class_name}( 
@@ -34,19 +36,18 @@ ${#end}  public:
         
         // ^^^--- constructor parameters (if needed)
         )
-      ${format.inheritance_list(["m_" + state_class.name.lowercase_name() + "()" for state_class in states])}
       // vvv--- constructing local values (if needed)
       
       // ^^^--- constructint local values (if needed) )
     { 
+      reset();
+      
       // vvv--- human defined construction (if needed)
       
       // ^^^--- human defined construction (if needed) )
-      
-      reset();
     }
     
-    void reset()   { m_current_state = &m_${initial_state.lowercase_name()}; }
+    void reset()   { m_current_state = &${initial_state_object_name}; }
     
     bool process_event(Event event)   { m_current_state->process_event(event, *this); }
   
@@ -55,8 +56,8 @@ ${#for method in all_methods}    ${#if method[0]}bool${#else}void${#end} ${metho
 ${#end}  
   private:
     // all possible states
-${#for state_class in states}    ${state_class.name.UppercaseCamelName()} m_${state_class.name.lowercase_name()};
-${#end}    
+${#for state_class in states}${#if not state_class.parent}    ${state_class.name.UppercaseCamelName()} m_${state_class.name.lowercase_name()};
+${#end}${#end}    
     State* m_current_state = { nullptr };
     
     // vvv--- ${class_name} additional fields and methods

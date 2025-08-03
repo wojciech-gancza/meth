@@ -24,13 +24,13 @@ namespace Test
     {
       case OPEN:
         the_door.turn_the_knob_and_pull();    // transition action connected to event Open
-        the_door.m_current_state = &the_door.m_opened;
+        the_door.m_current_state = &the_door.m_operatable.m_opened;
         break;
     
       case LOCK:
         if ( the_door.key_match() )
         {
-          the_door.m_current_state = &the_door.m_locked;
+          the_door.m_current_state = &the_door.m_operatable.m_locked;
           the_door.lock_with_key();    // Locked::on_enter(...)
         }
         break;
@@ -43,7 +43,7 @@ namespace Test
     {
       case CLOSE:
         the_door.do_not_allow_to_enter();    // Opened::on_leave(...)
-        the_door.m_current_state = &the_door.m_closed;
+        the_door.m_current_state = &the_door.m_operatable.m_closed;
         break;
     }
   }
@@ -55,7 +55,7 @@ namespace Test
       case UNLOCK:
         if ( the_door.key_match() )
         {
-          the_door.m_current_state = &the_door.m_closed;
+          the_door.m_current_state = &the_door.m_operatable.m_closed;
         }
         if ( the_door.use_crowbar() )
         {

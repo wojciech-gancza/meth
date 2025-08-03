@@ -315,6 +315,7 @@ class StateMachine(CodeGenerator):
             self.on_leave = on_leave
             self.outgoing_transitions = []
             self.process_event_code = []
+            self.children = []
             if parent:
                 self.parent = generatortools.Name(parent).lowercase_name()
             else:
@@ -365,6 +366,9 @@ class StateMachine(CodeGenerator):
             state.on_leave = self._create_function_name(state.on_leave)
             if state.on_leave:
                 list_of_actions.append(state.on_leave)
+            if state.parent:
+                parent_state = state_index[state.parent]
+                parent_state.children.append(state.name)
         for state in properties["states"]:
             self._prepare_event_processing_code(state, state_index, properties["object_name"])
         list_of_actions = list(dict.fromkeys(list_of_actions))
@@ -376,6 +380,7 @@ class StateMachine(CodeGenerator):
         all_methods = list_of_actions + list_of_conditions
         all_methods.sort()
         properties["all_methods"] = [(name in list_of_conditions, name) for name in all_methods] 
+        properties["initial_state_object_name"] = self._get_state_object_reference(properties["initial_state"].lowercase_name(), state_index)
 
     def _prepare_event_processing_code(self, state, state_index, machine_name):
         if state.outgoing_transitions:
@@ -423,8 +428,7 @@ class StateMachine(CodeGenerator):
                 transition_code.append(machine_name + "." + from_state.on_leave + "();    // " + from_state.name.UppercaseCamelName() + "::on_leave(...)")
         if transition.action:
             transition_code.append(machine_name + "." + transition.action + "();    // transition action connected to event " + transition.event.UppercaseCamelName() )
-        to_state = state_index[transition.target.lowercase_name()]
-        transition_code.append(machine_name + ".m_current_state = &" + machine_name + ".m_" + to_state.name.lowercase_name() + ";")
+        transition_code.append(machine_name + ".m_current_state = &" + machine_name + "." + self._get_state_object_reference(transition.target.lowercase_name(), state_index) + ";")
         for state in target_path:
             to_state = state_index[state]
             if to_state.on_enter:
@@ -446,6 +450,14 @@ class StateMachine(CodeGenerator):
             return self._get_state_path(state.parent, state_index) + [ state_name ]
         else:
             return [ state_name ]
+
+    def _get_state_object_reference(self, state_name, state_index):
+        state = state_index[state_name]
+        object_name = "m_" + state.name.lowercase_name()
+        if state.parent:
+            return self._get_state_object_reference(state.parent, state_index) + "." + object_name
+        else:
+            return object_name;
 
 #--------------------------------------------------------------------------
 

@@ -77,6 +77,10 @@ namespace Test
       {
         public:
           virtual void on_leave(TheDoor& the_door)   { the_door.call_for_repair(); }
+          
+          Closed m_closed;
+          Opened m_opened;
+          Locked m_locked;
       };
   
     public:
@@ -85,23 +89,18 @@ namespace Test
           
           // ^^^--- constructor parameters (if needed)
           )
-        : m_closed()
-        , m_opened()
-        , m_locked()
-        , m_broken()
-        , m_operatable()
         // vvv--- constructing local values (if needed)
         
         // ^^^--- constructint local values (if needed) )
       { 
+        reset();
+        
         // vvv--- human defined construction (if needed)
         
         // ^^^--- human defined construction (if needed) )
-        
-        reset();
       }
       
-      void reset()   { m_current_state = &m_opened; }
+      void reset()   { m_current_state = &m_operatable.m_opened; }
       
       bool process_event(Event event)   { m_current_state->process_event(event, *this); }
     
@@ -116,9 +115,6 @@ namespace Test
     
     private:
       // all possible states
-      Closed m_closed;
-      Opened m_opened;
-      Locked m_locked;
       Broken m_broken;
       Operatable m_operatable;
       
