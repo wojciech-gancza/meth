@@ -16,11 +16,11 @@ import time
 #     ++ conditions
 #     ++ generate state event handlers
 #     -- global/state events
-#     -! composite states
-#       -- building state structures - with proper event handling
-#       ++ generating proper list of actions
 #     -- concurrent (parallel) states
 #     -- PlantUML parser and locating plantuml souce in .cpp or .h output
+#     ++ composite states
+#       ++ building state structures - with proper event handling
+#       ++ generating proper list of actions
 #   -! core patterns
 #     ++ header file
 #     ++ remove unnecessary includes from cpp and header
@@ -30,9 +30,16 @@ import time
 #       -- test working in C++
 #       ++ test in python - generation of cpp file
 # -! simple types generator
-#   -- adding tool files (when required)
+#   -- make serialization conditional (on the level of generator)
+#     -- add set of variables in generator (and merge it with parameters)
+#     -- change in pattern files
+#   -! adding tool files (when required)
+#     -- implementation
+#     ++ idea
 #   -- registry of all generated types
 #   ++ bitflags type 
+#     ++ add 'operator bool()'
+#     ++ implementation
 #   ++ enum type
 #   ++ integer type
 #   ++ record type
@@ -53,6 +60,7 @@ import time
 #   -- add reading objects from cofiguration (all types)
 #   ++ configuration types: key, value, node, nodes
 # ++ fixing problems
+#   ++ fix problem found when generating enum convertion procedure for set [ "Unknown", "ValidOnce", "ValidAlways", "AnyAlways"]
 #   ++ converting string->enum - check length of the string first. Problem with too bix index
 # ++ main part of metagenerator
 #   ++ functionality as previos version +...
@@ -208,6 +216,22 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                            "configuration : value", \
                            "configuration : nodes"],
                 "ordered": True})
+
+class Test_SimpleTypesGeneratorFoundErrors(unittest.TestCase):
+
+    def __init__(self, *args, **kwargs):
+        super(Test_SimpleTypesGeneratorFoundErrors, self).__init__(*args, **kwargs)
+        self.environment = TestEnvironment("Test_SimpleTypesGenerator")
+        self.generator = generator.PlainOldDataTypes(self.environment.output_path.parent().parent().parent(), self.environment.cpp_output_path)
+        self.generator.set_output_path(self.environment.output_path)
+
+    def test_GeneratingEnumType(self):
+        variables = {"name": "bmqpub : publishing rule",
+                     "values": [ "Unknown", "ValidOnce", "ValidAlways", "AnyAlways"],
+                     "ordered": True,
+                     "default": "Unknown"}
+        self.generator.generate_enum(variables)
+        self.assertTrue(self.environment.check_output_file("bmqpub_publishing_rule.cpp"))
 
 #--------------------------------------------------------------------------
 

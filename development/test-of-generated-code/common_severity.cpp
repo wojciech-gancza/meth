@@ -70,25 +70,39 @@ namespace Common
     }
     switch (text[0])
     {
-      case 'A':
+      case A:
         return E_ARMAGEDON;
-      case 'D':
-        return E_DISASTER;
-      case 'E':
+      case D:
+        if (text.length() < 4)
+        {
+          return E_DISASTER;
+        }
+        switch (text[1])
+        {
+          case A:
+            return E_DATA;
+          case E:
+            return E_DEBUG;
+          default:
+          {
+            return E_DISASTER;
+          }
+        }
+      case E:
         return E_ERROR;
-      case 'F':
+      case F:
         return E_FATAL;
-      case 'I':
+      case I:
         return E_INFO;
-      case 'L':
+      case L:
         return E_LOG;
-      case 'M':
+      case M:
         return E_MEMO;
-      case 'N':
+      case N:
         return E_NOTICE;
-      case 'P':
+      case P:
         return E_PROBLEM;
-      case 'T':
+      case T:
         return E_TRACE;
       default:
       {

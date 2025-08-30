@@ -20,7 +20,12 @@ class ${class_name}
     ${#include "simple.getters.setters.pattern"}
 
     ${#include "simple.compare.pattern"}
-  
+    
+    operator bool() const
+    {
+      return m_${object_name} != 0;
+    }
+    
     ${class_name} operator!() const noexcept
     {
       return ${class_name}(m_${object_name} ^ (2 * last_flag_value - 1));

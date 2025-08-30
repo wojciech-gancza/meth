@@ -229,7 +229,7 @@ class EnumCodeGenerator:
             if character in selector_map.keys():
                 selector_map[character].append(name)
             else:
-                selector_map["'" + character + "'"] = [ name ]
+                selector_map[character] = [ name ]
         return selector_map
 
     def _group_by_length(self, names_list):

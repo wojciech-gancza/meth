@@ -71,7 +71,12 @@ namespace Acoustic
       bool operator==(const SelectedOutputIds& selected_output_ids) const noexcept { return (m_selected_output_ids == selected_output_ids.m_selected_output_ids); }
       bool operator!=(const SelectedOutputIds& selected_output_ids) const noexcept { return (m_selected_output_ids != selected_output_ids.m_selected_output_ids); }
       // No ordering operators
-    
+      
+      operator bool() const
+      {
+        return m_selected_output_ids != 0;
+      }
+      
       SelectedOutputIds operator!() const noexcept
       {
         return SelectedOutputIds(m_selected_output_ids ^ (2 * last_flag_value - 1));

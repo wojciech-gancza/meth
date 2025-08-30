@@ -102,15 +102,22 @@ namespace Acoustic
     }
     switch (text[12])
     {
-      case 'E':
-        return E_VEHICLE_OUTHER_SPEAKER;
-      case 'H':
+      case E:
+        if (text[0] == D)
+        {
+            return E_DRIVER_SPEAKER;
+        }
+        else
+        {
+            return E_VEHICLE_OUTHER_SPEAKER;
+        }
+      case H:
         return E_DRIVER_HANDPHONE;
-      case 'I':
+      case I:
         return E_RADIO_TRANSMIT;
-      case 'L':
+      case L:
         return E_AUDIO_INPUT_L;
-      case 'R':
+      case R:
         return E_AUDIO_INPUT_R;
       default:
       {
