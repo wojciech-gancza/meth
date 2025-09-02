@@ -182,20 +182,20 @@ class EnumCodeGenerator:
         precondition_length = switch_statement_data[2]
         switch_case_keys = list(switch_cases.keys())
         switch_case_keys.sort()
+        result_code = []
+        if precondition_length:
+            result_code = ["if (text.length() < " + str(precondition_length) + ")", "{", "  return E_" + names_list[-1] + ";", "}"]
         if len(switch_cases) == 2:
             first_key = switch_case_keys[0]
             first_key_code = self._indent( self._generate_code(switch_cases[first_key]) ) 
             second_key = switch_case_keys[1]
             second_key_code = self._indent( self._generate_code(switch_cases[second_key]) ) 
-            return [ "if (" + switch_expression + " == " + first_key + ")", "{"] + \
+            return result_code + [ "if (" + switch_expression + " == " + first_key + ")", "{"] + \
                    self._indent(first_key_code) + \
                    [ "}", "else", "{" ] + \
                    self._indent(second_key_code) + \
                    [ "}" ] 
         else:
-            result_code = []
-            if precondition_length:
-                result_code = ["if (text.length() < " + str(precondition_length) + ")", "{", "  return E_" + names_list[-1] + ";", "}"]
             result_code = result_code + [ "switch (" + switch_expression + ")", "{" ]
             for key in switch_case_keys[:-1]:
                 key_code = self._indent( self._generate_code(switch_cases[key]) )
@@ -225,7 +225,7 @@ class EnumCodeGenerator:
     def _gruop_by_character(self, character_index, names_list):
         selector_map = { }
         for name in names_list:
-            character = name[character_index]
+            character = "'" + name[character_index] + "'"
             if character in selector_map.keys():
                 selector_map[character].append(name)
             else:

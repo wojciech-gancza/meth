@@ -1,6 +1,7 @@
 #--------------------------------------------------------------------------
 
 import meth
+import os
 import math
 import generatortools
 import inspect
@@ -70,6 +71,21 @@ class CodeGenerator:
         properties["output_file_name"] = output_file_name
         self.generator.generate(pattern_file_name, str(output_file_name), properties)
 
+    def _add_toolfile(self, target_tool_file_name):
+        target_file_full_name = self.tools_output_path.create_changed_by(target_tool_file_name)
+        if not os.path.isfile(str(target_file_full_name)):
+            pattern_file_name = target_tool_file_name + ".tool"
+            full_pattern_name = self.environment.patterns_path.create_changed_by(pattern_file_name)
+            if os.path.isfile( str(full_pattern_name) ):
+                self.generator.generate("tool_file_wrapper.pattern", str(target_file_full_name), { \
+                    "solution_path": self.soluton_path,
+                    "tool_file_name": full_pattern_name,
+                    "output_file_name": target_file_full_name,
+                    "tool_file": pattern_file_name})
+            return True
+        else:
+            return False
+
 #--------------------------------------------------------------------------
 
 class PlainOldDataTypes(CodeGenerator):
@@ -79,6 +95,12 @@ class PlainOldDataTypes(CodeGenerator):
         self.mandatory_cpp_headers.append( self.tools_output_path.create_changed_by("common_conversion_error.h") )
         self.mandatory_h_headers.append( self.tools_output_path.create_changed_by("serialization_binary_serialization.h") )
         self.mandatory_h_std_headers = ["string", "iostream"]
+        self.tool_serialization_binary_serialization = True
+        self.tool_common_conversion_error = True
+        self.tool_common_record_fields_comparision = False
+        self.tool_common_size_error = False
+        self.tool_common_text_converter = False
+        self.tool_text_comparision = { }
 
     def generate_integer(self, properties):
         # required properties:
@@ -117,6 +139,7 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["simple_base_type"] = "const std::string&"
         extended_properties["default"] = "\"" + extended_properties["default"].replace("\\", "\\\\").replace("\"", "\\\"") + "\""
         self._generate_files("string.h.body.pattern", "string.cpp.body.pattern", extended_properties)
+        self.tool_text_comparision[extended_properties["compare_class"].lowercase_namespace_and_name()] = True
 
     def generate_floating_point(self, properties):
         # required properties:
@@ -193,6 +216,7 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["default"] = "ClockType::now()"
         extended_properties["simple_base_type"] = "TimePointType"
         self._generate_files("time.point.h.body.pattern", "time.point.cpp.body.pattern", extended_properties)
+        self.tool_common_text_converter = True
 
     def generate_time_duration(self, properties):
         # required properties:
@@ -211,6 +235,7 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["deserialization_code"] = duration_code.get_deserializatrion_code()
         extended_properties["simple_base_type"] = "TimeDurationType"
         self._generate_files("time.duration.h.body.pattern", "time.duration.cpp.body.pattern", extended_properties)
+        self.tool_common_text_converter = True
 
     def generate_record(self, properties):
         # required properties:
@@ -225,6 +250,7 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["cpp_includes"] =  [ self.tools_output_path.create_changed_by("common_record_fields_comparision.h") ]
         extended_properties["cpp_std_includes"].append( "sstream" )
         self._generate_files("record.h.body.pattern", "record.cpp.body.pattern", extended_properties)
+        self.tool_common_record_fields_comparision = True
 
     def generate_collection(self, properties):
         # required properties:
@@ -245,7 +271,24 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["item_class_name"] = extended_properties["element_type"].UppercaseCamelName()
         extended_properties["item_object_name"] = extended_properties["element_type"].lowercase_name()
         self._generate_files("collection.h.body.pattern", "collection.cpp.body.pattern", extended_properties)
+        self.tool_common_size_error = True
 
+    def generate_tool_files(self):
+        if self.tool_serialization_binary_serialization:
+            self._add_toolfile("serialization_binary_serialization.h")
+        if self.tool_common_conversion_error:
+            self._add_toolfile("common_conversion_error.h")
+        if self.tool_common_record_fields_comparision:
+            self._add_toolfile("common_record_fields_comparision.h")
+        if self.tool_common_size_error:
+            self._add_toolfile("common_size_error.h")
+        if self.tool_common_text_converter:
+            self._add_toolfile("common_text_converter.h")
+            self._add_toolfile("common_text_converter.cpp")
+        for key in self.tool_text_comparision.keys():
+            self._add_toolfile(key + ".h")
+            self._add_toolfile(key + ".cpp")
+       
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     def _set_default_value(self, properties, name, default_value):
@@ -344,6 +387,9 @@ class StateMachine(CodeGenerator):
         extended_properties = self._add_generator_properties(properties)
         self._normalize_properties(extended_properties)
         self._generate_files("state.machine.h.body.pattern", "state.machine.cpp.body.pattern", extended_properties)
+
+    def generate_tool_files(self):
+        pass
 
     def _normalize_properties(self, properties):
         properties["initial_state"] = generatortools.Name(properties["initial_state"])

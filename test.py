@@ -11,36 +11,24 @@ import time
 #--------------------------------------------------------------------------
 # backlog:
 #--------------------------------------------------------------------------
-# -! state machine generator
-#   -- other needed functionalities (to be defined)
-#     ++ conditions
-#     ++ generate state event handlers
-#     -- global/state events
-#     -- concurrent (parallel) states
-#     -- PlantUML parser and locating plantuml souce in .cpp or .h output
-#     ++ composite states
-#       ++ building state structures - with proper event handling
-#       ++ generating proper list of actions
-#   -! core patterns
-#     ++ header file
-#     ++ remove unnecessary includes from cpp and header
-#     ++ core functions of cpp - processing events
-#     ++ stubs of events processing functions
-#     -! test - check how the machine works
-#       -- test working in C++
-#       ++ test in python - generation of cpp file
 # -! simple types generator
+#   -- registry of all generated types
 #   -- make serialization conditional (on the level of generator)
 #     -- add set of variables in generator (and merge it with parameters)
 #     -- change in pattern files
-#   -! adding tool files (when required)
-#     -- implementation
+#   -! enum type
+#     -- optimimalization of connversion - consider skipping not needed is len(text) < ...
+#     ++ review generation of string->enum: check length before checking character in subselections
+#     ++ implementation
+#   ++ adding tool files (when required)
+#     ++ move all tool files to patterns
+#     ++ add header to tool files - describing usage
+#     ++ separate method adding tools files 
+#     ++ implementation
 #     ++ idea
-#   -- registry of all generated types
 #   ++ bitflags type 
 #     ++ add 'operator bool()'
 #     ++ implementation
-#   ++ enum type
 #   ++ integer type
 #   ++ record type
 #   ++ float type (based on float/double)
@@ -55,6 +43,24 @@ import time
 #   ++ string type
 #     ++ search by regex as compare option
 #     ++ implementation
+# -! state machine generator
+#   -- other needed functionalities (to be defined)
+#     -- global/state events
+#     -- concurrent (parallel) states
+#     -- PlantUML parser and locating plantuml souce in .cpp or .h output
+#     ++ composite states
+#       ++ building state structures - with proper event handling
+#       ++ generating proper list of actions
+#     ++ conditions
+#     ++ generate state event handlers
+#   -! core patterns
+#     -! test - check how the machine works
+#       -- test working in C++
+#       ++ test in python - generation of cpp file
+#     ++ header file
+#     ++ remove unnecessary includes from cpp and header
+#     ++ core functions of cpp - processing events
+#     ++ stubs of events processing functions
 # -! configuration
 #   -- basic configuration tests
 #   -- add reading objects from cofiguration (all types)
@@ -75,10 +81,15 @@ class TestEnvironment:
         self.cpp_output_path = self.script_path.create_changed_by("development/test-of-generated-code")
         self.sample_files_path = self.script_path.create_changed_by("development/testdata/" + subdirectory)
 
-    def check_output_file(self, file_name):
+    def check_output_file(self, file_name, *, skip_lines=None):
         file_to_check = methtools.FileContent(self.output_path.get_as_directory() + file_name)
         sample_file = methtools.FileContent(self.sample_files_path.get_as_directory() + file_name + ".good")
-        return file_to_check.text == sample_file.text
+        if skip_lines:
+            file_to_check = "\n".join( file_to_check.text.split("\n")[skip_lines:] )
+            sample_file = "\n".join( sample_file.text.split("\n")[skip_lines:] )
+            return file_to_check == sample_file
+        else:
+            return file_to_check.text == sample_file.text
     
     def prepare_old_output_file(self, file_name):
         file_copy = methtools.FileContent(self.sample_files_path.get_as_directory() + file_name + ".before")
@@ -116,6 +127,7 @@ class Test_StateMachineGenerator(unittest.TestCase):
                                        generator.StateMachine.Transition("unlock", "locked", "broken", condition="use crowbar") ], 
                       "initial_state": "opened" }
         self.generator.create_state_machine(variables)
+        self.generator.generate_tool_files()
 
 #--------------------------------------------------------------------------
 
@@ -138,6 +150,7 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                      "int_class": "uint16_t",
                      "ordered": True}
         self.generator.generate_integer(variables)
+        self.generator.generate_tool_files()
 
     def test_GeneratingEnumType(self):
         variables = {"name": "common : severity",
@@ -146,12 +159,14 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                      "ordered": True,
                      "default": "info"}
         self.generator.generate_enum(variables)
+        self.generator.generate_tool_files()
 
     def test_GeneratingBitsetType(self):
         variables = {"name": "acoustic : selected output ids",
                      "values": ["audio input l", "audio input r", "radio transmit", "driver handphone", 
                                 "driver speaker", "cabin inner speaker", "vehicle outher speaker"] }
         self.generator.generate_bitflags(variables)
+        self.generator.generate_tool_files()
 
     def test_GeneratingFloatingPointType(self):
         variables = {"name": "money : netto",
@@ -160,6 +175,7 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                      "accuracy": "0.005f",
                      "string_format": ".2"}
         self.generator.generate_floating_point(variables)
+        self.generator.generate_tool_files()
 
     def test_GeneratingStringType(self):
         variables = {"name": "common : text message",
@@ -167,12 +183,14 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                      "max_size": 4000,
                      "ordered": True}
         self.generator.generate_string(variables)
+        self.generator.generate_tool_files()
 
     def test_GeneratingTimepointType(self):
         variables = {"name": "common : event time", \
                      "text_output_format": "$Y-$M-$D $h:$m:$s.$f",
                      "ordered": True}
         self.generator.generate_timepoint(variables)
+        self.generator.generate_tool_files()
 
     def test_GeneratingTimeDurationType(self):
         variables = {"name": "common : delay", \
@@ -193,6 +211,7 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                                 "common : network : port number"],
                      "compareable": False}
         self.generator.generate_record(variables)
+        self.generator.generate_tool_files()
 
     def test_GeneratingCollectionType(self):
         self.generator.generate_string({ \
@@ -216,6 +235,7 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
                            "configuration : value", \
                            "configuration : nodes"],
                 "ordered": True})
+        self.generator.generate_tool_files()
 
 class Test_SimpleTypesGeneratorFoundErrors(unittest.TestCase):
 
@@ -231,7 +251,8 @@ class Test_SimpleTypesGeneratorFoundErrors(unittest.TestCase):
                      "ordered": True,
                      "default": "Unknown"}
         self.generator.generate_enum(variables)
-        self.assertTrue(self.environment.check_output_file("bmqpub_publishing_rule.cpp"))
+        self.assertTrue(self.environment.check_output_file("bmqpub_publishing_rule.cpp", skip_lines=12))
+        self.generator.generate_tool_files()
 
 #--------------------------------------------------------------------------
 

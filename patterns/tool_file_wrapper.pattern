@@ -6,29 +6,8 @@
 // not exist. So when need to return to the default version - just remove it and run 
 // generator once again.
 // --------------------------------------------------------------------------------------
-// This file is stored at: .../development/test-of-generated-code/common_regex_compare.cpp
-// Copied from:            .../patterns/common_regex_compare.cpp.tool
+// This file is stored at: .../${output_file_name.get_relative_to(solution_path)}
+// Copied from:            .../${tool_file_name.get_relative_to(solution_path)}
 // --------------------------------------------------------------------------------------
 
-#include "common_regex_compare.h"
-
-#include <regex>
-
-namespace Common
-{
-  bool RegexCompare::isEqual(const std::string& first, const std::string& second)
-  {
-    if (first == second)
-    {
-      return true;
-    }
-    std::regex second_re(second);
-    std::cmatch match_result;
-    if (std::regex_match(first.c_str(), match_result, second_re))
-    {
-      return true;
-    }
-    std::regex first_re(first);
-    return std::regex_match(second.c_str(), match_result, first_re);
-  }
-}
+${#include tool_file}
