@@ -21,6 +21,7 @@ class CodeGenerator:
         self.mandatory_cpp_headers = [ ]
         self.mandatory_h_headers = [ ]
         self.mandatory_h_std_headers = [ ]
+        self.generated_files_list = [ ]
 
     def set_output_path(self, output_path):
         self.output_path = generatortools.AbsolutePath(output_path)
@@ -70,6 +71,7 @@ class CodeGenerator:
         output_file_name = properties[output_type]
         properties["output_file_name"] = output_file_name
         self.generator.generate(pattern_file_name, str(output_file_name), properties)
+        self.generated_files_list.append(str(output_file_name))
 
     def _add_toolfile(self, target_tool_file_name):
         target_file_full_name = self.tools_output_path.create_changed_by(target_tool_file_name)
@@ -82,6 +84,7 @@ class CodeGenerator:
                     "tool_file_name": full_pattern_name,
                     "output_file_name": target_file_full_name,
                     "tool_file": pattern_file_name})
+                self.generated_files_list.append(str(target_file_full_name))
             return True
         else:
             return False
@@ -95,8 +98,8 @@ class PlainOldDataTypes(CodeGenerator):
         self.mandatory_cpp_headers.append( self.tools_output_path.create_changed_by("common_conversion_error.h") )
         self.mandatory_h_headers.append( self.tools_output_path.create_changed_by("serialization_binary_serialization.h") )
         self.mandatory_h_std_headers = ["string", "iostream"]
-        self.tool_serialization_binary_serialization = True
-        self.tool_common_conversion_error = True
+        self.tool_serialization_binary_serialization = False
+        self.tool_common_conversion_error = False
         self.tool_common_record_fields_comparision = False
         self.tool_common_size_error = False
         self.tool_common_text_converter = False
@@ -117,6 +120,8 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["cpp_std_includes"].append( "sstream" )
         extended_properties["simple_base_type"] = extended_properties["int_class"]
         self._generate_files("integer.h.body.pattern", "integer.cpp.body.pattern", extended_properties)
+        self.tool_serialization_binary_serialization = True
+        self.tool_common_conversion_error = True
 
     def generate_string(self, properties):
         # required properties:
@@ -140,6 +145,8 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["default"] = "\"" + extended_properties["default"].replace("\\", "\\\\").replace("\"", "\\\"") + "\""
         self._generate_files("string.h.body.pattern", "string.cpp.body.pattern", extended_properties)
         self.tool_text_comparision[extended_properties["compare_class"].lowercase_namespace_and_name()] = True
+        self.tool_serialization_binary_serialization = True
+        self.tool_common_conversion_error = True
 
     def generate_floating_point(self, properties):
         # required properties:
@@ -159,6 +166,8 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["cpp_std_includes"] = ["sstream"]
         extended_properties["simple_base_type"] = extended_properties["float_class"]
         self._generate_files("float.h.body.pattern", "float.cpp.body.pattern", extended_properties)
+        self.tool_serialization_binary_serialization = True
+        self.tool_common_conversion_error = True
 
     def generate_enum(self, properties):
         # required properties:
@@ -179,6 +188,8 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["h_std_includes"].append( "cstdint" )
         extended_properties["cpp_std_includes"].append( "sstream" )
         self._generate_files("enum.h.body.pattern", "enum.cpp.body.pattern", extended_properties)
+        self.tool_serialization_binary_serialization = True
+        self.tool_common_conversion_error = True
 
     def generate_bitflags(self, properties):
         # required properties:
@@ -199,6 +210,8 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["h_std_includes"] = ["cstdint"]
         extended_properties["cpp_std_includes"].append( "sstream" )
         self._generate_files("bitflags.h.body.pattern", "bitflags.cpp.body.pattern", extended_properties)
+        self.tool_serialization_binary_serialization = True
+        self.tool_common_conversion_error = True
 
     def generate_timepoint(self, properties):
         # required properties:
@@ -217,6 +230,8 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["simple_base_type"] = "TimePointType"
         self._generate_files("time.point.h.body.pattern", "time.point.cpp.body.pattern", extended_properties)
         self.tool_common_text_converter = True
+        self.tool_serialization_binary_serialization = True
+        self.tool_common_conversion_error = True
 
     def generate_time_duration(self, properties):
         # required properties:
@@ -236,6 +251,8 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["simple_base_type"] = "TimeDurationType"
         self._generate_files("time.duration.h.body.pattern", "time.duration.cpp.body.pattern", extended_properties)
         self.tool_common_text_converter = True
+        self.tool_serialization_binary_serialization = True
+        self.tool_common_conversion_error = True
 
     def generate_record(self, properties):
         # required properties:
@@ -251,6 +268,8 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["cpp_std_includes"].append( "sstream" )
         self._generate_files("record.h.body.pattern", "record.cpp.body.pattern", extended_properties)
         self.tool_common_record_fields_comparision = True
+        self.tool_serialization_binary_serialization = True
+        self.tool_common_conversion_error = True
 
     def generate_collection(self, properties):
         # required properties:
@@ -272,6 +291,8 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["item_object_name"] = extended_properties["element_type"].lowercase_name()
         self._generate_files("collection.h.body.pattern", "collection.cpp.body.pattern", extended_properties)
         self.tool_common_size_error = True
+        self.tool_serialization_binary_serialization = True
+        self.tool_common_conversion_error = True
 
     def generate_tool_files(self):
         if self.tool_serialization_binary_serialization:

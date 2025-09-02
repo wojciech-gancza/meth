@@ -12,7 +12,6 @@ import time
 # backlog:
 #--------------------------------------------------------------------------
 # -! simple types generator
-#   -- registry of all generated types
 #   -- make serialization conditional (on the level of generator)
 #     -- add set of variables in generator (and merge it with parameters)
 #     -- change in pattern files
@@ -43,6 +42,7 @@ import time
 #   ++ string type
 #     ++ search by regex as compare option
 #     ++ implementation
+#   ++ registry of all generated types
 # -! state machine generator
 #   -- other needed functionalities (to be defined)
 #     -- global/state events
