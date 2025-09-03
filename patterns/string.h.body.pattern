@@ -33,9 +33,9 @@ ${#if ordered}    bool operator<(const ${class_name}& other) const noexcept { re
 
     friend std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name}) { output << ${object_name}.toString(); return output; }
 
-    ${#include "simple.value.serialization.declaration.pattern"}
+${#if serializable}    ${#include "simple.value.serialization.declaration.pattern"}
 
-  private:
+${#end}  private:
     std::string m_${object_name};
 
     void checkSize()

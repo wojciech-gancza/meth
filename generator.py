@@ -93,11 +93,13 @@ class CodeGenerator:
 
 class PlainOldDataTypes(CodeGenerator):
 
-    def __init__(self, soluton_path, tools_target_path = None):
+    def __init__(self, soluton_path, *, tools_target_path = None, serializable=True):
         CodeGenerator.__init__(self, soluton_path, tools_target_path)
         self.mandatory_cpp_headers.append( self.tools_output_path.create_changed_by("common_conversion_error.h") )
-        self.mandatory_h_headers.append( self.tools_output_path.create_changed_by("serialization_binary_serialization.h") )
+        if serializable:
+            self.mandatory_h_headers.append( self.tools_output_path.create_changed_by("serialization_binary_serialization.h") )
         self.mandatory_h_std_headers = ["string", "iostream"]
+        self.serializable = serializable
         self.tool_serialization_binary_serialization = False
         self.tool_common_conversion_error = False
         self.tool_common_record_fields_comparision = False
@@ -120,7 +122,7 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["cpp_std_includes"].append( "sstream" )
         extended_properties["simple_base_type"] = extended_properties["int_class"]
         self._generate_files("integer.h.body.pattern", "integer.cpp.body.pattern", extended_properties)
-        self.tool_serialization_binary_serialization = True
+        self.tool_serialization_binary_serialization = self.serializable
         self.tool_common_conversion_error = True
 
     def generate_string(self, properties):
@@ -145,7 +147,7 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["default"] = "\"" + extended_properties["default"].replace("\\", "\\\\").replace("\"", "\\\"") + "\""
         self._generate_files("string.h.body.pattern", "string.cpp.body.pattern", extended_properties)
         self.tool_text_comparision[extended_properties["compare_class"].lowercase_namespace_and_name()] = True
-        self.tool_serialization_binary_serialization = True
+        self.tool_serialization_binary_serialization = self.serializable
         self.tool_common_conversion_error = True
 
     def generate_floating_point(self, properties):
@@ -166,7 +168,7 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["cpp_std_includes"] = ["sstream"]
         extended_properties["simple_base_type"] = extended_properties["float_class"]
         self._generate_files("float.h.body.pattern", "float.cpp.body.pattern", extended_properties)
-        self.tool_serialization_binary_serialization = True
+        self.tool_serialization_binary_serialization = self.serializable
         self.tool_common_conversion_error = True
 
     def generate_enum(self, properties):
@@ -188,7 +190,7 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["h_std_includes"].append( "cstdint" )
         extended_properties["cpp_std_includes"].append( "sstream" )
         self._generate_files("enum.h.body.pattern", "enum.cpp.body.pattern", extended_properties)
-        self.tool_serialization_binary_serialization = True
+        self.tool_serialization_binary_serialization = self.serializable
         self.tool_common_conversion_error = True
 
     def generate_bitflags(self, properties):
@@ -210,7 +212,7 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["h_std_includes"] = ["cstdint"]
         extended_properties["cpp_std_includes"].append( "sstream" )
         self._generate_files("bitflags.h.body.pattern", "bitflags.cpp.body.pattern", extended_properties)
-        self.tool_serialization_binary_serialization = True
+        self.tool_serialization_binary_serialization = self.serializable
         self.tool_common_conversion_error = True
 
     def generate_timepoint(self, properties):
@@ -230,7 +232,7 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["simple_base_type"] = "TimePointType"
         self._generate_files("time.point.h.body.pattern", "time.point.cpp.body.pattern", extended_properties)
         self.tool_common_text_converter = True
-        self.tool_serialization_binary_serialization = True
+        self.tool_serialization_binary_serialization = self.serializable
         self.tool_common_conversion_error = True
 
     def generate_time_duration(self, properties):
@@ -251,7 +253,7 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["simple_base_type"] = "TimeDurationType"
         self._generate_files("time.duration.h.body.pattern", "time.duration.cpp.body.pattern", extended_properties)
         self.tool_common_text_converter = True
-        self.tool_serialization_binary_serialization = True
+        self.tool_serialization_binary_serialization = self.serializable
         self.tool_common_conversion_error = True
 
     def generate_record(self, properties):
@@ -268,7 +270,7 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["cpp_std_includes"].append( "sstream" )
         self._generate_files("record.h.body.pattern", "record.cpp.body.pattern", extended_properties)
         self.tool_common_record_fields_comparision = True
-        self.tool_serialization_binary_serialization = True
+        self.tool_serialization_binary_serialization = self.serializable
         self.tool_common_conversion_error = True
 
     def generate_collection(self, properties):
@@ -291,7 +293,7 @@ class PlainOldDataTypes(CodeGenerator):
         extended_properties["item_object_name"] = extended_properties["element_type"].lowercase_name()
         self._generate_files("collection.h.body.pattern", "collection.cpp.body.pattern", extended_properties)
         self.tool_common_size_error = True
-        self.tool_serialization_binary_serialization = True
+        self.tool_serialization_binary_serialization = self.serializable
         self.tool_common_conversion_error = True
 
     def generate_tool_files(self):
@@ -318,6 +320,7 @@ class PlainOldDataTypes(CodeGenerator):
 
     def _extend_property_list(self, properties):
         extended_properties = self._add_generator_properties(properties)
+        extended_properties["serializable"] = self.serializable
         if "values" in extended_properties.keys():
             extended_properties["values"] = [generatortools.Name(value) for value in extended_properties["values"] ]
         self._set_default_value(extended_properties, "compareable", True)

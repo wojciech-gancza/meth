@@ -62,7 +62,7 @@ ${#end}         << "${values[-1].lowercase_namespace_and_name()}: " << static_ca
          << " }";
   return output;
 }
-
+${#if serializable}
 Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& serializer, const ${class_name}& ${object_name})
 {
 ${#for value in values}  serializer << static_cast<const ${value.FullyDecoratedClassName()}&>(${object_name});
@@ -74,7 +74,7 @@ Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer&
 ${#for value in values}  deserializer >> static_cast<${value.FullyDecoratedClassName()}&>(${object_name});
 ${#end}  return deserializer;
 }
-
+${#end}
 // vvv--- YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW
 
 // ^^^--- END OF USER DEFINED CLASS ELEMENTS

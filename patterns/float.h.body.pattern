@@ -27,9 +27,9 @@ ${#if ordered}    bool operator<(const ${class_name}& other) const noexcept { re
 
     friend std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name}) { output << ${object_name}.toString(); return output; }
 
-    ${#include "simple.value.serialization.pattern"}
+${#if serializable}    ${#include "simple.value.serialization.pattern"}
 
-  private:
+${#end}  private:
     ${float_class} m_${object_name};
 
     // vvv--- YOU CAN PUT ADDITIONAL CLASS ELEMENTS BELOW

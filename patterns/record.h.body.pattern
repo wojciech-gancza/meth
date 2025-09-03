@@ -54,9 +54,9 @@ class ${class_name}
       }${#end}
     }
 
-    ${#include "simple.compare.declaration.pattern"}
+${#if serializable}    ${#include "simple.compare.declaration.pattern"}
 
-    std::string toString() const;
+${#end}    std::string toString() const;
 
     friend std::ostream& operator<<(std::ostream& output, const ${class_name}& ${object_name});
 

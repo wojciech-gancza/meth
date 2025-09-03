@@ -15,10 +15,6 @@ import time
 #   -- make serialization conditional (on the level of generator)
 #     -- add set of variables in generator (and merge it with parameters)
 #     -- change in pattern files
-#   -! enum type
-#     -- optimimalization of connversion - consider skipping not needed is len(text) < ...
-#     ++ review generation of string->enum: check length before checking character in subselections
-#     ++ implementation
 #   ++ adding tool files (when required)
 #     ++ move all tool files to patterns
 #     ++ add header to tool files - describing usage
@@ -43,6 +39,10 @@ import time
 #     ++ search by regex as compare option
 #     ++ implementation
 #   ++ registry of all generated types
+#   ++ enum type
+#     ++ optimimalization of connversion - consider skipping not needed is len(text) < ...
+#     ++ review generation of string->enum: check length before checking character in subselections
+#     ++ implementation
 # -! state machine generator
 #   -- other needed functionalities (to be defined)
 #     -- global/state events
@@ -136,7 +136,8 @@ class Test_SimpleTypesGenerator(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(Test_SimpleTypesGenerator, self).__init__(*args, **kwargs)
         self.environment = TestEnvironment("Test_SimpleTypesGenerator")
-        self.generator = generator.PlainOldDataTypes(self.environment.output_path.parent().parent().parent(), self.environment.cpp_output_path)
+        self.generator = generator.PlainOldDataTypes(self.environment.output_path.parent().parent().parent(), \
+                                                     tools_target_path = self.environment.cpp_output_path)
         self.generator.set_output_path(self.environment.cpp_output_path)
         
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -242,7 +243,9 @@ class Test_SimpleTypesGeneratorFoundErrors(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(Test_SimpleTypesGeneratorFoundErrors, self).__init__(*args, **kwargs)
         self.environment = TestEnvironment("Test_SimpleTypesGenerator")
-        self.generator = generator.PlainOldDataTypes(self.environment.output_path.parent().parent().parent(), self.environment.cpp_output_path)
+        self.generator = generator.PlainOldDataTypes(self.environment.output_path.parent().parent().parent(), \
+                                                     tools_target_path = self.environment.cpp_output_path, \
+                                                     serializable = False)
         self.generator.set_output_path(self.environment.output_path)
 
     def test_GeneratingEnumType(self):

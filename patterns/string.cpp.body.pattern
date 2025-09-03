@@ -17,7 +17,7 @@ std::string ${class_name}::toString() const
   buffer << "\"";
   return buffer.str();
 }
-
+${#if serializable}
 Serialization::BinarySerializer& operator<<(Serialization::BinarySerializer& serializer, const ${class_name}& ${object_name})
 {
   ${int_class} count_of_bytes = ${object_name}.get${class_name}Length();
@@ -41,7 +41,7 @@ Serialization::BinaryDeserializer& operator>>(Serialization::BinaryDeserializer&
   ${object_name}.set${class_name}(result);
   return deserializer;
 }
- 
+${#end}
 // vvv--- YOU CAN PUT ADDITIONAL DEFINITIONS BELOW
 
 // ^^^--- END OF USER DEFINED DEFINITIONS

@@ -171,25 +171,31 @@ class EnumCodeGenerator:
         self.names_texts = [name.UPPERCASE_NAME() for name in names]
 
     def generate_code(self):
-        return self._generate_code(self.names_texts)
+        return self._generate_code(self.names_texts, 0)
 
-    def _generate_code(self, names_list):
+    def _generate_code(self, names_list, min_characters_count):
         if len(names_list) == 1:
             return [ "return E_" + names_list[0] + ";" ]
         switch_statement_data = self._check_best_way_to_distinguish(names_list)
-        switch_expression = switch_statement_data[0]
-        switch_cases = switch_statement_data[1]
-        precondition_length = switch_statement_data[2]
+        switch_expression = switch_statement_data["switch_expression"]
+        switch_cases = switch_statement_data["cases"]
+        precondition_length = switch_statement_data["precondition_length"]
         switch_case_keys = list(switch_cases.keys())
         switch_case_keys.sort()
+        switch_character_position = switch_statement_data["character_position"]
+        if switch_character_position is not None:
+            if switch_character_position < min_characters_count:
+                precondition_length = None
+            else:
+                min_characters_count = precondition_length
         result_code = []
         if precondition_length:
             result_code = ["if (text.length() < " + str(precondition_length) + ")", "{", "  return E_" + names_list[-1] + ";", "}"]
         if len(switch_cases) == 2:
             first_key = switch_case_keys[0]
-            first_key_code = self._indent( self._generate_code(switch_cases[first_key]) ) 
+            first_key_code = self._indent( self._generate_code(switch_cases[first_key], min_characters_count) ) 
             second_key = switch_case_keys[1]
-            second_key_code = self._indent( self._generate_code(switch_cases[second_key]) ) 
+            second_key_code = self._indent( self._generate_code(switch_cases[second_key], min_characters_count) ) 
             return result_code + [ "if (" + switch_expression + " == " + first_key + ")", "{"] + \
                    self._indent(first_key_code) + \
                    [ "}", "else", "{" ] + \
@@ -198,10 +204,10 @@ class EnumCodeGenerator:
         else:
             result_code = result_code + [ "switch (" + switch_expression + ")", "{" ]
             for key in switch_case_keys[:-1]:
-                key_code = self._indent( self._generate_code(switch_cases[key]) )
+                key_code = self._indent( self._generate_code(switch_cases[key], min_characters_count) )
                 result_code = result_code + self._indent( ["case " + str(key) + ":"] + key_code)   
             last_key = switch_case_keys[-1]
-            last_key_code = self._indent( self._generate_code(switch_cases[last_key]) ) 
+            last_key_code = self._indent( self._generate_code(switch_cases[last_key], min_characters_count) ) 
             return result_code + self._indent(["default:", "{"] + last_key_code + ["}"]) + ["}"]
 
     def _indent(self, code_block):
@@ -216,11 +222,17 @@ class EnumCodeGenerator:
         bigest_difference_by_character = max([len(seleced_by_character_at_position) for seleced_by_character_at_position in select_by_character_at_position])
         difference_by_lenght = len(select_by_length)
         if difference_by_lenght > bigest_difference_by_character:
-            return ("text.length()", select_by_length, None)
+            return { "switch_expression": "text.length()", \
+                     "cases": select_by_length, \
+                     "precondition_length": None, \
+                     "character_position": None }
         else:
             for character_index in range(consider_characters_count):
                 if len(select_by_character_at_position[character_index]) == bigest_difference_by_character:
-                     return ("text[" + str(character_index) + "]", select_by_character_at_position[character_index], consider_characters_count)
+                     return { "switch_expression": "text[" + str(character_index) + "]", \
+                              "cases": select_by_character_at_position[character_index], \
+                              "precondition_length": consider_characters_count, \
+                              "character_position": character_index }
 
     def _gruop_by_character(self, character_index, names_list):
         selector_map = { }

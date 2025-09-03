@@ -70,9 +70,9 @@ class ${class_name}
 
     ${#include "common.to.from.string.declaration.pattern"}
 
-    ${#include "simple.value.serialization.pattern"}
+${#if serializable}    ${#include "simple.value.serialization.pattern"}
 
-  private:
+${#end}  private:
     ${int_class} m_${object_name};
 
     static const char* m_${object_name}_bits_names[];

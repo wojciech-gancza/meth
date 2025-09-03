@@ -25,9 +25,9 @@ class ${class_name}
 
     ${#include "common.to.from.string.declaration.pattern"}
 
-    ${#include "simple.value.serialization.pattern"}
+${#if serializable}    ${#include "simple.value.serialization.pattern"}
 
-  private:
+${#end}  private:
     e${class_name} m_${object_name};
 
     static const char* m_${object_name}_names[];
