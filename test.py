@@ -13,6 +13,7 @@ import time
 #--------------------------------------------------------------------------
 # -! state machine generator
 #   -- other needed functionalities (to be defined)
+#     -- call function on initial transition
 #     -- global/state events
 #     -- concurrent (parallel) states
 #     -- PlantUML parser and locating plantuml souce in .cpp or .h output
@@ -21,9 +22,9 @@ import time
 #       ++ generating proper list of actions
 #     ++ conditions
 #     ++ generate state event handlers
-#   -! core patterns
-#     -! test - check how the machine works
-#       -- test working in C++
+#   ++ core patterns
+#     ++ test - check how the machine works
+#       ++ test working in C++
 #       ++ test in python - generation of cpp file
 #     ++ header file
 #     ++ remove unnecessary includes from cpp and header

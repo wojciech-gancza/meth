@@ -49,7 +49,7 @@ ${#end}  public:
     
     void reset()   { m_current_state = &${initial_state_object_name}; }
     
-    bool process_event(Event event)   { m_current_state->process_event(event, *this); }
+    void process_event(Event event)   { m_current_state->process_event(event, *this); }
   
   protected:
 ${#for method in all_methods}    ${#if method[0]}bool${#else}void${#end} ${method[1]}();

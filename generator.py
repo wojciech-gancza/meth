@@ -369,13 +369,11 @@ class PlainOldDataTypes(CodeGenerator):
 class StateMachine(CodeGenerator):
 
     class OutgoingEvent:
-
         def __init__(self, event_name, first_transition):
             self.event_name = event_name
             self.transitions = [ first_transition ]
 
     class StateDefinition:
-
         def __init__(self, name, *, on_enter=None, on_leave=None, parent=None):
             self.name = generatortools.Name(name)
             self.on_enter = on_enter
@@ -387,7 +385,6 @@ class StateMachine(CodeGenerator):
                 self.parent = generatortools.Name(parent).lowercase_name()
             else:
                 self.parent = None
-
         def append_outgoing_transition(self, transition):
             event_name = transition.event.UPPERCASE_NAME()
             for outgoing_transition in self.outgoing_transitions:
@@ -397,7 +394,6 @@ class StateMachine(CodeGenerator):
             self.outgoing_transitions.append( StateMachine.OutgoingEvent(event_name, transition) )
 
     class Transition:
-
         def __init__(self, event, source, target, *, action=None, condition=None):
             self.event = generatortools.Name(event)
             self.source = generatortools.Name(source)

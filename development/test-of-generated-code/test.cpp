@@ -11,6 +11,18 @@
 #include "common_event_time.h"
 #include "common_delay.h"
 #include "configuration_node.h"
+#include "test_the_door.h"
+
+//--------------------------------------------------------------------------------------------
+
+TEST(TestOfGenearatedStateMachine, TestOfSimpleProcessing)
+{
+  ::Test::TheDoor door;
+  door.process_event(::Test::TheDoor::CLOSE);
+  door.process_event(::Test::TheDoor::LOCK);
+  door.process_event(::Test::TheDoor::OPEN);
+  ASSERT_EQ(door.get_state_history(), "BE");
+}
 
 //--------------------------------------------------------------------------------------------
 
