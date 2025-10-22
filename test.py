@@ -11,35 +11,10 @@ import time
 #--------------------------------------------------------------------------
 # backlog:
 #--------------------------------------------------------------------------
-# -! state machine generator
-#   -- other needed functionalities (to be defined)
-#     -- call function on initial transition
-#     -- global/state events
-#     -- concurrent (parallel) states
-#     -- PlantUML parser and locating plantuml souce in .cpp or .h output
-#     ++ composite states
-#       ++ building state structures - with proper event handling
-#       ++ generating proper list of actions
-#     ++ conditions
-#     ++ generate state event handlers
-#   ++ core patterns
-#     ++ test - check how the machine works
-#       ++ test working in C++
-#       ++ test in python - generation of cpp file
-#     ++ header file
-#     ++ remove unnecessary includes from cpp and header
-#     ++ core functions of cpp - processing events
-#     ++ stubs of events processing functions
-# -! configuration
-#   -- basic configuration tests
-#   -- add reading objects from cofiguration (all types)
-#   ++ configuration types: key, value, node, nodes
-# ++ fixing problems
-#   ++ fix problem found when generating enum convertion procedure for set [ "Unknown", "ValidOnce", "ValidAlways", "AnyAlways"]
-#   ++ converting string->enum - check length of the string first. Problem with too bix index
-# ++ main part of metagenerator
-#   ++ functionality as previos version +...
-# ++ simple types generator
+# -! simple types generator
+#   -- handle exports in generated types
+#   -- generate global enum enumerating types
+#   -- generate string dump of serialized form of generated types
 #   ++ make serialization conditional (on the level of generator)
 #     ++ add set of variables in generator (and merge it with parameters)
 #     ++ change in pattern files
@@ -71,6 +46,34 @@ import time
 #     ++ optimimalization of connversion - consider skipping not needed is len(text) < ...
 #     ++ review generation of string->enum: check length before checking character in subselections
 #     ++ implementation
+# -! state machine generator
+#   -- other needed functionalities (to be defined)
+#     -- call function on initial transition
+#     -- global/state events
+#     -- concurrent (parallel) states
+#     -- PlantUML parser and locating plantuml souce in .cpp or .h output
+#     ++ composite states
+#       ++ building state structures - with proper event handling
+#       ++ generating proper list of actions
+#     ++ conditions
+#     ++ generate state event handlers
+#   ++ core patterns
+#     ++ test - check how the machine works
+#       ++ test working in C++
+#       ++ test in python - generation of cpp file
+#     ++ header file
+#     ++ remove unnecessary includes from cpp and header
+#     ++ core functions of cpp - processing events
+#     ++ stubs of events processing functions
+# -! configuration
+#   -- basic configuration tests
+#   -- add reading objects from cofiguration (all types)
+#   ++ configuration types: key, value, node, nodes
+# ++ fixing problems
+#   ++ fix problem found when generating enum convertion procedure for set [ "Unknown", "ValidOnce", "ValidAlways", "AnyAlways"]
+#   ++ converting string->enum - check length of the string first. Problem with too bix index
+# ++ main part of metagenerator
+#   ++ functionality as previos version +...
 #--------------------------------------------------------------------------
 
 class TestEnvironment:
