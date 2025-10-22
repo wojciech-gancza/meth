@@ -42,12 +42,12 @@ copied line by line to the target replacing variable elements by its value.
 Variables are denoted as '${ ... }'. The content '...' is simply interpreted 
 by the python interpreter and the value is placed in the result file. The value can be: 
 - scalar - then its string representation is located in the place of variable.
-- list - then set of lines are added with comma endings at the first and middle lines
-- list of lines wrapped in 'code_block' class - the content generates multiplied template lines
+- list - then set of lines are added in place of variable with its in dentation. When special
+  list formatting is needed - you can use any formatter which return list of strings.
 
 ### manually added code
 
-Lines located between '// -vvv ...' and '// -^^^ ...' are preserved. Programmer can place 
+Lines located between '// vvv--- ...' and '// ^^^--- ...' are preserved. Programmer can place 
 any code between them in generated file. When generation is called, the generator first loads
 file and extracts such block to be used in the new file. When file is generated first time, the 
 content of template will be stored.
@@ -56,17 +56,18 @@ content of template will be stored.
 
 To easily decide about code to add and for generating similar parts of code, two metastatements 
 were added:
- - '${#IF condition}' ... - conditionally added code. Conditional code ends at '${#END}' tag. 
-   It is also possible to use ${ELSE}. 'condition' is any python expression which value is 
+ - '${#if condition}' ... - conditionally added code. Conditional code ends at '${#end}' tag. 
+   It is also possible to use ${else}. 'condition' is any python expression which value is 
    evalueted when condition is calculated.
- - '${#FOR varname : collection}' - loop. All template text between this tag and '${#END}' is repeated
-   for variable named 'varname' trawersing the collection. When the collection is dictionary - 
-   use '${#FOR key, value : dictionary}' form of loop.
+ - '${#for varname in collection}' - loop. All template text between this tag and '${#end}' is repeated
+   for variable named 'varname' trawersing the collection. 
    
 Metastatements can be nested.
    
 ### common sniplets can be in included common files
 
 When same part of code is used in different code templates, you can just write it once, save in separate
-file and just include it into your template using metastatement '${INCLUDE filename}'. It works similar to the 
-'#include' known from C or C++ - the content of included file replaces this metastatememt.
+file and just include it into your template using metastatement '${include filename}'. It works similar to the 
+'#include' known from C or C++ - the content of included file replaces this metastatememt. Additionally, the
+list of variables and values can be added foming ${include filename "name": value, "name2": value2...} to override 
+(or define) variables locally in included file.
